@@ -1,4 +1,4 @@
-# Visual Coder
+# Code Visualizer
 
 An online coding tool that allows you to visualy see what your code does. The vision of this project is to create a mockup of Replit that would allow users to see what their code is doing on on running their code.
 
