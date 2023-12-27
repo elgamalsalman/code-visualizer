@@ -1,0 +1,15 @@
+hello && echo hihello && echo hihello && echo hihello; echo hi;Function "operator new; echo [[__END_OF_COMMAND_OUTPUT__]]\n" not defined.
+Quit
+Undefined command: "nn".  Try "help".
+Argument required (one or more breakpoint numbers).
+Set commands to be executed when the given breakpoints are hit.
+Give a space-separated breakpoint list as argument after "commands".
+A list element can be a breakpoint number (e.g. `5') or a range of numbers
+(e.g. `5-7').
+With no argument, the targeted breakpoint is the last one set.
+The commands themselves follow starting on the next line.
+Type a line containing "end" to indicate the end of them.
+Give "silent" as the first line to make the breakpoint silent;
+then no output is printed when it is hit, except what the commands print.
+asdkfj asdfjkjasf dksfjakdfjakdsfjaskdfjaksdf asd fasdfjkadsf kasdfj kasdfj asasdkfj asdfjkjasf dksfjakdfjakdsfjaskdfjaksdf asd fasdfjkadsf kasdfj kasdfj asasdkfj asdfjkjasf dksfjakdfjakdsfjaskdfjaksdf asd fasdfjkadsf kasdfj kasdfj asasdkfj asdfjkjasf dksfjakdfjakdsfjaskdfjaksdf asd fasdfjkadsf kasdfj kasdfj asasdkfj asdfjkjasf dksfjakdfjakdsfjaskdfjaksdf asd fasdfjkadsf kasdfj kasdfj asasdkfj asdfjkjasf dksfjakdfjakdsfjaskdfjaksdf asd fasdfjkadsf kasdfj kasdfj asasdkfj asdfjkjasf dksfjakdfjakdsfjaskdfjaksdf asd fasdfjkadsf kasdfj kasdfj asasdkfj asdfjkjasf dksfjakdfjakdsfjaskdfjaksdf asd fasdfjkadsf kasdfj kasdfj asasdkfj asdfjkjasf dksfjakdfjakdsfjaskdfjaksdf asd fasdfjkadsf kasdfj kasdfj asasdkfj asdfjkjasf dksfjakdfjakdsfjaskdfjaksdf asd fasdfjkadsf kasdfj kasdfj asasdkfj asdfjkjasf dksfjakdfjakdsfjaskdfjaksdf asd fasdfjkadsf kasdfj kasdfj asasdkfj asdfjkjasf dksfjakdfjakdsfjaskdfjaksdf asd fasdfjkadsf kasdfj kasdfj asasdkfj asdfjkjasf dksfjakdfjakdsfjaskdfjaksdf asd fasdfjkadsf kasdfj kasdfj asasdkfj asdfjkjasf dksfjakdfjakdsfjaskdfjaksdf asd fasdfjkadsf kasdfj kasdfj asasdkfj asdfjkjasf dksfjakdfjakdsfjaskdfjaksdf asd fasdfjkadsf kasdfj kasdfj as[[__END_OF_COMMAND_OUTPUT__]][[__END_OF_COMMAND_OUTPUT__]]asdkfjlasdfjalskdfjasdfafsdfadsf[[__END_OF_COMMAND_OUTPUT__]]asdkfjlasdfjalskdfjasdfafsdfadsf[[__END_OF_COMMAND_OUTPUT__]]
+asdkfjlasdfjalskdfjasdfafsdfadsf[[__END_OF_COMMAND_OUTPUT__]]

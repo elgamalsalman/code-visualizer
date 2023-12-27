@@ -1,6 +1,6 @@
 # Code Visualizer
 
-An online coding tool that allows you to visualy see what your code does. The vision of this project is to create a mockup of Replit that would allow users to see what their code is doing on on running their code.
+An online coding tool that allows you to visually see what your code does. The vision of this project is to create a mockup of Replit that would allow users to see what their code is doing on on running their code.
 
 As the teaching assistant of Data Structures and Algorithms at NYUAD, my motivation behind buildling this project is to help improve students visualisation of algorithms, since the lack of the ability to visualise how the algorithm works in one's head is one of the main reasons why some students end up with a lot of conceptual errors in their codes, especially when it comes to pointers.
 
@@ -94,3 +94,35 @@ void __attribute__ ((constructor)) premain() {
 
 #### Steps of Detecting New Object Allocations
 
+#### Log Events
+
+- creation of new node
+```json
+{
+	'type': 'new',
+	'object': {
+		'class': 'node',
+		'location': 'heap',
+		'id': 0x034234,
+		'value': 0,
+	},
+}
+```
+
+- deletion of node
+```json
+{
+	'type': 'delete',
+	'id': 0x034234,
+}
+```
+
+- change in a node's member variable value
+```json
+{
+	'type': 'change',
+	'id': 0x034234
+	'parameter': 'value',
+	'new_value': 23,
+}
+```

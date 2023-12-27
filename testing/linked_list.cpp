@@ -29,8 +29,8 @@ int main() {
 
 	// allocate three nodes in the heap
 	cout << "// creating nodes!\n";
-	Node *node_one = new Node(1); Node *node_two = new Node(1e9);
-	Node *nodes = new Node[3];
+	Node *node_one = new Node(1); Node *node_two = new Node(1e9); new Linked_list();
+	// Node *nodes = new Node[3];
 	node_one->next = node_two;
 
 	cout << "// ending\n";
