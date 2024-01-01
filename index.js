@@ -13,7 +13,9 @@
 
 import { strict as assert } from 'assert';
 
-import { spawn, execSync, exec } from 'child_process';
+// XXX
+// import { spawn, execSync, exec } from 'child_process';
+import { spawn } from 'node-pty';
 
 // ---------- GLOBALS ----------
 
@@ -23,15 +25,29 @@ const args = process.argv.slice(2);
 
 const code_header_file_path = args[0];
 const code_file_path = args[1];
-const executable_file_path = code_file_path.substr(0, code_file_path.lastIndexOf(".")) + ".out";
+const code_file_name = code_file_path.substr(0, code_file_path.lastIndexOf("."));
+const executable_file_path = code_file_name + ".exe";
+const gdb_output_file_path = code_file_name + ".gdb.out";
+const program_output_file_path = code_file_name + ".out";
+const program_error_file_path = code_file_name + ".err";
+
+const pseudoterminal_max_width = 999;
+const pseudoterminal_options = {
+  cols: pseudoterminal_max_width,
+  rows: 40,
+  cwd: process.cwd(),
+  env: process.env,
+};
 
 const linked_list_class_name = 'Linked_list';
 const node_class_name = 'Node';
 
 // --- VARIABLES ---
 
-// gdb child process
-let gdb;
+// gdb child processes
+let gdb_process;
+let program_output_process;
+let program_error_process;
 
 // gdb promises
 let command_promise;
@@ -46,11 +62,6 @@ const sleep = (time) => {
 	return new Promise(res => setTimeout(res, time));
 };
 
-// // gets word by index from string TODO
-// const get_word_by_index = (str, index) => {
-// 	console.log(str.split().filter(Boolean));
-// };
-
 // creates a promise that can be externally resolved
 const create_externally_resolvable_promise = () => {
     let res, prom = new Promise(inner_res => {
@@ -59,6 +70,13 @@ const create_externally_resolvable_promise = () => {
     prom.resolve = res;
     return prom;
 };
+
+// normalize string, remove colour codes and all other ansi codes
+const ansi_normalize = (str) => {
+	const normalized_str = str.replace(
+		/[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g, '');
+	return normalized_str;
+}
 
 // tokenizes a string
 const tokenize = (str) => {
@@ -92,14 +110,46 @@ const get_nth_occurrence_index = (arr, key, j) => {
 			return i;
 		}
 	}
-	console.log("[!!!] COULDN'T FIND THE NTH OCCURRENCE IN ARRAY");
-	console.log(`arr: ${arr}`);
-	console.log(`key: ${key}`);
-	console.log(`j: ${j}`);
 	assert(false);
 	return -1;
 }
 
+// executes a bash command using a temporary pseudoterminal session
+const execute_bash_command = (command, args) => {
+  return new Promise((resolve, reject) => {
+    const pty_process = spawn(
+			command,
+			args,
+			pseudoterminal_options,
+		);
+    let result = '';
+
+    pty_process.on('data', data => {
+      result += data;
+    });
+
+    pty_process.on('exit', code => {
+      if (code === 0) {
+        resolve(result);
+      } else {
+				console.log(`[!!!] command {${command}} failed`);
+        reject(new Error(`Command failed with exit code ${code}`));
+      }
+    });
+  });
+};
+
+// stop input to output echoing
+const stop_input_to_output_echoing = (spawn_instance) => {
+	const stdout = process.stdout;
+	const tty = process.binding('tty_wrap').TTY;
+	const tty_instance = new tty(spawn_instance.fd, true);
+	tty_instance.setRawMode(true);
+	spawn_instance.on('data', stdout.write.bind(stdout));
+	process.stdin.on('data', spawn_instance.write.bind(spawn_instance));
+};
+
+// log event
 const log_event = (json) => {
 	console.log('// LOG EVENT:');
 	console.log(json);
@@ -118,21 +168,23 @@ const execute_gdb_command = async (command) => {
 const on_gdb_data = (() => {
 	// closure for responce_lines
 	let responce_lines = [];
+	let echo = null;
 
-	// return the real on_gdb_data function
-	return async data => {
-		data = data.toString().trim();
+	return async (data) => {
+		data = ansi_normalize(data.toString()).trim();
 
 		// split
 		const delimiter = "(gdb)";
 		const delimiter_escaped = "\\(gdb\\)";
 		const regex = new RegExp(`(((?!(${delimiter_escaped})).)+|${delimiter_escaped})`, 'g');
-		const responces_delimited = data.match(regex);
+		let responces_delimited = data.match(regex);
+		if (responces_delimited === null) {
+			responces_delimited = [];
+		}
 
-		let responces = data.split('(gdb)');
 		for (const responce of responces_delimited) {
 			// if responce
-			if (responce != delimiter) {
+			if (responce !== delimiter) {
 				// add to responce lines
 				responce.split('\n').forEach((line, i) => {
 					responce_lines.push(line.trim());
@@ -140,19 +192,28 @@ const on_gdb_data = (() => {
 
 			// else if delimiter
 			} else {
+				// remove echo
+				if (echo !== null) {
+					// assert echoing
+					assert(echo === responce_lines[0]);
+					// remove first element in array
+					responce_lines.shift();
+				}
+
 				// process responce and get next command
 				command_promise = create_externally_resolvable_promise();
 				responce_promise.resolve(responce_lines);
 				const command = await command_promise;
 
 				// send command
-				gdb.stdin.write(command + '\n');
+				gdb_process.write(command + '\n');
+				echo = command;
 
 				// reset responce_lines
 				responce_lines = [];
 			}
 		}
-	}
+	};
 })();
 
 // checks if responce is from a controlpoint
@@ -249,7 +310,7 @@ const events_callbacks = {
 		const event = "new";
 
 		// get line info
-		res = await execute_gdb_command('frame 1'); console.log(res);
+		res = await execute_gdb_command('frame 1');
 		const line_number = parseInt(tokenize(res[1])[0]);
 		const line = tokenize(res[1]).slice(1);
 		await execute_gdb_command('frame 0');
@@ -290,8 +351,6 @@ const events_callbacks = {
 	// callback for deletions
 	"delete": async (res) => {
 		// get address
-		console.log("// checkpoint")
-		console.log(res)
 		res = await execute_gdb_command('watch ptr');
 		const watchpoint = get_controlpoint_number(res);
 		res = await execute_gdb_command('continue'); res.splice(0, 1);
@@ -319,19 +378,33 @@ const initialize_gdb = async () => {
 	command_promise = create_externally_resolvable_promise();
 	responce_promise = create_externally_resolvable_promise();
 
-	// compile and run code
-	execSync(`g++ -g ${code_header_file_path} ${code_file_path} -o ${executable_file_path}`);
-	gdb = spawn('gdb', ['-q', `${executable_file_path}`], { stdio: ['pipe', 'pipe', 'pipe'] });
-	gdb.stdout.setEncoding('utf8');
+	// compile, prepare output files and run code
+	execute_bash_command(`g++`, [
+		`-g`, `${code_header_file_path}`, `${code_file_path}`, `-o`, `${executable_file_path}`
+	]);
+	execute_bash_command(`echo`, [`-n`, `''`, `>`, `${program_output_file_path}`]); // empty program output file
+	execute_bash_command(`echo`, [`-n`, `''`, `>`, `${program_error_file_path}`]); // empty program error file
+	gdb_process = spawn('gdb', ['-q', `${executable_file_path}`], pseudoterminal_options);
+	program_output_process = spawn('tail', ['-f', `${program_output_file_path}`], pseudoterminal_options);
+	program_error_process = spawn('tail', ['-f', `${program_error_file_path}`], pseudoterminal_options);
 
-	gdb.stdout.on('data', on_gdb_data);
+	// stop input to output echoing
+	// stop_input_to_output_echoing(gdb_process);
+	// stop_input_to_output_echoing(program_output_process);
+	// stop_input_to_output_echoing(program_error_process);
 
-	gdb.stderr.on('data', async (data) => {
-		console.error(`stderr: ${data}`);
-	});
+	// encoding
+	gdb_process.setEncoding('utf8');
 
-	gdb.on('close', async (code) => {
-		console.log(`child process exited with code ${code}`);
+	// callbacks
+	gdb_process.on('data', on_gdb_data);
+
+	// exit
+	gdb_process.on('exit', code => {
+		// kill program output and error processes
+		program_output_process.kill();
+		program_error_process.kill();
+		console.log('// process exited with code', code);
 	});
 };
 
@@ -347,18 +420,18 @@ const run_gdb_program = async () => {
 	// await execute_gdb_command('');
 
 	// create breakpoints
-	responce = await execute_gdb_command('break operator new'); console.log(responce);
+	responce = await execute_gdb_command('break operator new'); console.error(responce);
 	set_controlpoint_callback(get_controlpoint_number(responce), events_callbacks["new"]);
-	responce = await execute_gdb_command('break operator delete(void*)'); console.log(responce);
+	responce = await execute_gdb_command('break operator delete(void*)'); console.error(responce);
 	set_controlpoint_callback(get_controlpoint_number(responce), events_callbacks["delete"]);
 
 	// !DEPRECATED! analyse node class
-	// responce = await execute_gdb_command(`ptype ${node_class_name}`); console.log(responce);
+	// responce = await execute_gdb_command(`ptype ${node_class_name}`); console.error(responce);
 
 	// run program
-	responce = await execute_gdb_command('run');
+	responce = await execute_gdb_command(`run > ${program_output_file_path}`);
 	responce.splice(0, 1); // remove starting line
-	console.log(responce);
+	console.error(responce);
 
 	while (is_controlpoint(responce)) {
 		const controlpoint_callback = get_controlpoint_callback(get_controlpoint_number(responce));
@@ -367,7 +440,7 @@ const run_gdb_program = async () => {
 		// get next responce
 		responce = await execute_gdb_command('continue');
 		responce.splice(0, 1); // remove starting line
-		console.log(responce);
+		console.error(responce);
 	}
 
 	// quit

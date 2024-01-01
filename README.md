@@ -51,6 +51,10 @@ As the teaching assistant of Data Structures and Algorithms at NYUAD, my motivat
 - gdb `watch var`: creates a watchpoint on the variable, in other words, execution will break if the variable's value changed
 - bash `command 2> error 1> output`: redirects error and output to error and output respectively
 - gdb `print &((Node *)(0x55555556b2c0)).next`
+- gdb `set logging file <file>`: sets the logging file, the file to redirect gdb output to
+- gdb `set logging overwrite [on|off]`: sets whether to overwrite the logging file or append to it
+- gdb `set logging redirect [on|off]`: sets whether to redirect and not even print the output to the screen or do both
+- gdb `set logging [on|off]`: turns logging on or off
 
 #### Useful C++ Snippets
 
@@ -93,6 +97,36 @@ void __attribute__ ((constructor)) premain() {
 ```
 
 #### Steps of Detecting New Object Allocations
+
+__logging__
+```
+set logging file linked_list.gdb.out
+set logging overwrite on
+set logging redirect on
+set logging on
+```
+
+__breakpoints__
+```
+break operator new
+break operator delete(void*)
+```
+
+__run__
+```
+run > linked_list.out
+```
+
+__the full thing without interruptions__
+```
+set logging file linked_list.gdb.out
+set logging overwrite on
+set logging redirect on
+set logging on
+break operator new
+break operator delete(void*)
+run > linked_list.out
+```
 
 #### Log Events
 
