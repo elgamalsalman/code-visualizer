@@ -133,12 +133,12 @@ run > linked_list.out
 - creation of new node
 ```json
 {
-	'type': 'new',
-	'object': {
-		'class': 'node',
-		'location': 'heap',
-		'id': 0x034234,
-		'value': 0,
+	"type": "new",
+	"object": {
+		"class": "node",
+		"location": "heap",
+		"id": 0x034234,
+		"value": 0,
 	},
 }
 ```
@@ -146,17 +146,25 @@ run > linked_list.out
 - deletion of node
 ```json
 {
-	'type': 'delete',
-	'id': 0x034234,
+	"type": "delete",
+	"id": 0x034234,
 }
 ```
 
-- change in a node's member variable value
+- change in a node"s member variable value
 ```json
 {
-	'type': 'change',
-	'id': 0x034234
-	'parameter': 'value',
-	'new_value': 23,
+	"type": "change",
+	"id": 0x034234
+	"parameter": "value",
+	"new_value": 23,
+}
+```
+
+- program output
+```json
+{
+	"type": "output",
+	"text": "hello world!\n",
 }
 ```

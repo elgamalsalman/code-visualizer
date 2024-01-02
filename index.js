@@ -13,8 +13,6 @@
 
 import { strict as assert } from 'assert';
 
-// XXX
-// import { spawn, execSync, exec } from 'child_process';
 import { spawn } from 'node-pty';
 
 // ---------- GLOBALS ----------
@@ -139,6 +137,7 @@ const execute_bash_command = (command, args) => {
   });
 };
 
+// !DEPRECATED! creates a tty instance that is hard to kill
 // stop input to output echoing
 const stop_input_to_output_echoing = (spawn_instance) => {
 	const stdout = process.stdout;
@@ -388,13 +387,10 @@ const initialize_gdb = async () => {
 	program_output_process = spawn('tail', ['-f', `${program_output_file_path}`], pseudoterminal_options);
 	program_error_process = spawn('tail', ['-f', `${program_error_file_path}`], pseudoterminal_options);
 
-	// stop input to output echoing
-	// stop_input_to_output_echoing(gdb_process);
-	// stop_input_to_output_echoing(program_output_process);
-	// stop_input_to_output_echoing(program_error_process);
-
 	// encoding
 	gdb_process.setEncoding('utf8');
+	program_output_process.setEncoding('utf8');
+	program_error_process.setEncoding('utf8');
 
 	// callbacks
 	gdb_process.on('data', on_gdb_data);
