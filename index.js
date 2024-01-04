@@ -2,7 +2,12 @@
 // `node index.js <header-file-path> <code-file-path>`
 
 // TODO:
-// - pipe output of code itself to a different place
+// - create a function for receiving events and this should redirect
+//   input data events to another function that would echo the input data
+//   into the input named pipe file
+// - set up change events
+// - package into a class that should be exported and can be instantiated
+//   and has an on('event', callback) function
 // - conditionals like (flag ? new Node() : new Tree()) won't work
 // - created objects with non-default constructors should be directly
 //   created with their initialization values, instead of letting
@@ -21,11 +26,13 @@ import { spawn } from 'node-pty';
 
 const args = process.argv.slice(2);
 
+const named_pipe_maintainer_bash_script_file_path = "named_pipe_maintainer.sh";
+
 const code_header_file_path = args[0];
 const code_file_path = args[1];
 const code_file_name = code_file_path.substr(0, code_file_path.lastIndexOf("."));
 const executable_file_path = code_file_name + ".exe";
-const gdb_output_file_path = code_file_name + ".gdb.out";
+const program_input_file_path = code_file_name + ".in";
 const program_output_file_path = code_file_name + ".out";
 const program_error_file_path = code_file_name + ".err";
 
@@ -113,8 +120,8 @@ const get_nth_occurrence_index = (arr, key, j) => {
 }
 
 // executes a bash command using a temporary pseudoterminal session
-const execute_bash_command = (command, args) => {
-  return new Promise((resolve, reject) => {
+const execute_bash_command = async (command, args) => {
+  return (new Promise((resolve, reject) => {
     const pty_process = spawn(
 			command,
 			args,
@@ -134,7 +141,7 @@ const execute_bash_command = (command, args) => {
         reject(new Error(`Command failed with exit code ${code}`));
       }
     });
-  });
+  }));
 };
 
 // !DEPRECATED! creates a tty instance that is hard to kill
@@ -150,7 +157,6 @@ const stop_input_to_output_echoing = (spawn_instance) => {
 
 // log event
 const log_event = (json) => {
-	console.log('// LOG EVENT:');
 	console.log(json);
 };
 
@@ -214,6 +220,22 @@ const on_gdb_data = (() => {
 		}
 	};
 })();
+
+// process incoming program output data
+const on_program_output_data = (data) => {
+	log_event({
+		type: "output",
+		text: data,
+	});
+};
+
+// process incoming program error data
+const on_program_error_data = (data) => {
+	log_event({
+		type: "error",
+		text: data,
+	});
+};
 
 // checks if responce is from a controlpoint
 const is_controlpoint = (res) => {
@@ -377,12 +399,27 @@ const initialize_gdb = async () => {
 	command_promise = create_externally_resolvable_promise();
 	responce_promise = create_externally_resolvable_promise();
 
-	// compile, prepare output files and run code
-	execute_bash_command(`g++`, [
+	// reset files
+	await execute_bash_command(`rm`, [`-f`, `${executable_file_path}`]); // remove previous executable file
+	await execute_bash_command(`rm`, [`-f`, `${program_input_file_path}`]); // remove previous program input file
+	await execute_bash_command(`mkfifo`, [`${program_input_file_path}`]); // create new program input file
+	await execute_bash_command(`truncate`, [`-s`, `0`, `${program_output_file_path}`]); // empty program output file
+	await execute_bash_command(`truncate`, [`-s`, `0`, `${program_error_file_path}`]); // empty program error file
+
+	// compile code
+	await execute_bash_command(`g++`, [
 		`-g`, `${code_header_file_path}`, `${code_file_path}`, `-o`, `${executable_file_path}`
 	]);
-	execute_bash_command(`echo`, [`-n`, `''`, `>`, `${program_output_file_path}`]); // empty program output file
-	execute_bash_command(`echo`, [`-n`, `''`, `>`, `${program_error_file_path}`]); // empty program error file
+	console.error(`[*] compiled`);
+
+	// maintain the input named pipe opened
+	const program_input_named_pipe_maintainer_process = spawn('bash',
+		[`${named_pipe_maintainer_bash_script_file_path}`, `${program_input_file_path}`],
+		pseudoterminal_options,
+	);
+
+	// run code
+	console.error(`[*] running...`);
 	gdb_process = spawn('gdb', ['-q', `${executable_file_path}`], pseudoterminal_options);
 	program_output_process = spawn('tail', ['-f', `${program_output_file_path}`], pseudoterminal_options);
 	program_error_process = spawn('tail', ['-f', `${program_error_file_path}`], pseudoterminal_options);
@@ -392,15 +429,18 @@ const initialize_gdb = async () => {
 	program_output_process.setEncoding('utf8');
 	program_error_process.setEncoding('utf8');
 
-	// callbacks
+	// data callbacks
 	gdb_process.on('data', on_gdb_data);
+	program_output_process.on('data', on_program_output_data);
+	program_error_process.on('data', on_program_error_data);
 
 	// exit
 	gdb_process.on('exit', code => {
-		// kill program output and error processes
+		// kill program input, output and error processes
+		program_input_named_pipe_maintainer_process.kill();
 		program_output_process.kill();
 		program_error_process.kill();
-		console.log('// process exited with code', code);
+		console.error(`[*] code execution done with exit code ${code}`);
 	});
 };
 
@@ -425,7 +465,7 @@ const run_gdb_program = async () => {
 	// responce = await execute_gdb_command(`ptype ${node_class_name}`); console.error(responce);
 
 	// run program
-	responce = await execute_gdb_command(`run > ${program_output_file_path}`);
+	responce = await execute_gdb_command(`run < ${program_input_file_path} 1> ${program_output_file_path} 2> ${program_error_file_path}`);
 	responce.splice(0, 1); // remove starting line
 	console.error(responce);
 
@@ -440,7 +480,7 @@ const run_gdb_program = async () => {
 	}
 
 	// quit
-	execute_gdb_command('quit');
+	await execute_gdb_command('quit');
 };
 
 // ---------- MAIN PROGRAM ----------

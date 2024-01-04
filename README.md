@@ -128,6 +128,16 @@ break operator delete(void*)
 run > linked_list.out
 ```
 
+__to redirect program input away from gdb input__
+```
+mkfifo linked_list.in
+while true; do sleep 999999999; done >linked_list.in
+```
+where the first line creates a fifo and the second line prevents it from closing
+```
+run < linked_list.in
+```
+
 #### Log Events
 
 - creation of new node
