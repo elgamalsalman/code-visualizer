@@ -2,10 +2,10 @@
 // `node index.js <header-file-path> <code-file-path>`
 
 // TODO:
+// - remove watchpoints of objects that were deleted
 // - create a function for receiving events and this should redirect
 //   input data events to another function that would echo the input data
 //   into the input named pipe file
-// - set up change events
 // - package into a class that should be exported and can be instantiated
 //   and has an on('event', callback) function
 // - conditionals like (flag ? new Node() : new Tree()) won't work
@@ -35,6 +35,7 @@ const executable_file_path = code_file_name + ".exe";
 const program_input_file_path = code_file_name + ".in";
 const program_output_file_path = code_file_name + ".out";
 const program_error_file_path = code_file_name + ".err";
+const pretty_printer_python_script_file_path = "pretty_printer.py";
 
 const pseudoterminal_max_width = 999;
 const pseudoterminal_options = {
@@ -57,6 +58,16 @@ let program_error_process;
 // gdb promises
 let command_promise;
 let responce_promise;
+
+// tracked class structures
+let classes = {
+	'Node': {
+		properties: [
+			{ name: 'next', type: 'Node*' },
+			{ name: 'value', type: 'int' },
+		],
+	},
+};
 
 // ---------- FUNCTION DEFINITIONS ----------
 
@@ -237,12 +248,34 @@ const on_program_error_data = (data) => {
 	});
 };
 
+// gets variable address
+const get_variable_address = async (subject) => {
+	const res = await execute_gdb_command(`x &(${subject})`);
+	const tokens = tokenize(res[0]);
+	return tokens[0];
+};
+
+// examine value pointed to by given subject
+const examine_pointed_value = async (subject, format = '') => {
+	const res = await execute_gdb_command(`x/${format} ${subject}`);
+
+	const result_arr = [];
+	for (const line of res) {
+		const tokens = tokenize(line);
+		const slicing_index = tokens.findIndex(e => e === ':') + 1;
+		const line_result_tokens = tokens.slice(slicing_index);
+		result_arr.push(...line_result_tokens);
+	}
+
+	return result_arr.join(' ');
+};
+
 // checks if responce is from a controlpoint
 const is_controlpoint = (res) => {
 	const tokens = tokenize(res[0]);
 	if (
 		tokens[0].toLowerCase() === 'breakpoint' ||
-		(tokens[0] + ' ' + tokens[1]).toLowerCase() === 'hardware watchpoint'
+		tokens[0].toLowerCase() === 'watchpoint'
 	) {
 		return true;
 	}
@@ -255,14 +288,20 @@ const get_controlpoint_number = (res) => {
 	if (tokens[0].toLowerCase() === 'breakpoint') {
 		return parseInt(tokens[1]);
 	} else if (
-		(tokens[0] + ' ' + tokens[1]).toLowerCase() === 'hardware watchpoint'
+		tokens[0].toLowerCase() === 'watchpoint'
 	) {
-		return parseInt(tokens[2]);
+		return parseInt(tokens[1]);
 	}
 	console.log("[!!!] COULDN'T EXTRACT CONTROLPOINT NUMBER");
 	assert(false);
 	return -1;
 };
+
+// get watchpoint subject
+const get_watchpoint_subject = (res) => {
+	const tokens = tokenize(res[1]);
+	return tokens.slice(3).join(' ');
+}
 
 // get watchpoint old value
 const get_watchpoint_old_value = (res) => {
@@ -344,50 +383,90 @@ const events_callbacks = {
 		assert(event_index >= 0 && event_index + 1 < line.length);
 		const class_name = line[event_index + 1];
 
-		// get address
-		res = await execute_gdb_command('watch ptr');
-		const watchpoint = get_controlpoint_number(res);
-		res = await execute_gdb_command('continue'); res.splice(0, 1);
-		assert(watchpoint === get_controlpoint_number(res));
-		await execute_gdb_command(`delete ${watchpoint}`);
-		const address = get_watchpoint_new_value(res);
+		// if this class is tracked
+		if (class_name in classes) {
+			// get object address
+			const ptr_address = await get_variable_address('ptr');
+			res = await execute_gdb_command(`watch ptr`);
+			const watchpoint = get_controlpoint_number(res);
+			res = await execute_gdb_command('continue');
+			res.splice(0, 1); console.error(res);
+			assert(watchpoint === get_controlpoint_number(res));
+			await execute_gdb_command(`delete ${watchpoint}`);
+			const object_address = await examine_pointed_value(ptr_address, 'a');
 
-		// TODO: this should go to a general function that can
-		// then deal with all object creations
+			// setup watchpoints on all tracked properties
+			for (const { name: property_name, type: property_type } of classes[class_name].properties) {
+				// get property address
+				const property_address = await get_variable_address(`((${class_name}*)(${object_address})).${property_name}`);
 
-		// TODO: create watchpoints on tracked object variables
+				// setup a watchpoint
+				res = await execute_gdb_command(`watch (${property_type})(*(${property_address}))`);
+				const watchpoint = get_controlpoint_number(res);
+				const callback = events_callbacks['change'](
+					object_address,
+					property_name,
+					property_address,
+					property_type,
+				);
+				set_controlpoint_callback(watchpoint, callback);
+			}
 
-		// log event
-		log_event({
-			type: 'new',
-			objects: [{
-				class: class_name,
-				location: 'heap', // HARDCODED
-				id: address,
-				// ...default_parameters, // TODO: pass object parameters
-			}],
-		});
+			// log event
+			log_event({
+				type: 'new',
+				objects: [{
+					class: class_name,
+					location: 'heap', // HARDCODED
+					id: object_address,
+					// ...default_parameters, // TODO: pass object parameters
+				}],
+			});
+		}
 	},
 
 	// callback for deletions
 	"delete": async (res) => {
 		// get address
+		const ptr_address = await get_variable_address('ptr');
 		res = await execute_gdb_command('watch ptr');
 		const watchpoint = get_controlpoint_number(res);
 		res = await execute_gdb_command('continue'); res.splice(0, 1);
 		assert(watchpoint === get_controlpoint_number(res));
 		await execute_gdb_command(`delete ${watchpoint}`);
-		const address = get_watchpoint_new_value(res);
+		const object_address = await examine_pointed_value(ptr_address, 'a');
 
 		// log event
 		log_event({
 			type: 'delete',
-			id: address,
+			id: object_address,
 		});
 	},
 
-	"change": async (res) => {
-		// TODO
+	// returns a callback for the change of a specific property in a
+	// specific object, takes id and property name and returns callback
+	"change": (object_address, property_name, property_address, property_type) => {
+		return async (res) => {
+			// TODO: this should be changed later for bettery type based callback choosing
+
+			let examination_format = null;
+			// if the property holds addresses
+			if (property_type[property_type.length - 1] === '*') {
+				examination_format = 'a';
+			// otherwise
+			} else {
+				examination_format = 'd';
+			}
+
+			const new_value = await examine_pointed_value(property_address, examination_format);
+
+			log_event({
+				type: 'change',
+				id: object_address,
+				property: property_name,
+				new_value: new_value,
+			});
+		};
 	},
 };
 
@@ -447,36 +526,37 @@ const initialize_gdb = async () => {
 // run gdb program
 const run_gdb_program = async () => {
 	// local variables
-	let responce = undefined;
+	let res = undefined;
 
 	// wait for gdb startup
 	await responce_promise;
 
-	// TESTING, TODO: remove this
-	// await execute_gdb_command('');
+	// TODO: fix different address sizes
+	// allow for unlimited number of watchpoints
+	await execute_gdb_command('set can-use-hw-watchpoints 0');
 
 	// create breakpoints
-	responce = await execute_gdb_command('break operator new'); console.error(responce);
-	set_controlpoint_callback(get_controlpoint_number(responce), events_callbacks["new"]);
-	responce = await execute_gdb_command('break operator delete(void*)'); console.error(responce);
-	set_controlpoint_callback(get_controlpoint_number(responce), events_callbacks["delete"]);
+	res = await execute_gdb_command('break operator new'); console.error(res);
+	set_controlpoint_callback(get_controlpoint_number(res), events_callbacks["new"]);
+	res = await execute_gdb_command('break operator delete(void*)'); console.error(res);
+	set_controlpoint_callback(get_controlpoint_number(res), events_callbacks["delete"]);
 
 	// !DEPRECATED! analyse node class
-	// responce = await execute_gdb_command(`ptype ${node_class_name}`); console.error(responce);
+	// res = await execute_gdb_command(`ptype ${node_class_name}`); console.error(res);
 
 	// run program
-	responce = await execute_gdb_command(`run < ${program_input_file_path} 1> ${program_output_file_path} 2> ${program_error_file_path}`);
-	responce.splice(0, 1); // remove starting line
-	console.error(responce);
+	res = await execute_gdb_command(`run < ${program_input_file_path} 1> ${program_output_file_path} 2> ${program_error_file_path}`);
+	res.splice(0, 1); // remove starting line
+	console.error(res);
 
-	while (is_controlpoint(responce)) {
-		const controlpoint_callback = get_controlpoint_callback(get_controlpoint_number(responce));
-		await controlpoint_callback(responce);
+	while (is_controlpoint(res)) {
+		const controlpoint_callback = get_controlpoint_callback(get_controlpoint_number(res));
+		await controlpoint_callback(res);
 		
 		// get next responce
-		responce = await execute_gdb_command('continue');
-		responce.splice(0, 1); // remove starting line
-		console.error(responce);
+		res = await execute_gdb_command('continue');
+		res.splice(0, 1); // remove starting line
+		console.error(res);
 	}
 
 	// quit

@@ -33,13 +33,12 @@ int main() {
 
 	int value = 0;
 	cin >> value;
-	cout << "// first value: " << value << '\n';
-	cin >> value;
-	cout << "// second value: " << value << '\n';
 
-	Node *node_one = new Node(1); Node *node_two = new Node(1e9); new Linked_list();
+	Node *node_one = new Node(value); Node *node_two = new Node(1e9); new Linked_list();
 	// Node *nodes = new Node[3];
 	node_one->next = node_two;
+
+	node_two->value = 123;
 
 	cerr << "// ending\n";
 

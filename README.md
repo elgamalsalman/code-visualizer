@@ -166,7 +166,7 @@ run < linked_list.in
 {
 	"type": "change",
 	"id": 0x034234
-	"parameter": "value",
+	"property": "value",
 	"new_value": 23,
 }
 ```
