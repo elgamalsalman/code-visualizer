@@ -17,6 +17,20 @@ As the teaching assistant of Data Structures and Algorithms at NYUAD, my motivat
 - taking screenshots
 - vim mode
 
+## TODO
+- remove watchpoints of objects that were deleted
+- create a function for receiving events and this should redirect
+  input data events to another function that would echo the input data
+  into the input named pipe file
+- package into a class that should be exported and can be instantiated
+  and has an on('event', callback) function
+- conditionals like (flag ? new Node() : new Tree()) won't work
+- created objects with non-default constructors should be directly
+  created with their initialization values, instead of letting
+  those trigger change events after creation
+- deal with compilation errors
+- figure out why running a code analyzer instant doesn't terminate
+
 ## Dev Notes
 
 #### Useful G++ and GDB Flags and Commands

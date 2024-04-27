@@ -2,7 +2,12 @@
 // `node index.js <header-file-path> <code-file-path>`
 
 // TODO:
-// - pipe output of code itself to a different place
+// - remove watchpoints of objects that were deleted
+// - create a function for receiving events and this should redirect
+//   input data events to another function that would echo the input data
+//   into the input named pipe file
+// - package into a class that should be exported and can be instantiated
+//   and has an on('event', callback) function
 // - conditionals like (flag ? new Node() : new Tree()) won't work
 // - created objects with non-default constructors should be directly
 //   created with their initialization values, instead of letting
@@ -13,7 +18,7 @@
 
 import { strict as assert } from 'assert';
 
-import { spawn, execSync, exec } from 'child_process';
+import { spawn } from 'node-pty';
 
 // ---------- GLOBALS ----------
 
@@ -21,28 +26,48 @@ import { spawn, execSync, exec } from 'child_process';
 
 const args = process.argv.slice(2);
 
+const named_pipe_maintainer_bash_script_file_path = "named_pipe_maintainer.sh";
+
 const code_header_file_path = args[0];
 const code_file_path = args[1];
 const code_file_name = code_file_path.substr(0, code_file_path.lastIndexOf("."));
 const executable_file_path = code_file_name + ".exe";
-const gdb_output_file_path = code_file_name + ".gdb.out";
+const program_input_file_path = code_file_name + ".in";
 const program_output_file_path = code_file_name + ".out";
+const program_error_file_path = code_file_name + ".err";
+const pretty_printer_python_script_file_path = "pretty_printer.py";
+
+const pseudoterminal_max_width = 999;
+const pseudoterminal_options = {
+  cols: pseudoterminal_max_width,
+  rows: 40,
+  cwd: process.cwd(),
+  env: process.env,
+};
 
 const linked_list_class_name = 'Linked_list';
 const node_class_name = 'Node';
 
-const end_of_command_output_token = '__END_OF_COMMAND_OUTPUT__';
-
 // --- VARIABLES ---
 
 // gdb child processes
-let gdb_input_process;
-let gdb_output_process;
+let gdb_process;
 let program_output_process;
+let program_error_process;
 
 // gdb promises
 let command_promise;
 let responce_promise;
+
+// tracked class structures
+let classes = {
+	'Node': {
+		properties: [
+			{ name: 'next', type: 'Node*' },
+			{ name: 'value', type: 'int' },
+		],
+	},
+};
 
 // ---------- FUNCTION DEFINITIONS ----------
 
@@ -61,6 +86,13 @@ const create_externally_resolvable_promise = () => {
     prom.resolve = res;
     return prom;
 };
+
+// normalize string, remove colour codes and all other ansi codes
+const ansi_normalize = (str) => {
+	const normalized_str = str.replace(
+		/[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g, '');
+	return normalized_str;
+}
 
 // tokenizes a string
 const tokenize = (str) => {
@@ -98,8 +130,44 @@ const get_nth_occurrence_index = (arr, key, j) => {
 	return -1;
 }
 
+// executes a bash command using a temporary pseudoterminal session
+const execute_bash_command = async (command, args) => {
+  return (new Promise((resolve, reject) => {
+    const pty_process = spawn(
+			command,
+			args,
+			pseudoterminal_options,
+		);
+    let result = '';
+
+    pty_process.on('data', data => {
+      result += data;
+    });
+
+    pty_process.on('exit', code => {
+      if (code === 0) {
+        resolve(result);
+      } else {
+				console.log(`[!!!] command {${command}} failed`);
+        reject(new Error(`Command failed with exit code ${code}`));
+      }
+    });
+  }));
+};
+
+// !DEPRECATED! creates a tty instance that is hard to kill
+// stop input to output echoing
+const stop_input_to_output_echoing = (spawn_instance) => {
+	const stdout = process.stdout;
+	const tty = process.binding('tty_wrap').TTY;
+	const tty_instance = new tty(spawn_instance.fd, true);
+	tty_instance.setRawMode(true);
+	spawn_instance.on('data', stdout.write.bind(stdout));
+	process.stdin.on('data', spawn_instance.write.bind(spawn_instance));
+};
+
+// log event
 const log_event = (json) => {
-	console.log('// LOG EVENT:');
 	console.log(json);
 };
 
@@ -113,98 +181,101 @@ const execute_gdb_command = async (command) => {
 };
 
 // process incoming data from gdb stdout
-const {on_gdb_input_data, on_gdb_output_data} = (() => {
+const on_gdb_data = (() => {
 	// closure for responce_lines
 	let responce_lines = [];
+	let echo = null;
 
-	return {
-		on_gdb_input_data: async (data) => {
-			data = data.toString().trim();
+	return async (data) => {
+		data = ansi_normalize(data.toString()).trim();
 
-			// split
-			const delimiter = "(gdb)";
-			const delimiter_escaped = "\\(gdb\\)";
-			const regex = new RegExp(`(((?!(${delimiter_escaped})).)+|${delimiter_escaped})`, 'g');
-			const responces_delimited = data.match(regex);
-			
-			console.log(`gdb_input data: ${data}`);
+		// split
+		const delimiter = "(gdb)";
+		const delimiter_escaped = "\\(gdb\\)";
+		const regex = new RegExp(`(((?!(${delimiter_escaped})).)+|${delimiter_escaped})`, 'g');
+		let responces_delimited = data.match(regex);
+		if (responces_delimited === null) {
+			responces_delimited = [];
+		}
 
-			// TODO continue from here, why isn't this run running?
-			// console.log(`run > ${program_output_file_path}`);
-			// gdb_input_process.stdin.write(`run > ${program_output_file_path}`);
+		for (const responce of responces_delimited) {
+			// if responce
+			if (responce !== delimiter) {
+				// add to responce lines
+				responce.split('\n').forEach((line, i) => {
+					responce_lines.push(line.trim());
+				});
 
-			// let responces = data.split(delimiter);
-			// for (const responce of responces_delimited) {
-			// 	// if responce
-			// 	if (responce !== delimiter) {
-			// 		// add to responce lines
-			// 		responce.split('\n').forEach((line, i) => {
-			// 			responce_lines.push(line.trim());
-			// 		});
+			// else if delimiter
+			} else {
+				// remove echo
+				if (echo !== null) {
+					// assert echoing
+					assert(echo === responce_lines[0]);
+					// remove first element in array
+					responce_lines.shift();
+				}
 
-			// 	// else if delimiter
-			// 	} else {
-			// 		// process responce and get next command
-			// 		command_promise = create_externally_resolvable_promise();
-			// 		responce_promise.resolve(responce_lines);
-			// 		const command = await command_promise;
+				// process responce and get next command
+				command_promise = create_externally_resolvable_promise();
+				responce_promise.resolve(responce_lines);
+				const command = await command_promise;
 
-			// 		// send command
-			// 		gdb.stdin.write(command + '\n');
-			// 		gdb.stdin.write(`echo ${end_of_command_output_token}\n`);
-			// 		// TODO complete this end of command output thing
+				// send command
+				gdb_process.write(command + '\n');
+				echo = command;
 
-			// 		// reset responce_lines
-			// 		responce_lines = [];
-			// 	}
-			// }
-		},
-		on_gdb_output_data: async (data) => {
-			data = data.toString().trim();
-
-			// split
-			const delimiter = "(gdb)";
-			const delimiter_escaped = "\\(gdb\\)";
-			const regex = new RegExp(`(((?!(${delimiter_escaped})).)+|${delimiter_escaped})`, 'g');
-			const responces_delimited = data.match(regex);
-
-			console.log(`gdb_output data: ${data}`);
-
-			// let responces = data.split(delimiter);
-			// for (const responce of responces_delimited) {
-			// 	// if responce
-			// 	if (responce !== delimiter) {
-			// 		// add to responce lines
-			// 		responce.split('\n').forEach((line, i) => {
-			// 			responce_lines.push(line.trim());
-			// 		});
-
-			// 	// else if delimiter
-			// 	} else {
-			// 		// process responce and get next command
-			// 		command_promise = create_externally_resolvable_promise();
-			// 		responce_promise.resolve(responce_lines);
-			// 		const command = await command_promise;
-
-			// 		// send command
-			// 		gdb.stdin.write(command + '\n');
-			// 		gdb.stdin.write(`echo ${end_of_command_output_token}\n`);
-			// 		// TODO complete this end of command output thing
-
-			// 		// reset responce_lines
-			// 		responce_lines = [];
-			// 	}
-			// }
-		},
+				// reset responce_lines
+				responce_lines = [];
+			}
+		}
 	};
 })();
+
+// process incoming program output data
+const on_program_output_data = (data) => {
+	log_event({
+		type: "output",
+		text: data,
+	});
+};
+
+// process incoming program error data
+const on_program_error_data = (data) => {
+	log_event({
+		type: "error",
+		text: data,
+	});
+};
+
+// gets variable address
+const get_variable_address = async (subject) => {
+	const res = await execute_gdb_command(`x &(${subject})`);
+	const tokens = tokenize(res[0]);
+	return tokens[0];
+};
+
+// examine value pointed to by given subject
+const examine_pointed_value = async (subject, format = '') => {
+	const res = await execute_gdb_command(`x/${format} ${subject}`);
+
+	const result_arr = [];
+	for (const line of res) {
+		const tokens = tokenize(line);
+		const slicing_index = tokens.findIndex(e => e === ':') + 1;
+		const line_result_tokens = tokens.slice(slicing_index);
+		result_arr.push(...line_result_tokens);
+	}
+
+	return result_arr.join(' ');
+};
 
 // checks if responce is from a controlpoint
 const is_controlpoint = (res) => {
 	const tokens = tokenize(res[0]);
 	if (
 		tokens[0].toLowerCase() === 'breakpoint' ||
-		(tokens[0] + ' ' + tokens[1]).toLowerCase() === 'hardware watchpoint'
+		tokens[0].toLowerCase() === 'watchpoint'
 	) {
 		return true;
 	}
@@ -217,14 +288,20 @@ const get_controlpoint_number = (res) => {
 	if (tokens[0].toLowerCase() === 'breakpoint') {
 		return parseInt(tokens[1]);
 	} else if (
-		(tokens[0] + ' ' + tokens[1]).toLowerCase() === 'hardware watchpoint'
+		tokens[0].toLowerCase() === 'watchpoint'
 	) {
-		return parseInt(tokens[2]);
+		return parseInt(tokens[1]);
 	}
 	console.log("[!!!] COULDN'T EXTRACT CONTROLPOINT NUMBER");
 	assert(false);
 	return -1;
 };
+
+// get watchpoint subject
+const get_watchpoint_subject = (res) => {
+	const tokens = tokenize(res[1]);
+	return tokens.slice(3).join(' ');
+}
 
 // get watchpoint old value
 const get_watchpoint_old_value = (res) => {
@@ -306,50 +383,90 @@ const events_callbacks = {
 		assert(event_index >= 0 && event_index + 1 < line.length);
 		const class_name = line[event_index + 1];
 
-		// get address
-		res = await execute_gdb_command('watch ptr');
-		const watchpoint = get_controlpoint_number(res);
-		res = await execute_gdb_command('continue'); res.splice(0, 1);
-		assert(watchpoint === get_controlpoint_number(res));
-		await execute_gdb_command(`delete ${watchpoint}`);
-		const address = get_watchpoint_new_value(res);
+		// if this class is tracked
+		if (class_name in classes) {
+			// get object address
+			const ptr_address = await get_variable_address('ptr');
+			res = await execute_gdb_command(`watch ptr`);
+			const watchpoint = get_controlpoint_number(res);
+			res = await execute_gdb_command('continue');
+			res.splice(0, 1); console.error(res);
+			assert(watchpoint === get_controlpoint_number(res));
+			await execute_gdb_command(`delete ${watchpoint}`);
+			const object_address = await examine_pointed_value(ptr_address, 'a');
 
-		// TODO: this should go to a general function that can
-		// then deal with all object creations
+			// setup watchpoints on all tracked properties
+			for (const { name: property_name, type: property_type } of classes[class_name].properties) {
+				// get property address
+				const property_address = await get_variable_address(`((${class_name}*)(${object_address})).${property_name}`);
 
-		// TODO: create watchpoints on tracked object variables
+				// setup a watchpoint
+				res = await execute_gdb_command(`watch (${property_type})(*(${property_address}))`);
+				const watchpoint = get_controlpoint_number(res);
+				const callback = events_callbacks['change'](
+					object_address,
+					property_name,
+					property_address,
+					property_type,
+				);
+				set_controlpoint_callback(watchpoint, callback);
+			}
 
-		// log event
-		log_event({
-			type: 'new',
-			objects: [{
-				class: class_name,
-				location: 'heap', // HARDCODED
-				id: address,
-				// ...default_parameters, // TODO: pass object parameters
-			}],
-		});
+			// log event
+			log_event({
+				type: 'new',
+				objects: [{
+					class: class_name,
+					location: 'heap', // HARDCODED
+					id: object_address,
+					// ...default_parameters, // TODO: pass object parameters
+				}],
+			});
+		}
 	},
 
 	// callback for deletions
 	"delete": async (res) => {
 		// get address
+		const ptr_address = await get_variable_address('ptr');
 		res = await execute_gdb_command('watch ptr');
 		const watchpoint = get_controlpoint_number(res);
 		res = await execute_gdb_command('continue'); res.splice(0, 1);
 		assert(watchpoint === get_controlpoint_number(res));
 		await execute_gdb_command(`delete ${watchpoint}`);
-		const address = get_watchpoint_new_value(res);
+		const object_address = await examine_pointed_value(ptr_address, 'a');
 
 		// log event
 		log_event({
 			type: 'delete',
-			id: address,
+			id: object_address,
 		});
 	},
 
-	"change": async (res) => {
-		// TODO
+	// returns a callback for the change of a specific property in a
+	// specific object, takes id and property name and returns callback
+	"change": (object_address, property_name, property_address, property_type) => {
+		return async (res) => {
+			// TODO: this should be changed later for bettery type based callback choosing
+
+			let examination_format = null;
+			// if the property holds addresses
+			if (property_type[property_type.length - 1] === '*') {
+				examination_format = 'a';
+			// otherwise
+			} else {
+				examination_format = 'd';
+			}
+
+			const new_value = await examine_pointed_value(property_address, examination_format);
+
+			log_event({
+				type: 'change',
+				id: object_address,
+				property: property_name,
+				new_value: new_value,
+			});
+		};
 	},
 };
 
@@ -361,74 +478,89 @@ const initialize_gdb = async () => {
 	command_promise = create_externally_resolvable_promise();
 	responce_promise = create_externally_resolvable_promise();
 
-	// compile and run code
-	execSync(`g++ -g ${code_header_file_path} ${code_file_path} -o ${executable_file_path}`);
-	execSync(`> ${gdb_output_file_path}`); // empty gdb output file
-	execSync(`> ${program_output_file_path}`); // empty program output file
-	gdb_input_process = spawn('gdb', ['-q', `${executable_file_path}`], { stdio: ['pipe', 'pipe', 'pipe'] });
-	gdb_output_process = spawn('tail', ['-f', `${gdb_output_file_path}`], { stdio: ['pipe', 'pipe', 'pipe'] });
-	program_output_process = spawn('tail', ['-f', `${program_output_file_path}`], { stdio: ['pipe', 'pipe', 'pipe'] });
+	// reset files
+	await execute_bash_command(`rm`, [`-f`, `${executable_file_path}`]); // remove previous executable file
+	await execute_bash_command(`rm`, [`-f`, `${program_input_file_path}`]); // remove previous program input file
+	await execute_bash_command(`mkfifo`, [`${program_input_file_path}`]); // create new program input file
+	await execute_bash_command(`truncate`, [`-s`, `0`, `${program_output_file_path}`]); // empty program output file
+	await execute_bash_command(`truncate`, [`-s`, `0`, `${program_error_file_path}`]); // empty program error file
+
+	// compile code
+	await execute_bash_command(`g++`, [
+		`-g`, `${code_header_file_path}`, `${code_file_path}`, `-o`, `${executable_file_path}`
+	]);
+	console.error(`[*] compiled`);
+
+	// maintain the input named pipe opened
+	const program_input_named_pipe_maintainer_process = spawn('bash',
+		[`${named_pipe_maintainer_bash_script_file_path}`, `${program_input_file_path}`],
+		pseudoterminal_options,
+	);
+
+	// run code
+	console.error(`[*] running...`);
+	gdb_process = spawn('gdb', ['-q', `${executable_file_path}`], pseudoterminal_options);
+	program_output_process = spawn('tail', ['-f', `${program_output_file_path}`], pseudoterminal_options);
+	program_error_process = spawn('tail', ['-f', `${program_error_file_path}`], pseudoterminal_options);
 
 	// encoding
-	gdb_input_process.stdout.setEncoding('utf8');
-	gdb_output_process.stdout.setEncoding('utf8');
+	gdb_process.setEncoding('utf8');
+	program_output_process.setEncoding('utf8');
+	program_error_process.setEncoding('utf8');
 
-	// redirect gdb output
-	gdb_input_process.stdin.write(`set logging file ${gdb_output_file_path}\n`);
-	gdb_input_process.stdin.write(`set logging overwrite on\n`);
-	gdb_input_process.stdin.write(`set logging redirect on\n`);
-	gdb_input_process.stdin.write(`set logging on\n`);
+	// data callbacks
+	gdb_process.on('data', on_gdb_data);
+	program_output_process.on('data', on_program_output_data);
+	program_error_process.on('data', on_program_error_data);
 
-	// callbacks
-	gdb_input_process.stdout.on('data', on_gdb_input_data);
-	gdb_output_process.stdout.on('data', on_gdb_output_data);
-
-	// redirect stderr
-	gdb_input_process.stderr.on('data', async (data) => {
-		console.error(`gdb input stderr: ${data}`);
-	});
-	gdb_output_process.stderr.on('data', async (data) => {
-		console.error(`gdb output stderr: ${data}`);
+	// exit
+	gdb_process.on('exit', code => {
+		// kill program input, output and error processes
+		program_input_named_pipe_maintainer_process.kill();
+		program_output_process.kill();
+		program_error_process.kill();
+		console.error(`[*] code execution done with exit code ${code}`);
 	});
 };
 
 // run gdb program
 const run_gdb_program = async () => {
 	// local variables
-	let responce = undefined;
+	let res = undefined;
 
 	// wait for gdb startup
 	await responce_promise;
 
-	// TESTING, TODO: remove this
-	// await execute_gdb_command('');
+	// TODO: fix different address sizes
+	// allow for unlimited number of watchpoints
+	await execute_gdb_command('set can-use-hw-watchpoints 0');
 
 	// create breakpoints
-	responce = await execute_gdb_command('break operator new'); console.log(responce);
-	set_controlpoint_callback(get_controlpoint_number(responce), events_callbacks["new"]);
-	responce = await execute_gdb_command('break operator delete(void*)'); console.log(responce);
-	set_controlpoint_callback(get_controlpoint_number(responce), events_callbacks["delete"]);
+	res = await execute_gdb_command('break operator new'); console.error(res);
+	set_controlpoint_callback(get_controlpoint_number(res), events_callbacks["new"]);
+	res = await execute_gdb_command('break operator delete(void*)'); console.error(res);
+	set_controlpoint_callback(get_controlpoint_number(res), events_callbacks["delete"]);
 
 	// !DEPRECATED! analyse node class
-	// responce = await execute_gdb_command(`ptype ${node_class_name}`); console.log(responce);
+	// res = await execute_gdb_command(`ptype ${node_class_name}`); console.error(res);
 
 	// run program
-	responce = await execute_gdb_command(`run > ${program_output_file_path}`);
-	responce.splice(0, 1); // remove starting line
-	console.log(responce);
+	res = await execute_gdb_command(`run < ${program_input_file_path} 1> ${program_output_file_path} 2> ${program_error_file_path}`);
+	res.splice(0, 1); // remove starting line
+	console.error(res);
 
-	while (is_controlpoint(responce)) {
-		const controlpoint_callback = get_controlpoint_callback(get_controlpoint_number(responce));
-		await controlpoint_callback(responce);
+	while (is_controlpoint(res)) {
+		const controlpoint_callback = get_controlpoint_callback(get_controlpoint_number(res));
+		await controlpoint_callback(res);
 		
 		// get next responce
-		responce = await execute_gdb_command('continue');
-		responce.splice(0, 1); // remove starting line
-		console.log(responce);
+		res = await execute_gdb_command('continue');
+		res.splice(0, 1); // remove starting line
+		console.error(res);
 	}
 
 	// quit
-	execute_gdb_command('quit');
+	await execute_gdb_command('quit');
 };
 
 // ---------- MAIN PROGRAM ----------

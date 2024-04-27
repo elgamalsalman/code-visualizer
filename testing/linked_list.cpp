@@ -15,6 +15,8 @@ class Linked_list {
 	public:
 	Linked_list() : head(new Node) , tail(new Node) {}
 
+	~Linked_list() { delete head; delete tail; }
+
 	void push_front(Node* new_node) {
 		new_node->next = head->next;
 		head->next = new_node;
@@ -34,7 +36,8 @@ int main() {
 	int value = 0;
 	cin >> value;
 
-	Node *node_one = new Node(value); Node *node_two = new Node(1e9); new Linked_list();
+	Linked_list *p;
+	Node *node_one = new Node(value); Node *node_two = new Node(1e9); p = new Linked_list();
 	// Node *nodes = new Node[3];
 	node_one->next = node_two;
 
@@ -43,5 +46,6 @@ int main() {
 	cerr << "// ending\n";
 
 	delete node_one;
-	// delete node_two;
+	delete node_two;
+	delete p;
 }
