@@ -1,0 +1,24 @@
+.tab-head {
+	@apply flex items-center justify-between px-4 py-2 border-b border-gray-200;
+}
+
+.active-tab-head {
+	@apply bg-blue-500 text-white;
+}
+
+.tab-head-icon {
+	@apply w-4 h-4;
+}
+
+.tab-head-title {
+
+}
+
+.tab-head-title-and-icon {
+	@apply text-gray-400 hover:text-gray-600 focus:outline-none;
+	@apply flex items-center space-x-2;
+}
+
+.tab-head-close-button {
+	@apply text-gray-400 hover:text-gray-600 focus:outline-none;
+}
