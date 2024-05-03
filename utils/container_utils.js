@@ -1,3 +1,5 @@
+import { strict as assert } from "assert";
+
 // ---------- UTIL FUNCTIONS ----------
 
 // count occurrences of key in an array
@@ -29,7 +31,4 @@ const get_nth_occurrence_index = (arr, key, j) => {
 
 // ---------- EXPORTS ----------
 
-export {
-	count_occurrences,
-	get_nth_occurrence_index,
-};
+export { count_occurrences, get_nth_occurrence_index };

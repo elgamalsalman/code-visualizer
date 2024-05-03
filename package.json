@@ -6,9 +6,9 @@
   "main": "index.js",
   "scripts": {
     "start": "node server.js",
-		"client-dev": "BROWSER=none npm --prefix client start",
+    "client-dev": "BROWSER=none npm --prefix client start",
     "server-dev": "nodemon server.js",
-		"dev": "concurrently \"npm run server-dev\" \"npm run client-dev\"",
+    "dev": "concurrently \"npm run server-dev\" \"npm run client-dev\"",
     "build": "npm --prefix client run build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

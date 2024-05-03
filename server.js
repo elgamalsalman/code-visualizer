@@ -15,7 +15,7 @@ const wss = new WebSocketServer({ server });
 app.get("/LOG", (request, response, next) => {
 	const { building, type, number, state } = request.query;
 	console.log({ building, type, number, state });
-	response.status(404).send('Data recieved, no page will be provided.');
+	response.status(404).send("Data recieved, no page will be provided.");
 });
 
 app.use("/", express.static(path.resolve(process.cwd(), "client", "build")));
@@ -31,7 +31,7 @@ app.use("/api", (request, response, next) => {
 // ----- ROUTES -----
 
 app.get("/", (request, response, next) => {
-	response.sendFile(path.join(process.cwd(), "client", "build", "main.html"));
+	response.sendFile(path.join(process.cwd(), "client", "build", "index.html"));
 });
 
 server.listen(port, () => {
@@ -39,12 +39,12 @@ server.listen(port, () => {
 });
 
 (async () => {
-  // any startup instructions for the server
+	// any startup instructions for the server
 	let code_analyser = new Code_Analyser(
 		"./testing/linked_list.cpp",
-		event => {
+		(event) => {
 			console.log(event);
-		},
+		}
 	);
 	code_analyser.run();
 	code_analyser.input("3");
