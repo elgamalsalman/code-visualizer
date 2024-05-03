@@ -1,15 +1,12 @@
 import React from "react";
-import "./RunButton.css";
+import styles from "./RunButton.module.css";
 
-import { PlayIcon } from "@heroicons/react/24/outline";
+import { PlayIcon } from "@heroicons/react/24/solid";
 
 const RunButton = ({ onClick }) => {
   return (
-    <button
-      onClick={onClick}
-      className=".run-button"
-    >
-      <PlayIcon className=".run-button-icon" aria-hidden="true" />
+    <button onClick={onClick} className={styles["run-button"]}>
+      <PlayIcon className={styles["play-icon"]} />
       <span>Run</span>
     </button>
   );

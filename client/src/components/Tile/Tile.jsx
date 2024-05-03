@@ -1,12 +1,8 @@
 import React from "react";
-import "./Tile.css";
+import styles from "./Tile.module.css";
 
 const Tile = ({ children }) => {
-	return (
-		<div className="tile">
-			{ children }
-		</div>
-	);
+  return <div className={styles["tile"]}>{children}</div>;
 };
 
 export default Tile;
