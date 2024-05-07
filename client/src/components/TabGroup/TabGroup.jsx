@@ -1,6 +1,9 @@
 import React, { useState } from "react";
+import styles from "./TabGroup.module.css";
 
-import TabHead from "components/TabHead/TabHead";
+import { PlusIcon } from "@heroicons/react/24/solid";
+
+import TabHead from "components/TabGroup/TabHead";
 
 const onTabClose = () => {
   // TODO
@@ -17,7 +20,7 @@ const TabGroup = ({ tabs }) => {
   });
 
   // active tab management
-  const activeTabTitle = tabs[activeTabIndex].props.title;
+  const activeTabTitle = tabs[activeTabIndex]?.props.title;
   const getActiveTabHandler = (tabIndex) => {
     return () => {
       setActiveTabIndex(tabIndex);
@@ -42,9 +45,21 @@ const TabGroup = ({ tabs }) => {
   });
 
   return (
-    <div>
-      <div className="tab-group-header">{tabGroupHeads}</div>
-      {tabs}
+    <div className={styles["tab-group"]}>
+      <div className={styles["tab-group-header"]}>
+        <div className={styles["tab-heads-div"]}>{tabGroupHeads}</div>
+        <div className={styles["controls-panel"]}>
+          <button
+            className={styles["new-tab-button"]}
+            onClick={() => {
+              console.log("creating new tab!");
+            }}
+          >
+            <PlusIcon className={styles["new-tab-button-icon"]} />
+          </button>
+        </div>
+      </div>
+      <div className={styles["tab-body"]}>{tabs}</div>
     </div>
   );
 };

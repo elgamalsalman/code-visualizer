@@ -1,3 +1,11 @@
 .app {
-  @apply h-screen w-screen overflow-hidden bg-blue-500;
+  @apply bg-background-dark-900 flex h-screen w-screen flex-col overflow-hidden;
+}
+
+.header-div {
+  @apply basis-8;
+}
+
+.tiles-div {
+  @apply grid flex-auto grid-cols-2 gap-2 p-2 pt-0;
 }

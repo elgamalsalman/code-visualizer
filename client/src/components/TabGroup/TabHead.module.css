@@ -1,0 +1,30 @@
+.tab-head {
+  @apply border-background-dark-700 bg-background-dark-850 flex items-center justify-center border-r;
+  @apply text-white text-xs;
+}
+
+.active-tab-head {
+  @apply border-t-blue-500 border-t;
+  @apply bg-background-dark-800;
+}
+
+.tab-head:not(.active-tab-head) {
+  @apply border-background-dark-700 border-b;
+}
+
+.tab-head-title-div {
+  @apply flex h-full items-center justify-center gap-2 px-2;
+  @apply hover:bg-background-dark-700;
+}
+
+.tab-head-title-icon {
+  @apply h-4 w-4;
+}
+
+.tab-head-close-button {
+  @apply hover:bg-background-dark-700 h-full px-1.5 focus:outline-none;
+}
+
+.tab-head-close-button-icon {
+  @apply h-3 w-3;
+}

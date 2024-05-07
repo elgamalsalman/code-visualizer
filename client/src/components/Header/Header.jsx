@@ -1,11 +1,15 @@
 import React from "react";
+import styles from "./Header.module.css";
 
 import RunButton from "components/RunButton/RunButton";
 
-const Header = () => {
+const Header = ({ eventHandlers }) => {
+  const { onRun } = eventHandlers;
   return (
-    <header className="header">
-      <RunButton />
+    <header className={styles["header"]}>
+      <div className={styles["run-button-div"]}>
+        <RunButton onClick={onRun} />
+      </div>
     </header>
   );
 };

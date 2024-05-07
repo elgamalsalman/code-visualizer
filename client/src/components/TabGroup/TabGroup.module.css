@@ -1,0 +1,31 @@
+.tab-group {
+  @apply bg-background-dark-850;
+}
+
+.tab-group-header {
+  @apply flex h-8 w-full;
+}
+
+.tab-heads-div {
+  @apply flex flex-initial overflow-x-scroll;
+}
+
+.tab-heads-div > div:last-child {
+  @apply border-r-0;
+}
+
+.controls-panel {
+  @apply border-background-dark-700 flex shrink-0 grow items-center border-b border-l px-1;
+}
+
+.new-tab-button {
+  @apply hover:bg-background-dark-800 h-fit rounded-md p-1.5 focus:outline-none;
+}
+
+.new-tab-button-icon {
+  @apply text-white h-3 w-3;
+}
+
+.tab-body {
+  @apply bg-background-dark-800;
+}
