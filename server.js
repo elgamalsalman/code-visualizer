@@ -2,36 +2,34 @@ import path from "path";
 import http from "http";
 
 import express from "express";
+import cors from "cors";
 import { WebSocketServer } from "ws";
 
-import Code_Analyser from "./controllers/code_analyser.js";
-import { sleep } from "./utils/promise_utils.js";
+import api_routes from "./routes/api_routes.js";
 
-const port = 3001;
+import config from "./config.js";
+import { sleep } from "./utils/promise_utils.js";
+import Code_Analyser from "./services/code_analyser.js";
+
+const port = config.port;
 const app = express();
 const server = http.createServer(app);
 const wss = new WebSocketServer({ server });
 
-app.get("/LOG", (request, response, next) => {
-	const { building, type, number, state } = request.query;
-	console.log({ building, type, number, state });
-	response.status(404).send("Data recieved, no page will be provided.");
-});
+// prevent cors errors
+app.use(cors());
+app.use(express.json());
 
 app.use("/", express.static(path.resolve(process.cwd(), "client", "build")));
 
-// ----- API -----
-
-app.use("/api", (request, response, next) => {
-	response.send({
-		message: "Data from API!",
-	});
-});
-
 // ----- ROUTES -----
 
-app.get("/", (request, response, next) => {
-	response.sendFile(path.join(process.cwd(), "client", "build", "index.html"));
+// api
+app.use("/api/v1", api_routes);
+
+// web app
+app.get("/", async (req, res, next) => {
+	res.sendFile(path.join(process.cwd(), "client", "build", "index.html"));
 });
 
 server.listen(port, () => {
@@ -39,13 +37,13 @@ server.listen(port, () => {
 });
 
 (async () => {
-	// any startup instructions for the server
-	let code_analyser = new Code_Analyser(
-		"./testing/linked_list.cpp",
-		(event) => {
-			console.log(event);
-		}
-	);
-	code_analyser.run();
-	code_analyser.input("3");
+	// // any startup instructions for the server
+	// let code_analyser = new Code_Analyser(
+	// 	"./testing/linked_list.cpp",
+	// 	(event) => {
+	// 		console.log(event);
+	// 	}
+	// );
+	// code_analyser.run();
+	// code_analyser.input("3");
 })();

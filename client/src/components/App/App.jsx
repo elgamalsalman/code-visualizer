@@ -11,6 +11,25 @@ import Editor from "components/Editor/Editor";
 import Console from "components/Console/Console";
 import Grapher from "components/Grapher/Grapher";
 
+const syncWithServer = async (fileContent) => {
+  const requestOptions = {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify([
+      {
+        action: "write",
+        path: "main.cpp",
+        type: "file",
+        content: fileContent,
+      },
+    ]),
+  };
+  const requestURL = `${config.server.baseURL}/api`;
+  const response = await fetch(requestURL, requestOptions);
+  const data = await response.json();
+  console.log(data);
+};
+
 const App = () => {
   const editorRef = useRef(null);
   const autoSavingTimerRef = useRef(null);
@@ -22,8 +41,8 @@ const App = () => {
 
     if (editorRef.current !== null) {
       const fileContent = editorRef.current.getValue();
-      // TODO: syncToServer(fileContent);
-      console.log(fileContent);
+      syncWithServer(fileContent);
+      // console.log(fileContent);
     }
   };
 

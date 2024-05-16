@@ -1,4 +1,7 @@
 export default {
+  server: {
+    baseURL: "http://localhost:3001/api/",
+  },
   editors: {
     themes: {
       dark: {
@@ -13,5 +16,6 @@ export default {
     },
     defaultValue: "// your code here",
   },
+  // FIXME: change auto-saving delay in production
   autoSavingDelay: 3000,
 };
