@@ -35,7 +35,7 @@ export default class Save_Controller {
 			);
 		} catch (error) {
 			const error_response = {
-				status: config.http_codes.failure,
+				status: config.http_codes.failed,
 				error: {
 					name: error.name,
 					message: error.message,

@@ -3,7 +3,7 @@ import http from "http";
 
 import express from "express";
 import cors from "cors";
-import { WebSocketServer } from "ws";
+import expressWS from "express-ws";
 
 import api_routes from "./routes/api_routes.js";
 
@@ -14,10 +14,9 @@ import Code_Analyser from "./services/code_analyser.js";
 const port = config.port;
 const app = express();
 const server = http.createServer(app);
-const wss = new WebSocketServer({ server });
+expressWS(app, server);
 
-// prevent cors errors
-app.use(cors());
+app.use(cors()); // prevent cors errors
 app.use(express.json());
 
 app.use("/", express.static(path.resolve(process.cwd(), "client", "build")));

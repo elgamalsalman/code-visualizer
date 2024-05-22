@@ -2,7 +2,7 @@ export default {
 	port: 3001,
 	http_codes: {
 		success: 200,
-		failure: 500,
+		failed: 500,
 	},
 	testing: {
 		test_user_id: "test_user",

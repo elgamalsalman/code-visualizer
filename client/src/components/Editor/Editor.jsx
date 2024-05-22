@@ -8,7 +8,7 @@ function Editor({ editorRef, onChange }) {
   const monacoRef = useRef(null);
 
   const handleEditorWillMount = (monaco) => {
-    monaco.editor.defineTheme("dark", config.editors.themes["dark"]);
+    monaco.editor.defineTheme("dark", config.editor.themes["dark"]);
     monaco.editor.setTheme("dark");
   };
 
@@ -25,7 +25,7 @@ function Editor({ editorRef, onChange }) {
       <MonacoEditor
         height="80vh"
         defaultLanguage="cpp"
-        defaultValue={config.editors.defaultValue}
+        defaultValue={config.editor.defaultValue}
         // line="2"
         // theme="dark"
         loading={null}

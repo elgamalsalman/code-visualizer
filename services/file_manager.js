@@ -121,12 +121,6 @@ export default class File_Manager {
 						await fs.promises.mkdir(full_path, { recursive: true });
 					}
 				} else if (action === "write") {
-					if (!fs.existsSync(full_path)) {
-						throw new Error(
-							"file manager can't write to an entity that doesn't exist"
-						);
-					}
-
 					if (entity === "file") {
 						await fs.promises.writeFile(full_path, content);
 					} else if (entity === "dir") {

@@ -1,0 +1,20 @@
+.header {
+  @apply border-background-dark-750 mb-1 border-b;
+  @apply font-mono text-gray-200;
+}
+
+.content {
+  @apply whitespace-pre-wrap font-mono leading-none;
+}
+
+.content-type-input {
+  @apply text-gray-400;
+}
+
+.content-type-output {
+  @apply text-gray-200;
+}
+
+.content-type-error {
+  @apply text-red-500;
+}

@@ -3,12 +3,16 @@ import styles from "./Header.module.css";
 
 import RunButton from "components/RunButton/RunButton";
 
-const Header = ({ eventHandlers }) => {
-  const { onRun } = eventHandlers;
+const Header = ({ runningStatus, eventHandlers }) => {
+  const { onRun, onKill } = eventHandlers;
   return (
     <header className={styles["header"]}>
       <div className={styles["run-button-div"]}>
-        <RunButton onClick={onRun} />
+        <RunButton
+          runningStatus={runningStatus}
+          onRun={onRun}
+          onKill={onKill}
+        />
       </div>
     </header>
   );
