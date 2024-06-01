@@ -2,9 +2,13 @@
 
 // ----- EXTERNAL -----
 
+import path from "path";
 import { strict as assert } from "assert";
 
 // ----- INTERNAL -----
+
+// config
+import config from "../config.js";
 
 // utils
 import { create_externally_resolvable_promise } from "../utils/promise_utils.js";
@@ -20,14 +24,6 @@ import GDB from "./gdb.js";
 
 // TODO put this in a config file
 // ---------- CONFIG ----------
-
-const CODE_HEADER_FILE_PATH = "./scripts/code_header.cpp";
-const NAMED_PIPE_MAINTAINER_BASH_SCRIPT_FILE_PATH =
-	"./scripts/named_pipe_maintainer.sh";
-const EXECUTABLE_FILE_EXTENSION = "exe";
-const INPUT_FILE_EXTENSION = "in";
-const OUTPUT_FILE_EXTENSION = "out";
-const ERROR_FILE_EXTENSION = "err";
 
 // tracked class structures
 let CLASSES = {
@@ -48,9 +44,8 @@ class Code_Analyser {
 	// ----- MEMBER VARIABLES -----
 
 	// code header
-	#code_header_file_path;
-	#code_file_path;
-	#code_file_name;
+	#user_id;
+	#user_dir_path;
 	#executable_file_path;
 	#program_input_file_path;
 	#program_output_file_path;
@@ -113,7 +108,7 @@ class Code_Analyser {
 				const watchpoint = GDB.get_controlpoint_number(res);
 				res = await this.#gdb.execute("continue");
 				res.splice(0, 1);
-				console.error(res);
+				// console.error(res);
 				assert(watchpoint === GDB.get_controlpoint_number(res));
 				await this.#gdb.execute(`delete ${watchpoint}`);
 				const object_address = await this.#gdb.examine_pointed_value(
@@ -225,27 +220,31 @@ class Code_Analyser {
 
 	// ----- CONSTRUCTORS -----
 
-	constructor(code_file_path, events_handler) {
-		this.#code_header_file_path = CODE_HEADER_FILE_PATH;
-		this.#code_file_path = code_file_path;
-		this.#code_file_name = code_file_path.substr(
-			0,
-			code_file_path.lastIndexOf(".")
+	constructor(user_id, events_handler) {
+		this.#user_id = user_id;
+		this.#user_dir_path = path.resolve(
+			config.users.files.root_dir_path,
+			user_id
 		);
-		this.#executable_file_path =
-			this.#code_file_name + "." + EXECUTABLE_FILE_EXTENSION;
-		this.#program_input_file_path =
-			this.#code_file_name + "." + INPUT_FILE_EXTENSION;
-		this.#program_output_file_path =
-			this.#code_file_name + "." + OUTPUT_FILE_EXTENSION;
-		this.#program_error_file_path =
-			this.#code_file_name + "." + ERROR_FILE_EXTENSION;
+		this.#executable_file_path = path.resolve(
+			this.#user_dir_path,
+			config.users.files.executable_file_name
+		);
+		this.#program_input_file_path = path.resolve(
+			this.#user_dir_path,
+			config.users.files.program_input_file_name
+		);
+		this.#program_output_file_path = path.resolve(
+			this.#user_dir_path,
+			config.users.files.program_output_file_name
+		);
+		this.#program_error_file_path = path.resolve(
+			this.#user_dir_path,
+			config.users.files.program_error_file_name
+		);
 		this.#init_promise = create_externally_resolvable_promise();
 
 		this.#events_handler = events_handler;
-
-		// async
-		this.#init();
 	}
 
 	// ----- MEMBER FUNCTIONS -----
@@ -254,7 +253,7 @@ class Code_Analyser {
 
 	// log event // TODO send it
 	#log_event = (json) => {
-		// console.log(json);
+		console.log(json);
 		this.#events_handler(json);
 	};
 
@@ -262,7 +261,7 @@ class Code_Analyser {
 	#on_program_output_data = (data) => {
 		this.#log_event({
 			type: "output",
-			text: data,
+			content: data,
 		});
 	};
 
@@ -270,7 +269,7 @@ class Code_Analyser {
 	#on_program_error_data = (data) => {
 		this.#log_event({
 			type: "error",
-			text: data,
+			content: data,
 		});
 	};
 
@@ -329,8 +328,10 @@ class Code_Analyser {
 		return event_index;
 	};
 
+	// --- PUBLIC ---
+
 	// intialise gdb
-	#init = async () => {
+	init = async () => {
 		// reset files
 		await PTY.execute(`rm`, [`-f`, `${this.#executable_file_path}`]); // remove previous executable file
 		await PTY.execute(`rm`, [`-f`, `${this.#program_input_file_path}`]); // remove previous program input file
@@ -347,23 +348,38 @@ class Code_Analyser {
 		]); // empty program error file
 
 		// compile code
-		await PTY.execute(`g++`, [
-			`-g`,
-			`${this.#code_header_file_path}`,
-			`${this.#code_file_path}`,
-			`-o`,
-			`${this.#executable_file_path}`,
-		]);
-		console.error(`[*] compiled`);
+		let compilation_output = null;
+		try {
+			compilation_output = await PTY.execute(`make`, [
+				`-sBC`,
+				`${this.#user_dir_path}`,
+			]);
+		} catch (error) {
+			const error_event = {
+				type: "compilation",
+				status: "failed",
+				error: error.message,
+			};
+			this.#log_event(error_event);
+			return error_event;
+		}
+
+		const success_event = {
+			type: "compilation",
+			status: "success",
+			output: compilation_output,
+		};
+		this.#log_event(success_event);
+		console.log(`[*] compiled`);
 
 		// maintain the input named pipe opened
 		const program_input_named_pipe_maintainer_process = new PTY("bash", [
-			`${NAMED_PIPE_MAINTAINER_BASH_SCRIPT_FILE_PATH}`,
+			`${config.users.files.shared.named_pipe_maintainer.path}`,
 			`${this.#program_input_file_path}`,
 		]);
 
 		// run code
-		console.error(`[*] running...`);
+		console.log(`[*] running...`);
 		this.#gdb = new GDB(["-q", `${this.#executable_file_path}`]);
 		this.#program_output_process = new PTY("tail", [
 			"-f",
@@ -384,14 +400,14 @@ class Code_Analyser {
 			program_input_named_pipe_maintainer_process.kill();
 			this.#program_output_process.kill();
 			this.#program_error_process.kill();
-			console.error(`[*] code execution done with exit code ${code}`);
+			console.log(`[*] code execution done with exit code ${code}`);
 		});
 
 		// resolve initialization promise
 		this.#init_promise.resolve();
-	};
 
-	// --- PUBLIC ---
+		return success_event;
+	};
 
 	// run program
 	run = async () => {
@@ -406,13 +422,13 @@ class Code_Analyser {
 
 		// create breakpoints
 		res = await this.#gdb.execute("break operator new");
-		console.error(res);
+		// console.error(res);
 		this.#set_controlpoint_callback(
 			GDB.get_controlpoint_number(res),
 			this.#events_callbacks["new"]
 		);
 		res = await this.#gdb.execute("break operator delete(void*)");
-		console.error(res);
+		// console.error(res);
 		this.#set_controlpoint_callback(
 			GDB.get_controlpoint_number(res),
 			this.#events_callbacks["delete"]
@@ -425,7 +441,7 @@ class Code_Analyser {
 			} 2> ${this.#program_error_file_path}`
 		);
 		res.splice(0, 1); // remove starting line
-		console.error(res);
+		// console.error(res);
 
 		while (GDB.is_controlpoint(res)) {
 			const controlpoint_callback = this.#get_controlpoint_callback(
@@ -436,14 +452,22 @@ class Code_Analyser {
 			// get next responce
 			res = await this.#gdb.execute("continue");
 			res.splice(0, 1); // remove starting line
-			console.error(res);
+			// console.error(res);
 		}
 
-		// list watchpoints
-		await this.#gdb.execute("info watchpoints");
+		// DEBUG: list watchpoints
+		// await this.#gdb.execute("info watchpoints");
 
 		// quit
 		await this.#gdb.execute("quit");
+
+		// exit event
+		const success_event = {
+			type: "exit",
+			status: "success",
+		};
+		this.#log_event(success_event);
+		return success_event;
 	};
 
 	// take user input

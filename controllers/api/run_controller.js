@@ -1,4 +1,4 @@
-export default class Run_Controller {
+class Run_Controller {
 	constructor() {
 		// empty constructor
 	}
@@ -8,3 +8,7 @@ export default class Run_Controller {
 		next(new Error("not implemented yet"));
 	};
 }
+
+const run_controller = new Run_Controller();
+
+export default run_controller;

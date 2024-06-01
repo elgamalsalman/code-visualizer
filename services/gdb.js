@@ -82,6 +82,9 @@ class GDB {
 		// initialize pty
 		this.#gdb = new PTY("gdb", options);
 		this.#gdb.on("data", this.#on_gdb_data);
+		this.#gdb.on("close", () => {
+			this.#responce_promise.resolve();
+		});
 
 		// async
 		this.#init();
@@ -101,7 +104,7 @@ class GDB {
 	// process incoming data from gdb stdout
 	#on_gdb_data = async (data) => {
 		data = ansi_normalize(data.toString()).trim();
-		console.error(`[*] on_gdb_data ${data}`);
+		// console.error(`[*] on_gdb_data ${data}`);
 
 		// split
 		const delimiter = "(gdb)";
@@ -165,7 +168,7 @@ class GDB {
 		// await initialisation
 		await this.#init_promise;
 
-		console.error(`[*] gdb execute ${command}`);
+		// console.error(`[*] gdb execute ${command}`);
 
 		this.#responce_promise = create_externally_resolvable_promise();
 		this.#command_promise.resolve(command);

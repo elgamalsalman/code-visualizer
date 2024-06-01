@@ -2,8 +2,8 @@ import config from "../../config.js";
 
 import File_Manager from "../../services/file_manager.js";
 
-export default class Save_Controller {
-	#file_manager = new File_Manager(config.users.files.root_dir_path);
+class Save_Controller {
+	#file_manager = new File_Manager();
 
 	constructor() {
 		// empty constructor
@@ -47,3 +47,7 @@ export default class Save_Controller {
 		}
 	};
 }
+
+const save_controller = new Save_Controller();
+
+export default save_controller;

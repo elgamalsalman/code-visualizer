@@ -3,6 +3,8 @@
 import { Router } from "express";
 import expressWS from "express-ws";
 
+import ws_run_controller from "../controllers/api/ws/ws_run_controller.js";
+
 // --- globals ---
 
 const router = Router();
@@ -10,13 +12,7 @@ expressWS(router);
 
 // --- routes ---
 
-router.ws("/run", (ws, req) => {
-	const { user_id } = req.body;
-
-	ws.on("message", (message) => {
-		console.log(`message to ${user_id}: {${message}}!`);
-	});
-});
+router.ws("/run", ws_run_controller.run);
 
 // --- exports ---
 

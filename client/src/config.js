@@ -35,6 +35,7 @@ const config = {
       failed: "failed",
     },
     runTemplate: {
+      id: 0,
       data: [],
       status: "running",
     },

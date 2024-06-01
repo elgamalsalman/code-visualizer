@@ -1,6 +1,6 @@
 import React, { useRef, useEffect } from "react";
 
-import ConsoleRun from "components/Console/ConsoleRun";
+import ConsoleRun from "./ConsoleRun";
 
 const Console = ({ runs, onInput }) => {
   const consoleEndRef = useRef(null);

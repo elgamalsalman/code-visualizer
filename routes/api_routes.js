@@ -7,15 +7,12 @@ import api_ws_routes from "./api_ws_routes.js";
 import auth from "../middlewares/auth_handler.js";
 import ws_header from "../middlewares/ws_header_handler.js";
 
-import Save_Controller from "../controllers/api/save_controller.js";
-import Run_Controller from "../controllers/api/run_controller.js";
+import save_controller from "../controllers/api/save_controller.js";
+import run_controller from "../controllers/api/run_controller.js";
 
 // --- globals ---
 
 const router = Router();
-
-let save_controller = new Save_Controller();
-let run_controller = new Run_Controller();
 
 // --- routes ---
 

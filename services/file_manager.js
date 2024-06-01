@@ -6,23 +6,30 @@ import config from "../config.js";
 import { recursive_read } from "../utils/file_system_utils.js";
 
 export default class File_Manager {
-	#root_dir;
+	#users_dir;
 
-	constructor(root_dir) {
-		// ensure root dir does exist
-		assert(
-			fs.existsSync(path.resolve(root_dir)) &&
-				"file manager root directory doesn't exist"
-		);
-
-		this.#root_dir = root_dir;
+	constructor() {
+		this.#users_dir = path.resolve(config.users.files.root_dir_path);
 	}
+
+	create_user_dir = async (user_id) => {
+		const user_dir_path = path.resolve(this.#users_dir, user_id);
+		await fs.promises.mkdir(user_dir_path);
+		const make_file_path = path.resolve(
+			config.root_dir_path,
+			config.users.files.shared.makefile.path
+		);
+		await fs.promises.cp(
+			make_file_path,
+			path.resolve(user_dir_path, config.users.files.shared.makefile.name)
+		);
+	};
 
 	get_user_dir_path = async (user_id) => {
 		// console.log(`get_user_dir_path(${user_id})`);
-		const user_dir_path = path.resolve(this.#root_dir, user_id);
+		const user_dir_path = path.resolve(this.#users_dir, user_id);
 		if (!fs.existsSync(user_dir_path)) {
-			await fs.promises.mkdir(user_dir_path);
+			await this.create_user_dir(user_id);
 		}
 		return user_dir_path;
 	};

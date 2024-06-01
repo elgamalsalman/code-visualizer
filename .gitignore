@@ -1,6 +1,7 @@
 node_modules
 .*.sw*
 .env
+.todo
 
 # users files
 _users

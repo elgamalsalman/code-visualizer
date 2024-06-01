@@ -1,17 +1,17 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useImmer } from "use-immer";
+import { useImmer, useImmerReducer } from "use-immer";
 import styles from "./App.module.css";
 
 import config from "config";
-import { deepCopy } from "utils/objectUtils.js";
+import { deepCopy } from "common/utils/objectUtils.js";
 
-import Header from "components/Header/Header";
-import Tile from "components/Tile/Tile";
+import Header from "common/components/Header/Header";
+import Tile from "common/components/Tile/Tile";
 import TabGroup from "components/TabGroup/TabGroup";
 import Tab from "components/TabGroup/Tab";
-import Editor from "components/Editor/Editor";
-import Console from "components/Console/Console";
-import Grapher from "components/Grapher/Grapher";
+import Editor from "containers/Editor/Editor";
+import Console from "containers/Console/Console";
+import Grapher from "containers/Grapher/Grapher";
 
 const syncWithServer = async (fileContent) => {
   const requestOptions = {
@@ -35,6 +35,49 @@ const syncWithServer = async (fileContent) => {
   console.log(data);
 };
 
+const pastRunsReducer = (runs, action) => {
+  switch (action.type) {
+    case "add": {
+      console.log("add");
+      runs.push(action.newRun);
+      break;
+    }
+  }
+};
+
+const currRunReducer = (run, action) => {
+  switch (action.type) {
+    case "new": {
+      console.log("new");
+      return {
+        ...deepCopy(config.console.runTemplate),
+        id: action.id,
+      };
+      break;
+    }
+    case "reset": {
+      console.log("reset");
+      return null;
+      break;
+    }
+
+    case "input":
+    case "output":
+    case "error": {
+      const lastDataPoint = run.data[run.data.length - 1];
+      if (lastDataPoint?.type === action.type) {
+        lastDataPoint.content += action.content;
+      } else {
+        run.data.push({
+          type: config.console.runDataTypes[action.type],
+          content: action.content,
+        });
+      }
+      break;
+    }
+  }
+};
+
 const App = () => {
   const editorRef = useRef(null);
   const autoSavingTimerRef = useRef(null);
@@ -43,8 +86,17 @@ const App = () => {
   );
   const runWSRef = useRef(null);
   const [idCounter, setIdCounter] = useState(config.testing.idCounter);
-  const [pastRuns, updatePastRuns] = useImmer(config.testing.pastRuns);
-  const [currRun, updateCurrRun] = useImmer(config.testing.currRun);
+  const [pastRuns, pastRunsDispatch] = useImmerReducer(
+    pastRunsReducer,
+    config.testing.pastRuns,
+  );
+  const [currRun, currRunDispatch] = useImmerReducer(
+    currRunReducer,
+    config.testing.currRun,
+  );
+
+  console.log(`pastRuns: ${pastRuns}`);
+  console.log(`currRun: ${currRun}`);
 
   const save = async () => {
     // if already up to date
@@ -77,20 +129,24 @@ const App = () => {
     }
   };
 
-  const consoleUserInputHandler = (input) => {
-    updateCurrRun((run) => {
-      if (run === null) console.error("Can't take input without a valid run!");
-      const inputType = config.console.runDataTypes.input;
-      const lastDataPoint = run.data[run.data.length - 1];
-      if (lastDataPoint?.type === inputType) {
-        lastDataPoint.content += input;
-      } else {
-        run.data.push({
-          type: inputType,
-          content: input,
-        });
-      }
-    });
+  const getRunIOHandler = (type) => {
+    return (io) => {
+      currRunDispatch({
+        type: type,
+        content: io,
+      });
+    };
+  };
+
+  const runEventHandler = (event) => {
+    console.log(event);
+    if (event.type === "output" || event.type === "error") {
+      // FIXME
+      // getRunIOHandler(event.type)(event.content);
+    } else if (event.type === "exit") {
+      killHandler(event.status);
+    }
+    // TODO: rest of event types
   };
 
   const runHandler = async () => {
@@ -102,12 +158,7 @@ const App = () => {
 
     // save and create new run object
     await save();
-    updateCurrRun((run) => {
-      if (run !== null) console.error("Can't nest runs!");
-      const newRun = deepCopy(config.console.runTemplate);
-      newRun.id = idCounter;
-      return deepCopy(newRun);
-    });
+    currRunDispatch({ type: "new", id: idCounter });
     setIdCounter(idCounter + 1);
 
     // initiate run in server
@@ -118,25 +169,31 @@ const App = () => {
     runWSRef.current.addEventListener("open", (e) => {
       setRunningStatus(config.appRunningStatuses.running);
     });
-    runWSRef.current.addEventListener("message", (e) => {}); // TODO
-    runWSRef.current.addEventListener("close", (e) => {
-      runWSRef.current = null;
+    runWSRef.current.addEventListener("message", (payload) => {
+      const event = JSON.parse(payload.data);
+      runEventHandler(event);
     });
   };
 
   const killHandler = (status = config.console.runStatuses.failed) => {
-    const newPastRun = deepCopy(currRun);
-    newPastRun.status = status;
     setRunningStatus(config.appRunningStatuses.idle);
-    updatePastRuns((runs) => {
-      runs.push(newPastRun);
+    pastRunsDispatch({
+      type: "add",
+      newRun: {
+        ...deepCopy(currRun),
+        status: status,
+      },
     });
-    updateCurrRun((run) => null);
-    runWSRef.current.close();
+    currRunDispatch({ type: "reset" });
+    runWSRef.current?.close();
+    runWSRef.current = null;
   };
 
-  const runs = [...pastRuns];
-  if (runningStatus === config.console.runStatuses.running) runs.push(currRun);
+  const runs = [...deepCopy(pastRuns)];
+  console.log(runs);
+  console.log(currRun);
+  if (runningStatus === config.console.runStatuses.running)
+    runs.push(deepCopy(currRun));
   return (
     <div className={styles["app"]}>
       <div className={styles["header-div"]}>
@@ -164,7 +221,7 @@ const App = () => {
           <TabGroup
             tabs={[
               <Tab key="Console" title="Console" type="console">
-                <Console runs={runs} onInput={consoleUserInputHandler} />
+                <Console runs={runs} onInput={getRunIOHandler("input")} />
               </Tab>,
               <Tab key="Grapher" title="Grapher" type="grapher">
                 <Grapher />
