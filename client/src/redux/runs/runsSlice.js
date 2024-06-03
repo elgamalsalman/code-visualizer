@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-import { runDoneStatuses, getNewRun } from "./runsModels";
+import { runDoneStatuses, getNewRun } from "src/models/runs/runsModels";
 
 const runsSlice = createSlice({
   name: "runs",
@@ -10,7 +10,7 @@ const runsSlice = createSlice({
       // action: { startTime }
       if (state.length > 0) {
         const run = state[state.length - 1];
-        if (run.status in runDoneStatuses) {
+        if (runDoneStatuses.includes(run.status)) {
           throw Error("creating run when prev is not done");
         }
       }
@@ -26,22 +26,32 @@ const runsSlice = createSlice({
       }
 
       const run = state[state.length - 1];
-      if (run.status in runDoneStatuses) throw Error("logging to a done run!");
-      run.data.push(action.event);
+      if (runDoneStatuses.includes(run.status))
+        throw Error("logging to a done run!");
+      const dataLength = run.data.length;
+      if (
+        dataLength > 0 &&
+        run.data[dataLength - 1].type === action.event.type
+      ) {
+        run.data[dataLength - 1] += action.event.data;
+      } else {
+        run.data.push(action.event);
+      }
     },
     terminateRun: (state, action) => {
       // action: { event, endTime }
       if (state.length <= 0) {
         throw Error("Received run event without any runs created!");
       }
-      if (!(action.event.status in runDoneStatuses)) {
+      if (!runDoneStatuses.includes(action.event.status)) {
         throw Error(
           "Received a termination event with an unrecognised terminations status",
         );
       }
 
       const run = state[state.length - 1];
-      if (run.status in runDoneStatuses) throw Error("terminating a done run!");
+      if (runDoneStatuses.includes(run.status))
+        throw Error("terminating a done run!");
       run.data.push(action.event);
       run.status = action.event.status;
       run.endTime = action.endTime;

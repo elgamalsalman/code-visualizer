@@ -3,7 +3,7 @@ import styles from "./TabGroup.module.css";
 
 import { PlusIcon } from "@heroicons/react/24/solid";
 
-import TabHead from "components/TabGroup/TabHead";
+import TabHead from "src/components/TabGroup/TabHead";
 
 const onTabClose = () => {
   // TODO

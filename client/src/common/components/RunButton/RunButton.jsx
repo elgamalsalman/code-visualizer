@@ -1,7 +1,8 @@
 import React from "react";
 import styles from "./RunButton.module.css";
 
-import config from "config";
+// FIXME: shouldn't really depend on config
+import config from "src/config";
 
 import { PlayIcon, ArrowPathIcon, StopIcon } from "@heroicons/react/24/solid";
 

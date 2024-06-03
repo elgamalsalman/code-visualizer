@@ -55,12 +55,12 @@ const getRunEventTemplate = {
 
 // assert valid file configuration
 (() => {
-  const keys1 = runEventTypes.keys();
-  const keys2 = getRunEventTypes.keys();
-  const valid = true;
+  const keys1 = Object.keys(runEventTypes);
+  const keys2 = Object.keys(getRunEventTemplate);
+  let valid = true;
   if (keys1.length !== keys2.length) valid = false;
   for (const key1 of keys1) {
-    if (!(key1 in keys2)) valid = false;
+    if (!keys2.includes(key1)) valid = false;
   }
 
   if (!valid) {

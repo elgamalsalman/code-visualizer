@@ -51,42 +51,6 @@ const config = {
     },
   },
   autoSavingDelay: 5000,
-
-  testing: {
-    pastRuns: [
-      {
-        id: 0,
-        data: [
-          { type: "output", content: "enter x:" },
-          { type: "input", content: "34\n" },
-          { type: "output", content: "enter y:" },
-          { type: "input", content: "-12\n" },
-          { type: "error", content: "Can't process -ves!" },
-        ],
-        status: "failed",
-      },
-      {
-        id: 1,
-        data: [
-          { type: "output", content: "enter x:" },
-          { type: "input", content: "3\n" },
-          { type: "output", content: "enter y:" },
-          { type: "input", content: "2\n" },
-          { type: "output", content: "Result is 5!" },
-        ],
-        status: "success",
-      },
-    ],
-
-    currRun: null,
-    // currRun: {
-    //   id: 2,
-    //   data: [{ type: "output", content: "enter x:" }],
-    //   status: "running",
-    // },
-    idCounter: 2,
-    user_id: "test_user",
-  },
 };
 
 export default config;

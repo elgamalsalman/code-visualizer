@@ -1,17 +1,23 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useImmer, useImmerReducer } from "use-immer";
+import { useDispatch, useSelector } from "react-redux";
 import styles from "./App.module.css";
 
-import config from "config";
-import { deepCopy } from "common/utils/objectUtils.js";
+import config from "src/config";
+import { getUNIXTimeNow } from "src/common/utils/dateTime";
+import useAutoSave from "src/common/hooks/useAutoSave";
 
-import Header from "common/components/Header/Header";
-import Tile from "common/components/Tile/Tile";
-import TabGroup from "components/TabGroup/TabGroup";
-import Tab from "components/TabGroup/Tab";
-import Editor from "containers/Editor/Editor";
-import Console from "containers/Console/Console";
-import Grapher from "containers/Grapher/Grapher";
+import useAppRunningStatus from "src/hooks/useAppRunningStatus";
+import { createRun, logRunEvent, terminateRun } from "src/redux/runs/runsSlice";
+import { getRunEventTemplate } from "src/models/runs/runsEventsModels";
+
+import Header from "src/common/components/Header/Header";
+import Tile from "src/common/components/Tile/Tile";
+import TabGroup from "src/components/TabGroup/TabGroup";
+import Tab from "src/components/TabGroup/Tab";
+import Editor from "src/containers/Editor/Editor";
+import Console from "src/containers/Console/Console";
+import Grapher from "src/containers/Grapher/Grapher";
 
 const syncWithServer = async (fileContent) => {
   const requestOptions = {
@@ -35,108 +41,19 @@ const syncWithServer = async (fileContent) => {
   console.log(data);
 };
 
-const pastRunsReducer = (runs, action) => {
-  switch (action.type) {
-    case "add": {
-      console.log("add");
-      runs.push(action.newRun);
-      break;
-    }
-  }
-};
-
-const currRunReducer = (run, action) => {
-  switch (action.type) {
-    case "new": {
-      console.log("new");
-      return {
-        ...deepCopy(config.console.runTemplate),
-        id: action.id,
-      };
-      break;
-    }
-    case "reset": {
-      console.log("reset");
-      return null;
-      break;
-    }
-
-    case "input":
-    case "output":
-    case "error": {
-      const lastDataPoint = run.data[run.data.length - 1];
-      if (lastDataPoint?.type === action.type) {
-        lastDataPoint.content += action.content;
-      } else {
-        run.data.push({
-          type: config.console.runDataTypes[action.type],
-          content: action.content,
-        });
-      }
-      break;
-    }
-  }
-};
-
 const App = () => {
+  const dispatch = useDispatch();
+  const runs = useSelector((state) => state.runs);
+  const appRunningStatus = useAppRunningStatus();
+
   const editorRef = useRef(null);
-  const autoSavingTimerRef = useRef(null);
-  const [runningStatus, setRunningStatus] = useState(
-    config.appRunningStatuses.idle,
-  );
-  const runWSRef = useRef(null);
-  const [idCounter, setIdCounter] = useState(config.testing.idCounter);
-  const [pastRuns, pastRunsDispatch] = useImmerReducer(
-    pastRunsReducer,
-    config.testing.pastRuns,
-  );
-  const [currRun, currRunDispatch] = useImmerReducer(
-    currRunReducer,
-    config.testing.currRun,
-  );
-
-  console.log(`pastRuns: ${pastRuns}`);
-  console.log(`currRun: ${currRun}`);
-
-  const save = async () => {
-    // if already up to date
-    if (autoSavingTimerRef.current === null) return;
-
-    // clear any auto-saving timers
-    clearTimeout(autoSavingTimerRef.current);
-    autoSavingTimerRef.current = null;
-
+  // TODO:  useServerPull();
+  const [save, registerChange] = useAutoSave(async () => {
     const fileContent = editorRef.current.getValue();
     await syncWithServer(fileContent);
     console.log(fileContent);
-  };
-
-  // save on unmount
-  useEffect(() => {
-    return async () => {
-      await save();
-    };
-  }, []);
-
-  // registerChange
-  const registerChange = () => {
-    if (autoSavingTimerRef.current === null) {
-      // schedule an auto-save
-      autoSavingTimerRef.current = setTimeout(
-        () => save(),
-        config.autoSavingDelay,
-      );
-    }
-  };
-
-  const getRunIOHandler = (type) => {
-    return (io) => {
-      currRunDispatch({
-        type: type,
-        content: io,
-      });
-    };
-  };
+  }, config.AutoSavingDelay);
+  const runWSRef = useRef(null);
 
   const runEventHandler = (event) => {
     console.log(event);
@@ -153,22 +70,16 @@ const App = () => {
     // wait for editor to load up
     if (editorRef.current === null) return;
 
-    // save and connect to server web socket
-    setRunningStatus(config.appRunningStatuses.connecting);
-
     // save and create new run object
     await save();
-    currRunDispatch({ type: "new", id: idCounter });
-    setIdCounter(idCounter + 1);
+    dispatch(createRun({ startTime: getUNIXTimeNow() }));
 
     // initiate run in server
     runWSRef.current = new WebSocket(`${config.server.api.ws.url}/run`, [
       "json",
       config.testing.user_id,
     ]);
-    runWSRef.current.addEventListener("open", (e) => {
-      setRunningStatus(config.appRunningStatuses.running);
-    });
+    runWSRef.current.addEventListener("open", (e) => {});
     runWSRef.current.addEventListener("message", (payload) => {
       const event = JSON.parse(payload.data);
       runEventHandler(event);
@@ -176,33 +87,26 @@ const App = () => {
   };
 
   const killHandler = (status = config.console.runStatuses.failed) => {
-    setRunningStatus(config.appRunningStatuses.idle);
-    pastRunsDispatch({
-      type: "add",
-      newRun: {
-        ...deepCopy(currRun),
-        status: status,
-      },
-    });
-    currRunDispatch({ type: "reset" });
+    dispatch(
+      terminateRun({
+        event: getRunEventTemplate.terminate(status),
+        endTime: getUNIXTimeNow(),
+      }),
+    );
     runWSRef.current?.close();
     runWSRef.current = null;
   };
 
-  const runs = [...deepCopy(pastRuns)];
   console.log(runs);
-  console.log(currRun);
-  if (runningStatus === config.console.runStatuses.running)
-    runs.push(deepCopy(currRun));
   return (
     <div className={styles["app"]}>
       <div className={styles["header-div"]}>
         <Header
-          runningStatus={runningStatus}
+          runningStatus={appRunningStatus}
           eventHandlers={{
             onRun: runHandler,
             onKill: () => {
-              killHandler(config.console.runStatuses.fialed);
+              killHandler(config.console.runStatuses.failed);
             },
           }}
         />
@@ -221,7 +125,7 @@ const App = () => {
           <TabGroup
             tabs={[
               <Tab key="Console" title="Console" type="console">
-                <Console runs={runs} onInput={getRunIOHandler("input")} />
+                <Console runs={runs} />
               </Tab>,
               <Tab key="Grapher" title="Grapher" type="grapher">
                 <Grapher />

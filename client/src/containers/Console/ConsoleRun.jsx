@@ -1,7 +1,7 @@
 import React from "react";
 import styles from "./ConsoleRun.module.css";
 
-import config from "config";
+import config from "src/config";
 
 function ConsoleRun({ run, logInput }) {
   const { id, data, status } = run;

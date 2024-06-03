@@ -1,6 +1,6 @@
 import React, { useRef } from "react";
 
-import config from "config";
+import config from "src/config";
 
 import MonacoEditor from "@monaco-editor/react";
 

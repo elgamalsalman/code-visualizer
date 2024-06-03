@@ -1,7 +1,7 @@
 import React from "react";
 import styles from "./Header.module.css";
 
-import RunButton from "common/components/RunButton/RunButton";
+import RunButton from "src/common/components/RunButton/RunButton";
 
 const Header = ({ runningStatus, eventHandlers }) => {
   const { onRun, onKill } = eventHandlers;
