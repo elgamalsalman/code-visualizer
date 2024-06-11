@@ -1,9 +1,5 @@
 const config = {
-  appRunningStatuses: {
-    connecting: "connecting",
-    running: "running",
-    idle: "idle",
-  },
+  userId: "test_user",
   server: {
     url: "http://localhost:3001",
     api: {
@@ -11,6 +7,10 @@ const config = {
       ws: {
         url: "http://localhost:3001/api/v1/ws",
       },
+    },
+    http_codes: {
+      success: 200,
+      failed: 500,
     },
   },
   editor: {
@@ -29,26 +29,6 @@ const config = {
   },
   console: {
     defaultRowCount: 3,
-    runStatuses: {
-      running: "running",
-      success: "success",
-      failed: "failed",
-    },
-    runTemplate: {
-      id: 0,
-      data: [],
-      status: "running",
-    },
-    runDataTemplate: {
-      id: 0,
-      type: "input",
-      content: "34",
-    },
-    runDataTypes: {
-      input: "input",
-      output: "output",
-      error: "error",
-    },
   },
   autoSavingDelay: 5000,
 };

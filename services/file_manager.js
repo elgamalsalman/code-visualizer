@@ -3,7 +3,7 @@ import path from "path";
 import { strict as assert } from "assert";
 
 import config from "../config.js";
-import { recursive_read } from "../utils/file_system_utils.js";
+import { read_file_tree } from "../utils/file_system_utils.js";
 
 export default class File_Manager {
 	#users_dir;
@@ -111,26 +111,32 @@ export default class File_Manager {
 
 		try {
 			// update the files
-			for (let { action, path: user_path, entity, content } of updates) {
+			for (let {
+				action,
+				entity: {
+					meta: { path: user_path, type },
+					content,
+				},
+			} of updates) {
 				// validate updates information
 				if (
 					!config.file_manager.actions.includes(action) ||
-					!config.file_manager.entities.includes(entity)
+					!config.file_manager.entities.includes(type)
 				) {
 					throw new Error("invalid file manager update's action or entity");
 				}
 
 				const full_path = path.resolve(user_dir_path, user_path);
 				if (action === "create") {
-					if (entity === "file") {
+					if (type === "file") {
 						await fs.promises.writeFile(full_path, content);
-					} else if (entity === "dir") {
+					} else if (type === "dir") {
 						await fs.promises.mkdir(full_path, { recursive: true });
 					}
 				} else if (action === "write") {
-					if (entity === "file") {
+					if (type === "file") {
 						await fs.promises.writeFile(full_path, content);
-					} else if (entity === "dir") {
+					} else if (type === "dir") {
 						throw new Error("file manager cannot write to a directory");
 					}
 				} else if (action === "delete") {
@@ -140,9 +146,9 @@ export default class File_Manager {
 						);
 					}
 
-					if (entity === "file") {
+					if (type === "file") {
 						await fs.promises.unlink(full_path);
-					} else if (entity === "dir") {
+					} else if (type === "dir") {
 						await fs.promises.rm(full_path, {
 							recursive: true,
 							force: true,
@@ -155,7 +161,7 @@ export default class File_Manager {
 		}
 	};
 
-	get_user_files = async (user_id) => {
+	get_user_file_tree = async (user_id) => {
 		// create user directory if it doesn't exist
 		const user_dir_path = await this.get_user_dir_path(user_id);
 
@@ -166,30 +172,23 @@ export default class File_Manager {
 			config.file_manager.user_statuses.pending_statuses.reading
 		);
 
-		const entity_descriptors = [];
+		let file_tree = null;
 		try {
-			// get user files
-			await recursive_read(
-				user_dir_path,
-				(file_path, file_content) => {
-					entity_descriptors.push({
-						entity: "file",
-						path: file_path,
-						content: file_content,
-					});
-				},
-				(dir_path) => {
-					entity_descriptors.push({
-						entity: "dir",
-						path: dir_path,
-					});
-				}
-			);
+			// get user file tree
+			file_tree = await read_file_tree(user_dir_path, [
+				config.file_manager.user_statuses.free_status,
+				...Object.values(config.file_manager.user_statuses.pending_statuses),
+				config.users.files.executable_file_name,
+				config.users.files.program_input_file_name,
+				config.users.files.program_output_file_name,
+				config.users.files.program_error_file_name,
+				config.users.files.shared.makefile.name,
+			]);
 		} finally {
 			// return user status back to free
 			await this.set_user_status_to_free(user_id);
 		}
 
-		return entity_descriptors;
+		return file_tree;
 	};
 }

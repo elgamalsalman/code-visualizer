@@ -1,5 +1,5 @@
 const getUNIXTimeNow = () => {
-  return Date.parse(Date.now());
+  return Date.now();
 };
 
 export { getUNIXTimeNow };

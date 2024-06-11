@@ -3,9 +3,10 @@ import styles from "./ConsoleRun.module.css";
 
 import config from "src/config";
 
+import { runStatuses } from "src/models/run/runModels";
+
 function ConsoleRun({ run, logInput }) {
   const { id, data, status } = run;
-  const runningStatus = config.console.runStatuses.running;
 
   const handleInput = (e) => {
     // assertion
@@ -45,7 +46,7 @@ function ConsoleRun({ run, logInput }) {
       </div>
       <textarea
         className="text-input-area"
-        readOnly={status !== runningStatus}
+        readOnly={status !== runStatuses.running}
         value={""}
         onChange={handleInput}
         rows={defaultRowCount}

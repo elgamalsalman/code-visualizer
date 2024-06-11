@@ -1,7 +1,7 @@
 import { useSelector } from "react-redux";
 
-import { runStatuses, runDoneStatuses } from "src/models/runs/runsModels";
-import { appRunningStatuses } from "src/models/appInfo/appInfoModels";
+import { runStatuses, runDoneStatuses } from "src/models/run/runModels";
+import { appStatuses } from "src/models/appInfo/appInfoModels";
 
 const useRunningStatus = () => {
   return useSelector((state) => {
@@ -9,14 +9,14 @@ const useRunningStatus = () => {
     if (runsLength > 0) {
       const lastRun = state.runs[runsLength - 1];
       if (runDoneStatuses.includes(lastRun.status)) {
-        return appRunningStatuses.idle;
+        return appStatuses.idle;
       } else if (lastRun.status === runStatuses.running) {
-        return appRunningStatuses.running;
+        return appStatuses.running;
       } else {
-        return appRunningStatuses.pending;
+        return appStatuses.pending;
       }
     } else {
-      return appRunningStatuses.idle;
+      return appStatuses.idle;
     }
   });
 };

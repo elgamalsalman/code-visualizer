@@ -1,4 +1,8 @@
-import { useRef, useEffect, experimental_useEffectEvent as useEffectEvent } from "react";
+import {
+  useRef,
+  useEffect,
+  experimental_useEffectEvent as useEffectEvent,
+} from "react";
 
 const useAutoSave = (onSave, autoSavingDelay) => {
   const autoSavingTimerRef = useRef(null);
@@ -22,6 +26,7 @@ const useAutoSave = (onSave, autoSavingDelay) => {
     return async () => {
       await saveEffectEvent();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // registerChange

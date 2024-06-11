@@ -13,20 +13,22 @@ class Save_Controller {
 		// --- REQUEST BODY STRUCTURE ---
 		// {
 		// 	user_id: "test_user",
-		// 	updates: [
+		// 	events: [
 		// 		{
 		// 			action: "create"/"write"/"delete",
-		// 			path: "main.cpp",
-		// 			entity: "file"/"dir",
-		// 			content: "// content of main.cpp!",
+		// 			entity: {
+		// 				path: "main.cpp",
+		// 				type: "file"/"dir",
+		// 				content: "// content of main.cpp!",
+		// 			},
 		// 		},
 		// 	],
 		// }
 
-		const { user_id, updates } = req.body;
+		const { user_id, events } = req.body;
 		console.log(`user ${user_id} saving files...`);
 		try {
-			await this.#file_manager.update_user_files(user_id, updates);
+			await this.#file_manager.update_user_files(user_id, events);
 
 			res.send(
 				JSON.stringify({
