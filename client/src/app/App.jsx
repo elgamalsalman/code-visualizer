@@ -5,27 +5,20 @@ import styles from "./App.module.css";
 
 import config from "src/config";
 import { getUNIXTimeNow } from "src/common/utils/dateTime";
-import useAutoSave from "src/common/hooks/useAutoSave";
 
 import { createRun, logRunEvent, terminateRun } from "src/redux/runs/runsSlice";
 import { getRunEventTemplate } from "src/models/run/runEventModels";
-import {
-  entityTypes,
-  getEntityMeta,
-  getEntityData,
-} from "src/models/entity/entityModels";
+import { entityTypes, getEntityMeta } from "src/models/entity/entityModels";
 import {
   entityEventTypes,
   getEntityEvent,
 } from "src/models/events/entityEvents";
 import { runStatuses } from "src/models/run/runModels";
-import { pushEntityEventsToServer } from "src/api/entityService";
-import {
-  readFileFromLocalStorage,
-  writeFileToLocalStorage,
-} from "src/services/localStorageService";
 import useServerPullFileTree from "src/hooks/useServerPullFileTree";
 import useMountFileTree from "src/hooks/useMountFileTree";
+import useCanvasTree from "src/hooks/useCanvasTree";
+import useOpenEditorModels from "src/hooks/useOpenEditorModels";
+import useAutoSaveEntities from "src/hooks/useAutoSaveEntities";
 
 import Tile from "src/common/components/Tile/Tile";
 import TabGroup from "src/components/TabGroup/TabGroup";
@@ -40,45 +33,13 @@ const App = () => {
   const dispatch = useDispatch();
   const runs = useSelector((state) => state.runs);
 
-  const editorRef = useRef(null);
+  // FIXME: editors always start with default content not the server file content
   const fileTree = useServerPullFileTree();
   useMountFileTree(fileTree);
-  // const editorRefs = useEditorRefMap();
-  const [save, registerFileChange] = useAutoSave(async (changes) => {
-    const locallyProcessedEntityEvents = await Promise.all(
-      changes.map(async (entityEvent) => {
-        if (
-          [entityEventTypes.create, entityEventTypes.write].includes(
-            entityEvent.type,
-          ) &&
-          entityEvent.entity.type === entityTypes.file
-        ) {
-          // TODO: this should take from a more complicated structure of editorRefs
-          // to allow for multiple editor refs at once
-          // TODO: this be a call to a function that syncs editorRefs to localstorage
-          // and another that syncs localstorage to server, that is it
-          let fileContent = editorRef.current?.getValue();
-          // TODO: if editor no longer exists take info from localstorage
-          if (!fileContent) {
-            fileContent = await readFileFromLocalStorage(entityEvent.entity);
-          }
-          const entity = getEntityData(
-            entityEvent.entity.path,
-            entityTypes.file,
-            undefined,
-            fileContent,
-          );
-          await writeFileToLocalStorage(entity);
-
-          entityEvent.entity = entity;
-        }
-
-        return entityEvent;
-      }),
-    );
-    await pushEntityEventsToServer(config.userId, locallyProcessedEntityEvents);
-    console.log("saved to server!");
-  }, config.autoSavingDelay);
+  const [{ current: editorModelRefs }, subscribe, unsubscribe] =
+    useOpenEditorModels(); // TODO: subscribe and unsubscribe
+  const canvasTree = useCanvasTree(subscribe, unsubscribe); // TODO
+  const [save, registerEntityEvent] = useAutoSaveEntities(editorModelRefs);
   const runWSRef = useRef(null);
 
   const runHandler = async () => {
@@ -87,20 +48,22 @@ const App = () => {
     dispatch(createRun({ startTime: getUNIXTimeNow() }));
   };
 
+  const killHandler = () => {
+    dispatch(
+      terminateRun({
+        event: getRunEventTemplate.terminate(runStatuses.failed),
+        endTime: getUNIXTimeNow(),
+      }),
+    );
+  };
+
   return (
     <div className={styles["app"]}>
       <div className={styles["header-div"]}>
         <Header
           eventHandlers={{
             onRun: runHandler,
-            onKill: () => {
-              dispatch(
-                terminateRun({
-                  event: getRunEventTemplate.terminate(runStatuses.failed),
-                  endTime: getUNIXTimeNow(),
-                }),
-              );
-            },
+            onKill: killHandler,
           }}
         />
       </div>
@@ -114,13 +77,27 @@ const App = () => {
               tabs={[
                 <Tab key="main.cpp" title="main.cpp" type="code">
                   <Editor
-                    editorRef={editorRef}
+                    model={editorModelRefs["main.cpp"]}
                     onChange={() =>
-                      registerFileChange(
+                      registerEntityEvent(
                         "main.cpp",
                         getEntityEvent(
                           entityEventTypes.write,
                           getEntityMeta("main.cpp", entityTypes.file),
+                        ),
+                      )
+                    }
+                  />
+                </Tab>,
+                <Tab key="headers/vector.h" title="vector.h" type="code">
+                  <Editor
+                    model={editorModelRefs["headers/vector.h"]}
+                    onChange={() =>
+                      registerEntityEvent(
+                        "headers/vector.h",
+                        getEntityEvent(
+                          entityEventTypes.write,
+                          getEntityMeta("headers/vector.h", entityTypes.file),
                         ),
                       )
                     }

@@ -15,17 +15,25 @@
 }
 
 .controls-panel {
-  @apply border-background-dark-700 flex shrink-0 grow items-center border-b border-l px-1;
+  @apply flex shrink-0 grow items-center border-b border-l border-background-dark-700 px-1;
 }
 
 .new-tab-button {
-  @apply hover:bg-background-dark-800 h-fit rounded-md p-1.5 focus:outline-none;
+  @apply h-fit rounded-md p-1.5 hover:bg-background-dark-800 focus:outline-none;
 }
 
 .new-tab-button-icon {
-  @apply text-white h-3 w-3;
+  @apply h-3 w-3 text-white;
 }
 
 .tab-body {
   @apply bg-background-dark-800;
+}
+
+.active-tab-wrapper {
+  @apply visible;
+}
+
+.non-active-tab-wrapper {
+  @apply hidden;
 }

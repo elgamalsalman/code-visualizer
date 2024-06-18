@@ -5,8 +5,9 @@ import "./MonacoEditorFix.js";
 
 import MonacoEditor from "@monaco-editor/react";
 
-function Editor({ editorRef, onChange }) {
+function Editor({ model: modelRef, onChange }) {
   const monacoRef = useRef(null);
+  const editorRef = useRef(null);
 
   const handleEditorWillMount = (monaco) => {
     monaco.editor.defineTheme("dark", config.editor.themes["dark"]);
@@ -16,9 +17,12 @@ function Editor({ editorRef, onChange }) {
   const handleEditorDidMount = (editor, monaco) => {
     editorRef.current = editor;
     monacoRef.current = monaco;
+
+    if (modelRef.current) editor.setModel(modelRef.current);
     editor.getModel().onDidChangeContent((event) => {
       onChange();
     });
+    if (!modelRef.current) modelRef.current = editor.getModel();
   };
 
   return (
