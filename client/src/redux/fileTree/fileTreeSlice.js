@@ -1,8 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-const filesSlice = createSlice({
-  name: "files",
-  initialState: {},
+const fileTreeSlice = createSlice({
+  name: "fileTree",
+  initialState: null,
   reducers: {
     updateFileTree: (state, action) => {
       // action.payload: { fileTree }
@@ -17,5 +17,5 @@ const filesSlice = createSlice({
   },
 });
 
-export const { updateFileTree, updateFile } = filesSlice.actions;
-export default filesSlice.reducer;
+export const { updateFileTree, updateFile } = fileTreeSlice.actions;
+export default fileTreeSlice.reducer;

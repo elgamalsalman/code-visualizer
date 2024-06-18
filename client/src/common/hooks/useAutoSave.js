@@ -6,6 +6,7 @@ import {
 
 const useAutoSave = (onSave, autoSavingDelay) => {
   const autoSavingTimerRef = useRef(null);
+  const changesMapRef = useRef(new Map());
 
   const save = async () => {
     // if already up to date
@@ -16,7 +17,12 @@ const useAutoSave = (onSave, autoSavingDelay) => {
     autoSavingTimerRef.current = null;
 
     // do the saving logic
-    await onSave();
+    const changes = [];
+    changesMapRef.current.forEach((value, key) => changes.push(value));
+    await onSave(changes);
+
+    // clear changes set
+    changesMapRef.current.clear();
   };
 
   const saveEffectEvent = useEffectEvent(save);
@@ -30,7 +36,10 @@ const useAutoSave = (onSave, autoSavingDelay) => {
   }, []);
 
   // registerChange
-  const registerChange = () => {
+  const registerChange = (changeId, change) => {
+    // add change to set of changes
+    if (changeId !== undefined) changesMapRef.current.set(changeId, change);
+
     if (autoSavingTimerRef.current === null) {
       // schedule an auto-save
       autoSavingTimerRef.current = setTimeout(() => save(), autoSavingDelay);

@@ -111,44 +111,45 @@ export default class File_Manager {
 
 		try {
 			// update the files
+			console.log(updates);
 			for (let {
-				action,
+				type: eventType,
 				entity: {
-					meta: { path: user_path, type },
+					meta: { path: user_path, type: entityType },
 					content,
 				},
 			} of updates) {
 				// validate updates information
 				if (
-					!config.file_manager.actions.includes(action) ||
-					!config.file_manager.entities.includes(type)
+					!config.file_manager.eventTypes.includes(eventType) ||
+					!config.file_manager.entityTypes.includes(entityType)
 				) {
-					throw new Error("invalid file manager update's action or entity");
+					throw new Error("invalid file manager update's eventyType or entity");
 				}
 
 				const full_path = path.resolve(user_dir_path, user_path);
-				if (action === "create") {
-					if (type === "file") {
+				if (eventType === "create") {
+					if (entityType === "file") {
 						await fs.promises.writeFile(full_path, content);
-					} else if (type === "dir") {
+					} else if (entityType === "dir") {
 						await fs.promises.mkdir(full_path, { recursive: true });
 					}
-				} else if (action === "write") {
-					if (type === "file") {
+				} else if (eventType === "write") {
+					if (entityType === "file") {
 						await fs.promises.writeFile(full_path, content);
-					} else if (type === "dir") {
+					} else if (entityType === "dir") {
 						throw new Error("file manager cannot write to a directory");
 					}
-				} else if (action === "delete") {
+				} else if (eventType === "delete") {
 					if (!fs.existsSync(full_path)) {
 						throw new Error(
 							"file manager can't delete an entity that doesn't exist"
 						);
 					}
 
-					if (type === "file") {
+					if (entityType === "file") {
 						await fs.promises.unlink(full_path);
-					} else if (type === "dir") {
+					} else if (entityType === "dir") {
 						await fs.promises.rm(full_path, {
 							recursive: true,
 							force: true,

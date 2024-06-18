@@ -1,0 +1,44 @@
+.header {
+  @apply flex h-8 items-center justify-between px-1 text-sm text-white;
+  @apply mb-2 border-b border-background-dark-700;
+}
+
+.header-controls-div {
+  @apply flex items-center justify-between gap-1;
+}
+
+.file-tree-entities-div {
+  @apply my-2 ml-2;
+}
+
+.new-file-button,
+.new-dir-button,
+.close-file-tree-button,
+.open-file-tree-button {
+  @apply rounded p-1 hover:bg-background-dark-800;
+}
+
+.open-file-tree-div,
+.closed-file-tree-div {
+  @apply h-full overflow-hidden rounded-md;
+}
+
+.closed-file-tree-div {
+  @apply border border-background-dark-700 p-1;
+}
+
+.open-file-tree-div {
+  @apply w-[15rem];
+}
+
+.close-file-tree-button {
+  @apply pr-1.5;
+}
+
+.open-file-tree-button {
+  @apply h-full w-6 p-1;
+}
+
+.icon {
+  @apply h-4 w-4 text-white;
+}

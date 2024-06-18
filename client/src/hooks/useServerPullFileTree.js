@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { pullServerFileTree } from "src/api/fileService";
+import { pullServerFileTree } from "src/api/entityService";
 
 import config from "src/config";
 

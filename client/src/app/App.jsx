@@ -9,9 +9,21 @@ import useAutoSave from "src/common/hooks/useAutoSave";
 
 import { createRun, logRunEvent, terminateRun } from "src/redux/runs/runsSlice";
 import { getRunEventTemplate } from "src/models/run/runEventModels";
-import { entityTypes, getEntityData } from "src/models/entity/entityModels";
+import {
+  entityTypes,
+  getEntityMeta,
+  getEntityData,
+} from "src/models/entity/entityModels";
+import {
+  entityEventTypes,
+  getEntityEvent,
+} from "src/models/events/entityEvents";
 import { runStatuses } from "src/models/run/runModels";
-import { updateServerEntities } from "src/api/fileService";
+import { pushEntityEventsToServer } from "src/api/entityService";
+import {
+  readFileFromLocalStorage,
+  writeFileToLocalStorage,
+} from "src/services/localStorageService";
 import useServerPullFileTree from "src/hooks/useServerPullFileTree";
 import useMountFileTree from "src/hooks/useMountFileTree";
 
@@ -19,6 +31,7 @@ import Tile from "src/common/components/Tile/Tile";
 import TabGroup from "src/components/TabGroup/TabGroup";
 import Tab from "src/components/TabGroup/Tab";
 import Header from "src/containers/Header/Header";
+import FileTree from "src/containers/FileTree/FileTree";
 import Editor from "src/containers/Editor/Editor";
 import Console from "src/containers/Console/Console";
 import Grapher from "src/containers/Grapher/Grapher";
@@ -30,24 +43,41 @@ const App = () => {
   const editorRef = useRef(null);
   const fileTree = useServerPullFileTree();
   useMountFileTree(fileTree);
-  // TODO: useFileMetas(?filePaths);
-  // create a model for the files
-  // useServerPull should use an api function to request all entities
-  // useMountFileTree should save file structure in redux
-  // files: [{ path, isSaved }]
-  // useFiles() should return a dictionary of the files
-  // files: { path: {isSaved, getContent()} } // still needs thinking, filetree and rest, function in everythingy, too much?
-  const [save, registerChange] = useAutoSave(async () => {
-    const entities = [
-      getEntityData(
-        "main.cpp",
-        entityTypes.file,
-        true,
-        editorRef.current.getValue(),
-      ),
-    ];
-    await updateServerEntities(config.userId, entities);
-    console.log(entities[0].content);
+  // const editorRefs = useEditorRefMap();
+  const [save, registerFileChange] = useAutoSave(async (changes) => {
+    const locallyProcessedEntityEvents = await Promise.all(
+      changes.map(async (entityEvent) => {
+        if (
+          [entityEventTypes.create, entityEventTypes.write].includes(
+            entityEvent.type,
+          ) &&
+          entityEvent.entity.type === entityTypes.file
+        ) {
+          // TODO: this should take from a more complicated structure of editorRefs
+          // to allow for multiple editor refs at once
+          // TODO: this be a call to a function that syncs editorRefs to localstorage
+          // and another that syncs localstorage to server, that is it
+          let fileContent = editorRef.current?.getValue();
+          // TODO: if editor no longer exists take info from localstorage
+          if (!fileContent) {
+            fileContent = await readFileFromLocalStorage(entityEvent.entity);
+          }
+          const entity = getEntityData(
+            entityEvent.entity.path,
+            entityTypes.file,
+            undefined,
+            fileContent,
+          );
+          await writeFileToLocalStorage(entity);
+
+          entityEvent.entity = entity;
+        }
+
+        return entityEvent;
+      }),
+    );
+    await pushEntityEventsToServer(config.userId, locallyProcessedEntityEvents);
+    console.log("saved to server!");
   }, config.autoSavingDelay);
   const runWSRef = useRef(null);
 
@@ -74,28 +104,44 @@ const App = () => {
           }}
         />
       </div>
-      <div className={styles["tiles-div"]}>
-        <Tile className={styles["editor-tile"]}>
-          <TabGroup
-            tabs={[
-              <Tab key="main.cpp" title="main.cpp" type="code">
-                <Editor editorRef={editorRef} onChange={registerChange} />
-              </Tab>,
-            ]}
-          />
+      <div className={styles["main-div"]}>
+        <Tile transparent className={styles["file-tree-tile"]}>
+          <FileTree />
         </Tile>
-        <Tile className={styles["output-tile"]}>
-          <TabGroup
-            tabs={[
-              <Tab key="Console" title="Console" type="console">
-                <Console runs={runs} />
-              </Tab>,
-              <Tab key="Grapher" title="Grapher" type="grapher">
-                <Grapher />
-              </Tab>,
-            ]}
-          />
-        </Tile>
+        <div className={styles["canvas"]}>
+          <Tile className={styles["editor-tile"]}>
+            <TabGroup
+              tabs={[
+                <Tab key="main.cpp" title="main.cpp" type="code">
+                  <Editor
+                    editorRef={editorRef}
+                    onChange={() =>
+                      registerFileChange(
+                        "main.cpp",
+                        getEntityEvent(
+                          entityEventTypes.write,
+                          getEntityMeta("main.cpp", entityTypes.file),
+                        ),
+                      )
+                    }
+                  />
+                </Tab>,
+              ]}
+            />
+          </Tile>
+          <Tile className={styles["output-tile"]}>
+            <TabGroup
+              tabs={[
+                <Tab key="Console" title="Console" type="console">
+                  <Console runs={runs} />
+                </Tab>,
+                <Tab key="Grapher" title="Grapher" type="grapher">
+                  <Grapher />
+                </Tab>,
+              ]}
+            />
+          </Tile>
+        </div>
       </div>
     </div>
   );

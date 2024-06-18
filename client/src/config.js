@@ -13,6 +13,9 @@ const config = {
       failed: 500,
     },
   },
+  localStorage: {
+    fileKeysPrefix: "file:",
+  },
   editor: {
     themes: {
       dark: {

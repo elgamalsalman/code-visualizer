@@ -1,3 +1,7 @@
 .tile {
-  @apply bg-background-dark-800 overflow-hidden rounded-md shadow-md;
+  @apply overflow-hidden rounded-md bg-background-dark-800 shadow-md;
+}
+
+.transparent-tile {
+  @apply bg-transparent;
 }

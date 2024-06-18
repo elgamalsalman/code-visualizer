@@ -2,16 +2,16 @@ import config from "src/config";
 
 import {
   getPullServerEntitiesRequest,
-  getUpdateServerEntitiesRequest,
-} from "./fileModels";
+  getPushEntityEventsRequest,
+} from "./entityRequests";
 
-const updateServerEntities = async (userId, entities) => {
+const pushEntityEventsToServer = async (userId, entityEvents) => {
   const requestOptions = {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(getUpdateServerEntitiesRequest(userId, entities)),
+    body: JSON.stringify(getPushEntityEventsRequest(userId, entityEvents)),
   };
-  const requestURL = `${config.server.api.url}/save`;
+  const requestURL = `${config.server.api.url}/push`;
   const response = await fetch(requestURL, requestOptions);
   const data = await response.json();
   console.log(data);
@@ -34,4 +34,4 @@ const pullServerFileTree = async (userId, readContents) => {
   return payload.file_tree;
 };
 
-export { updateServerEntities, pullServerFileTree };
+export { pushEntityEventsToServer, pullServerFileTree };

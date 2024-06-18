@@ -1,0 +1,40 @@
+.entity-header {
+  @apply mb-0.5 flex h-6 justify-between;
+  @apply rounded hover:bg-background-dark-800;
+}
+
+.entity-header-clickable {
+  @apply flex flex-grow h-6 flex-initial items-center justify-start gap-1 pl-1;
+}
+
+.file-header {
+  @apply pl-5;
+}
+
+.entity-header .entity-menu-button {
+  @apply hidden;
+}
+
+.entity-header:hover .entity-menu-button {
+  @apply block;
+}
+
+.icon {
+  @apply h-4 w-4 text-background-dark-400;
+}
+
+.entity-name {
+  @apply mx-2 overflow-hidden text-sm text-background-dark-400;
+}
+
+.entity-menu-button {
+  @apply rounded p-1 hover:bg-background-dark-700;
+}
+
+.entity-menu-button:hover .icon {
+  @apply text-background-dark-100;
+}
+
+.dir-children-div {
+  @apply ml-2.5 border-l border-background-dark-700 pl-1;
+}

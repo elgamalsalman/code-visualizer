@@ -1,11 +1,23 @@
 .app {
-  @apply bg-background-dark-900 flex h-screen w-screen flex-col overflow-hidden;
+  @apply flex h-screen w-screen flex-col overflow-hidden bg-background-dark-900;
 }
 
 .header-div {
   @apply basis-8;
 }
 
-.tiles-div {
-  @apply grid flex-auto grid-cols-2 gap-2 p-2 pt-0;
+.main-div {
+  @apply flex flex-auto gap-2 p-2 pt-0;
+}
+
+.file-tree-tile {
+  @apply !overflow-visible;
+}
+
+.canvas {
+  @apply flex flex-grow gap-2 pt-0;
+}
+
+.canvas > div {
+  @apply flex-1;
 }

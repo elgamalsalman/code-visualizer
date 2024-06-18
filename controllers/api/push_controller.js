@@ -2,20 +2,20 @@ import config from "../../config.js";
 
 import File_Manager from "../../services/file_manager.js";
 
-class Save_Controller {
+class Push_Controller {
 	#file_manager = new File_Manager();
 
 	constructor() {
 		// empty constructor
 	}
 
-	save = async (req, res, next) => {
+	push = async (req, res, next) => {
 		// --- REQUEST BODY STRUCTURE ---
 		// {
 		// 	user_id: "test_user",
 		// 	events: [
 		// 		{
-		// 			action: "create"/"write"/"delete",
+		// 			type: "create"/"write"/"delete",
 		// 			entity: {
 		// 				path: "main.cpp",
 		// 				type: "file"/"dir",
@@ -50,6 +50,6 @@ class Save_Controller {
 	};
 }
 
-const save_controller = new Save_Controller();
+const push_controller = new Push_Controller();
 
-export default save_controller;
+export default push_controller;

@@ -1,6 +1,7 @@
 import React, { useRef } from "react";
 
 import config from "src/config";
+import "./MonacoEditorFix.js";
 
 import MonacoEditor from "@monaco-editor/react";
 
@@ -26,8 +27,6 @@ function Editor({ editorRef, onChange }) {
         height="80vh"
         defaultLanguage="cpp"
         defaultValue={config.editor.defaultValue}
-        // line="2"
-        // theme="dark"
         loading={null}
         theme="dark"
         options={{

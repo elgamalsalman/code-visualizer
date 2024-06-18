@@ -4,7 +4,7 @@ import {
   experimental_useEffectEvent as useEffectEvent,
 } from "react";
 import { getEntityMeta } from "src/models/entity/entityModels";
-import { updateFileTree } from "src/redux/files/filesSlice";
+import { updateFileTree } from "src/redux/fileTree/fileTreeSlice";
 import { setAppStatus } from "src/redux/app/appSlice";
 import { appStatuses } from "src/models/app/appModels";
 

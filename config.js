@@ -17,8 +17,8 @@ export default {
 			program_error_file_name: ".err",
 			shared: {
 				makefile: {
-					path: "scripts/Makefile",
-					name: "Makefile",
+					path: "scripts/makefile",
+					name: "makefile",
 				},
 				code_header: {
 					path: "scripts/code_header.cpp",
@@ -30,8 +30,8 @@ export default {
 		},
 	},
 	file_manager: {
-		actions: ["create", "write", "delete"],
-		entities: ["file", "dir"],
+		eventTypes: ["create", "write", "delete"],
+		entityTypes: ["file", "dir"],
 		user_statuses: {
 			free_status: "__free__",
 			pending_statuses: {

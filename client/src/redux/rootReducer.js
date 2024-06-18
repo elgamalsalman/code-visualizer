@@ -1,11 +1,11 @@
 import { combineReducers } from "@reduxjs/toolkit";
 import appReducer from "./app/appSlice";
-import filesReducer from "./files/filesSlice";
+import fileTreeReducer from "./fileTree/fileTreeSlice";
 import runsReducer from "./runs/runsSlice";
 
 const rootReducer = combineReducers({
   app: appReducer,
-  files: filesReducer,
+  fileTree: fileTreeReducer,
   runs: runsReducer,
 });
 
