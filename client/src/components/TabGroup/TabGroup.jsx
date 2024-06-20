@@ -59,14 +59,10 @@ const TabGroup = ({ tabs }) => {
           </button>
         </div>
       </div>
-      <div className={styles["tab-body"]}>
+      <div className={styles["tab-group-body"]}>
         {tabs.map((tab, i) => (
           <div
-            className={
-              i === activeTabIndex
-                ? styles["active-tab-wrapper"]
-                : styles["non-active-tab-wrapper"]
-            }
+            className={`${styles["tab-wrapper"]} ${i === activeTabIndex && styles["non-active-tab-wrapper"]}`}
           >
             {tab}
           </div>

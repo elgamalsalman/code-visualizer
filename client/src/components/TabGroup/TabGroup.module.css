@@ -1,5 +1,5 @@
 .tab-group {
-  @apply bg-background-dark-850;
+  @apply flex h-full flex-col bg-background-dark-850;
 }
 
 .tab-group-header {
@@ -26,12 +26,12 @@
   @apply h-3 w-3 text-white;
 }
 
-.tab-body {
-  @apply bg-background-dark-800;
+.tab-group-body {
+  @apply grow bg-background-dark-800;
 }
 
-.active-tab-wrapper {
-  @apply visible;
+.tab-wrapper {
+  @apply visible h-full;
 }
 
 .non-active-tab-wrapper {
