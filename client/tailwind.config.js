@@ -24,6 +24,15 @@ module.exports = {
           950: "#020617",
         },
       },
+      keyframes: {
+        "soft-pulse": {
+          "0%, 100%": { opacity: "0.05" }, // Change this value to your desired min opacity
+          "50%": { opacity: "0.1" }, // Change this value to your desired max opacity
+        },
+      },
+      animation: {
+        "soft-pulse": "soft-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+      },
     },
   },
   plugins: [],

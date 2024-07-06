@@ -10,7 +10,7 @@ import {
   writeFileToLocalStorage,
 } from "src/services/localStorageService";
 
-const useAutoSaveEntities = (editorModelRefs) => {
+const useAutoSaveEntities = (editorStates) => {
   return useAutoSave(async (changes) => {
     const locallyProcessedEntityEvents = await Promise.all(
       changes.map(async (entityEvent) => {
@@ -21,13 +21,14 @@ const useAutoSaveEntities = (editorModelRefs) => {
           entityEvent.entity.type === entityTypes.file
         ) {
           let fileContent = null;
-          const model = editorModelRefs[entityEvent.entity.path].current;
-          if (model) {
-            fileContent = model.getValue();
+          const state = editorStates[entityEvent.entity.path];
+          if (state) {
+            fileContent = state.getState().doc.toString();
           } else {
             // if editor no longer exists take info from localstorage
             fileContent = await readFileFromLocalStorage(entityEvent.entity);
           }
+          if (fileContent === null) fileContent = ""; // if file just created
           const entity = getEntityData(
             entityEvent.entity.path,
             entityTypes.file,

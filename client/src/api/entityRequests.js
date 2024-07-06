@@ -1,8 +1,3 @@
-import {
-  entityEventTypes,
-  getEntityEvent,
-} from "src/models/events/entityEvents";
-
 const getPushEntityEventsRequest = (userId, events) => {
   return {
     user_id: userId,
@@ -10,10 +5,21 @@ const getPushEntityEventsRequest = (userId, events) => {
   };
 };
 
-const getPullServerEntitiesRequest = (userId) => {
+const getPullServerFileTreeRequest = (userId) => {
   return {
     user_id: userId,
   };
 };
 
-export { getPushEntityEventsRequest, getPullServerEntitiesRequest };
+const getPullServerEntitiesRequest = (userId, entityMetas) => {
+  return {
+    user_id: userId,
+    entity_metas: entityMetas,
+  };
+};
+
+export {
+  getPushEntityEventsRequest,
+  getPullServerFileTreeRequest,
+  getPullServerEntitiesRequest,
+};

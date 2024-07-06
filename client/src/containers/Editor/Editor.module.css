@@ -1,3 +1,14 @@
-.monaco-editor {
-  @apply h-52;
+.editor-outer-div {
+  @apply relative h-full;
+}
+
+.editor-loading-skeleton-outer-div {
+  @apply absolute inset-0 px-2 py-[8.5px];
+}
+.editor-loading-skeleton-inner-div {
+  @apply h-full overflow-hidden;
+}
+
+.editor-loading-skeleton {
+  @apply animate-soft-pulse h-full;
 }

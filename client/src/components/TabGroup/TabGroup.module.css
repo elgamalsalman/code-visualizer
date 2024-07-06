@@ -31,9 +31,9 @@
 }
 
 .tab-wrapper {
-  @apply visible h-full;
+  @apply hidden h-full;
 }
 
-.non-active-tab-wrapper {
-  @apply hidden;
+.active-tab-wrapper {
+  @apply block;
 }

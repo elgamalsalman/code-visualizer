@@ -8,6 +8,7 @@ const auth = async (req, res, next) => {
 			.send(
 				JSON.stringify(new Error(`invalid user_id of ${req.body.user_id}`))
 			);
+		console.error("invlaid user_id!");
 		return;
 	}
 

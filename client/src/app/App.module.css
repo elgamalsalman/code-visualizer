@@ -14,10 +14,6 @@
   @apply !overflow-visible;
 }
 
-.canvas {
-  @apply flex flex-grow gap-2 pt-0;
-}
-
-.canvas > div {
+.window-tree {
   @apply flex-1;
 }

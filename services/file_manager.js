@@ -1,9 +1,10 @@
 import fs from "fs";
 import path from "path";
-import { strict as assert } from "assert";
 
 import config from "../config.js";
+
 import { read_file_tree } from "../utils/file_system_utils.js";
+import { entity_types, get_entity_data } from "../models/entity_models.js";
 
 export default class File_Manager {
 	#users_dir;
@@ -191,5 +192,42 @@ export default class File_Manager {
 		}
 
 		return file_tree;
+	};
+
+	get_user_entities = async (user_id, entity_metas) => {
+		// create user directory if it doesn't exist
+		const user_dir_path = await this.get_user_dir_path(user_id);
+
+		// wait for pending updates and update status to reading
+		await this.wait_for_pending_user(user_id);
+		await this.set_user_status(
+			user_id,
+			config.file_manager.user_statuses.pending_statuses.reading
+		);
+
+		let entities = null;
+		try {
+			entities = await Promise.all(
+				entity_metas.map(async (entity_meta) => {
+					let content = undefined;
+					if (entity_meta.type === entity_types.file) {
+						content = await fs
+							.readFileSync(path.resolve(user_dir_path, entity_meta.path))
+							.toString();
+					}
+					return get_entity_data(
+						entity_meta.path,
+						entity_meta.type,
+						entity_meta.isSaved,
+						content
+					);
+				})
+			);
+		} finally {
+			// return user status back to free
+			await this.set_user_status_to_free(user_id);
+		}
+
+		return entities;
 	};
 }

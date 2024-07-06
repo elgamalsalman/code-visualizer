@@ -9,7 +9,7 @@ import {
 } from "@heroicons/react/24/solid";
 
 const get_type_icon = (type, icon_classes) => {
-  if (type === "code") {
+  if (type === "editor") {
     const code_icon_color = "#3b82f6";
     return <CodeBracketIcon className={icon_classes} color={code_icon_color} />;
   } else if (type === "console") {

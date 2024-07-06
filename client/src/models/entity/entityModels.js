@@ -18,4 +18,13 @@ const getEntityData = (path, type, isSaved, content) => {
   };
 };
 
-export { entityTypes, getEntityMeta, getEntityData };
+const getFileTreeNode = (name, type) => {
+  const node = {
+    name: name,
+    type: type,
+  };
+  if (type === entityTypes.dir) node.children = [];
+  return node;
+};
+
+export { entityTypes, getEntityMeta, getEntityData, getFileTreeNode };

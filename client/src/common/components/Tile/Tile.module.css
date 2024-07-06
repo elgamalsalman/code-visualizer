@@ -1,5 +1,5 @@
 .tile {
-  @apply overflow-hidden rounded-md bg-background-dark-800 shadow-md;
+  @apply h-full overflow-hidden rounded-md bg-background-dark-800 shadow-md;
 }
 
 .transparent-tile {

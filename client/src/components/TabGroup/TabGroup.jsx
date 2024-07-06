@@ -1,45 +1,22 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import styles from "./TabGroup.module.css";
 
 import { PlusIcon } from "@heroicons/react/24/solid";
 
 import TabHead from "src/components/TabGroup/TabHead";
 
-const onTabClose = () => {
-  // TODO
-};
-
-const TabGroup = ({ tabs }) => {
-  const [activeTabIndex, setActiveTabIndex] = useState(0);
-
-  // assert that the children are tabs
-  tabs.forEach((child) => {
-    if (child.type.name !== "Tab") {
-      console.error("TabGroup's tabs are not all Tab components");
-    }
-  });
-
-  // active tab management
-  const activeTabTitle = tabs[activeTabIndex]?.props.title;
-  const getActiveTabHandler = (tabIndex) => {
-    return () => {
-      setActiveTabIndex(tabIndex);
-    };
-  };
-
+const TabGroup = ({ tabs, activeTabId, onActiveTabChange, onTabClose }) => {
   // get list of tab heads
-  let i = -1;
   const tabGroupHeads = tabs.map((child) => {
-    i++;
-    const { title, type } = child.props;
+    const { id, title, type } = child.props;
     return (
       <TabHead
-        key={title}
+        key={id}
         title={title}
         type={type}
-        isActive={title === activeTabTitle}
-        onClick={getActiveTabHandler(i)}
-        onClose={onTabClose}
+        isActive={id === activeTabId}
+        onClick={() => onActiveTabChange(id)}
+        onClose={() => onTabClose(id)}
       />
     );
   });
@@ -60,13 +37,16 @@ const TabGroup = ({ tabs }) => {
         </div>
       </div>
       <div className={styles["tab-group-body"]}>
-        {tabs.map((tab, i) => (
-          <div
-            className={`${styles["tab-wrapper"]} ${i === activeTabIndex && styles["non-active-tab-wrapper"]}`}
-          >
-            {tab}
-          </div>
-        ))}
+        {tabs.map((tab) => {
+          return (
+            <div
+              key={tab.props.id}
+              className={`${styles["tab-wrapper"]} ${tab.props.id === activeTabId && styles["active-tab-wrapper"]}`}
+            >
+              {tab}
+            </div>
+          );
+        })}
       </div>
     </div>
   );

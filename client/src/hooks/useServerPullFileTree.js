@@ -8,7 +8,7 @@ const useServerPullFileTree = () => {
   useEffect(() => {
     (async () => {
       try {
-        const serverFileTree = await pullServerFileTree(config.userId, false);
+        const serverFileTree = await pullServerFileTree(config.userId);
         setFileTree(serverFileTree);
       } catch (error) {
         console.log("error");

@@ -1,0 +1,15 @@
+.window-split {
+  @apply flex h-full flex-grow gap-2 pt-0;
+}
+
+.horizontal-window-split {
+  @apply flex-row;
+}
+
+.vertical-window-split {
+  @apply flex-col;
+}
+
+.window-split-child {
+  @apply flex-1;
+}

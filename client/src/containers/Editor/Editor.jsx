@@ -1,48 +1,80 @@
-import React, { useId, useRef, useEffect } from "react";
+import React, { useState, useId, useRef, useEffect } from "react";
 import styles from "./Editor.module.css";
 
 import config from "src/config";
 
-import { EditorState } from "@codemirror/state";
-import { EditorView, keymap } from "@codemirror/view";
-import { defaultKeymap } from "@codemirror/commands";
+import { EditorView } from "@codemirror/view";
+import { Transaction } from "@codemirror/state";
+import { createExternallyResolvablePromise } from "src/common/utils/promiseUtils";
+import { generateHash } from "src/common/utils/securityUtils";
+import { ReactComponent as EditorLoadingSkeleton } from "./editorLoadingSkeleton.svg";
 
-function Editor({ model: modelRef, onChange }) {
-  // const monacoRef = useRef(null);
-  // const editorRef = useRef(null);
+function Editor({ subscribe, unsubscribe, filePath, onNativeChange }) {
+  const editorId = useId();
+  const [hasLoaded, setHasLoaded] = useState(false);
 
-  // const handleEditorWillMount = (monaco) => {
-  //   monaco.editor.defineTheme("dark", config.editor.themes["dark"]);
-  //   monaco.editor.setTheme("dark");
-  // };
-
-  // const handleEditorDidMount = (editor, monaco) => {
-  //   editorRef.current = editor;
-  //   monacoRef.current = monaco;
-
-  //   // editor.setModel(modelRef.current);
-  //   editor.setModel(monaco.editor.createModel("yesss", "cpp"));
-  //   editor.getModel().onDidChangeContent((event) => {
-  //     onChange();
-  //   });
-  // };
-  const hasMountedRef = useRef(false);
-  const editorDivId = useId();
-
-  const editorDivHTMLId = `monaco-editor-${editorDivId}`;
+  const editorDivHTMLId = `cm-editor-${editorId}`;
   useEffect(() => {
-    let startState = EditorState.create({
-      doc: "Hello World",
-      extensions: [keymap.of(defaultKeymap)],
-    });
+    let view = null;
+    let commonState = null;
+    let updaterId = null;
+    const subscriptionPromise = subscribe(filePath);
+    const editorCreationPromise = createExternallyResolvablePromise();
 
-    let view = new EditorView({
-      state: startState,
-      parent: document.getElementById(editorDivHTMLId),
-    });
+    // wait till state ref loads and update loaded state
+    (async () => {
+      commonState = await subscriptionPromise;
+      updaterId = `${editorId}-${generateHash(8)}`;
+      view = new EditorView({
+        state: commonState.getState(),
+        parent: document.getElementById(editorDivHTMLId),
+        dispatchTransactions: (trs) => {
+          // console.log(`dispatched at ${editorId}`);
+          for (const tr of trs) {
+            view.update([tr]);
+            if (tr.changes && tr.docChanged) {
+              onNativeChange();
+              commonState.updateLastTransaction(tr);
+              for (const id in commonState.updaters) {
+                if (id !== updaterId) commonState.updaters[id](tr);
+              }
+            }
+          }
+        },
+      });
+      commonState.updaters[updaterId] = (changes) => {
+        // console.log(`change reflected at ${editorId}`);
+        view.update([view.state.update(changes)]);
+      };
+      editorCreationPromise.resolve();
+      setHasLoaded(true);
+    })();
+
+    return () => {
+      (async () => {
+        await subscriptionPromise;
+        await editorCreationPromise;
+        delete commonState.updaters[updaterId];
+        unsubscribe(filePath);
+        view.destroy();
+      })();
+    };
   }, []);
 
-  return <div id={editorDivHTMLId} className={styles["monaco-editor"]}></div>;
+  return (
+    <div className={styles["editor-outer-div"]}>
+      {!hasLoaded && (
+        <div className={styles["editor-loading-skeleton-outer-div"]}>
+          <div className={styles["editor-loading-skeleton-inner-div"]}>
+            <div className={styles["editor-loading-skeleton"]}>
+              <EditorLoadingSkeleton />
+            </div>
+          </div>
+        </div>
+      )}
+      <div id={editorDivHTMLId}></div>
+    </div>
+  );
 }
 
 export default Editor;

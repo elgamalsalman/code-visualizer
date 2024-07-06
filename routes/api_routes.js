@@ -21,7 +21,8 @@ router.use("/ws", ws_header);
 router.use(auth);
 
 router.put("/push", push_controller.push);
-router.post("/pull", pull_controller.pull);
+router.post("/pull/file_tree", pull_controller.file_tree);
+router.post("/pull/entities", pull_controller.entities);
 router.put("/run", run_controller.run);
 
 router.use("/ws", api_ws_routes);

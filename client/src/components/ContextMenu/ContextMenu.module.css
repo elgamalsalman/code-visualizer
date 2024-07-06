@@ -1,0 +1,19 @@
+.context-menu {
+  @apply z-10 hidden w-40 rounded border border-background-dark-600 bg-background-dark-800 p-2 text-sm text-background-dark-300;
+}
+
+.active-context-menu {
+  @apply fixed flex flex-col gap-2;
+}
+
+.button {
+  @apply relative flex items-center gap-2 rounded p-1 pl-2 hover:bg-background-dark-700;
+}
+
+.icon-div {
+  @apply h-4 w-4;
+}
+
+.item-separator {
+  @apply w-full border-t border-background-dark-600;
+}

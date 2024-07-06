@@ -4,7 +4,7 @@
 }
 
 .entity-header-clickable {
-  @apply flex flex-grow h-6 flex-initial items-center justify-start gap-1 pl-1;
+  @apply flex h-6 flex-initial flex-grow items-center justify-start gap-1 pl-1;
 }
 
 .file-header {
@@ -36,5 +36,13 @@
 }
 
 .dir-children-div {
-  @apply ml-2.5 border-l border-background-dark-700 pl-1;
+  @apply ml-2.5 block border-l border-background-dark-700 pl-1;
+}
+
+.closed-dir-children-div {
+  @apply hidden;
+}
+
+.empty-dir-message {
+  @apply mb-0.5 pl-7 text-sm text-background-dark-700;
 }

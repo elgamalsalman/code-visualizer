@@ -1,8 +1,4 @@
-import {
-  useRef,
-  useEffect,
-  experimental_useEffectEvent as useEffectEvent,
-} from "react";
+import { useRef, useEffect } from "react";
 
 const useAutoSave = (onSave, autoSavingDelay) => {
   const autoSavingTimerRef = useRef(null);
@@ -25,12 +21,10 @@ const useAutoSave = (onSave, autoSavingDelay) => {
     changesMapRef.current.clear();
   };
 
-  const saveEffectEvent = useEffectEvent(save);
-
   // save on unmount
   useEffect(() => {
     return async () => {
-      await saveEffectEvent();
+      await save();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
