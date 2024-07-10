@@ -6,9 +6,9 @@ import { entityEventTypes } from "src/models/events/entityEvents";
 import useAutoSave from "src/common/hooks/useAutoSave";
 import { pushEntityEventsToServer } from "src/api/entityService";
 import {
-  readFileFromLocalStorage,
-  writeFileToLocalStorage,
-} from "src/services/localStorageService";
+  readFileFromStorage,
+  writeFileToStorage,
+} from "src/services/storageService";
 
 const useAutoSaveEntities = (editorStates) => {
   return useAutoSave(async (changes) => {
@@ -25,8 +25,8 @@ const useAutoSaveEntities = (editorStates) => {
           if (state) {
             fileContent = state.getState().doc.toString();
           } else {
-            // if editor no longer exists take info from localstorage
-            fileContent = await readFileFromLocalStorage(entityEvent.entity);
+            // if editor no longer exists take info from storage
+            fileContent = await readFileFromStorage(entityEvent.entity);
           }
           if (fileContent === null) fileContent = ""; // if file just created
           const entity = getEntityData(
@@ -35,7 +35,7 @@ const useAutoSaveEntities = (editorStates) => {
             undefined,
             fileContent,
           );
-          await writeFileToLocalStorage(entity);
+          await writeFileToStorage(entity);
           entityEvent.entity = entity;
         }
 

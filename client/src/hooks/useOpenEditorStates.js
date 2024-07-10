@@ -10,9 +10,9 @@ import {
 } from "src/models/entity/entityModels";
 import { pullServerEntities } from "src/api/entityService";
 import {
-  readFileFromLocalStorage,
-  writeFileToLocalStorage,
-} from "src/services/localStorageService";
+  readFileFromStorage,
+  writeFileToStorage,
+} from "src/services/storageService";
 import { getNewEditorState } from "src/containers/Editor/editorState";
 
 const useOpenEditorStates = () => {
@@ -42,7 +42,7 @@ const useOpenEditorStates = () => {
       };
 
       // get content from either of local storage or server
-      let content = await readFileFromLocalStorage(
+      let content = await readFileFromStorage(
         getEntityMeta(fileId, entityTypes.file, undefined),
       );
       if (content === null) {
@@ -56,7 +56,7 @@ const useOpenEditorStates = () => {
             undefined,
             content,
           );
-          await writeFileToLocalStorage(entity);
+          await writeFileToStorage(entity);
         } catch (err) {
           console.log(err);
         }
@@ -82,7 +82,7 @@ const useOpenEditorStates = () => {
       const content = statesRef.current[fileId].getState().doc.toString();
       // console.log(`editor ${fileId} content`);
       // console.log(content);
-      await writeFileToLocalStorage(
+      await writeFileToStorage(
         getEntityData(fileId, entityTypes.file, undefined, content),
       );
 

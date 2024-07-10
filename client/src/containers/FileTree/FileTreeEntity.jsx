@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useDispatch } from "react-redux";
 import styles from "./FileTreeEntity.module.css";
 
 import NewEntityPrompt from "./NewEntityPrompt";
@@ -9,11 +10,16 @@ import {
   EllipsisVerticalIcon,
 } from "@heroicons/react/24/outline";
 
-import { entityTypes } from "src/models/entity/entityModels";
+import { entityTypes, getEntityData } from "src/models/entity/entityModels";
+import {
+  entityEventTypes,
+  getEntityEvent,
+} from "src/models/events/entityEvents";
 import DynamicFileIcon from "src/common/components/DynamicFileIcon/DynamicFileIcon";
 import DynamicDirIcon from "src/common/components/DynamicDirIcon/DynamicDirIcon";
 import FileContextMenu from "./contextMenus/FileContextMenu";
 import DirContextMenu from "./contextMenus/DirContextMenu";
+import { updateEntity } from "src/redux/fileTree/fileTreeSlice";
 
 const FileTreeEntity = ({
   path,
@@ -23,15 +29,18 @@ const FileTreeEntity = ({
   registerEntityEvent,
   onFocusTab,
   onAddTab,
+  onCloseTabs,
 }) => {
-  const isFile = fileTree.type === entityTypes.file;
-  const isDir = fileTree.type === entityTypes.dir;
+  const dispatch = useDispatch();
   const [isDirOpen, setIsDirOpen] = useState(true);
   const [isContextMenuActive, setIsContextMenuActive] = useState(false);
   const [contextMenuPosition, setContextMenuPosition] = useState({
     x: 0,
     y: 0,
   });
+
+  const isFile = fileTree.type === entityTypes.file;
+  const isDir = fileTree.type === entityTypes.dir;
 
   const openContextMenu = (e) => {
     if (e.preventDefault) e.preventDefault();
@@ -59,8 +68,10 @@ const FileTreeEntity = ({
               : null
           }
           deleteNewEntityPrompt={deleteNewEntityPrompt}
+          registerEntityEvent={registerEntityEvent}
           onFocusTab={onFocusTab}
           onAddTab={onAddTab}
+          onCloseTabs={onCloseTabs}
         />
       )),
     ];
@@ -85,9 +96,10 @@ const FileTreeEntity = ({
           className={styles["entity-header-clickable"]}
           onClick={() => {
             if (isFile) {
-              if (!onFocusTab("editor", path)) {
-                console.log(path);
-                onAddTab("editor", path);
+              if (
+                !onFocusTab((tab) => tab.type === "editor" && tab.path === path)
+              ) {
+                onAddTab({type: "editor", path});
               }
             } else {
               setIsDirOpen((flag) => !flag);
@@ -142,12 +154,41 @@ const FileTreeEntity = ({
           isActive={isContextMenuActive}
           position={contextMenuPosition}
           onBlur={() => setIsContextMenuActive(false)}
+          onOpen={() => {
+            // if (!onFocusTab("editor", path)) {
+            onAddTab({ type: "editor", path });
+            // }
+            setIsContextMenuActive(false);
+          }}
+          onDelete={() => {
+            const entityEvent = getEntityEvent(
+              entityEventTypes.delete,
+              getEntityData(path, entityTypes.file, undefined, undefined),
+            );
+            registerEntityEvent(path, entityEvent);
+            dispatch(updateEntity(entityEvent));
+            onCloseTabs((tab) => tab.type === "editor" && tab.path === path);
+            setIsContextMenuActive(false);
+          }}
         />
       ) : (
         <DirContextMenu
           isActive={isContextMenuActive}
           position={contextMenuPosition}
           onBlur={() => setIsContextMenuActive(false)}
+          onDelete={() => {
+            console.log("deleting");
+            const entityEvent = getEntityEvent(
+              entityEventTypes.delete,
+              getEntityData(path, entityTypes.dir, undefined, undefined),
+            );
+            registerEntityEvent(path, entityEvent);
+            dispatch(updateEntity(entityEvent)); // FIXME: IMPLEMENT
+            onCloseTabs(
+              (tab) => tab.type === "editor" && tab.path.startsWith(`${path}/`),
+            );
+            setIsContextMenuActive(false);
+          }}
         />
       )}
     </div>

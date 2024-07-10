@@ -13,4 +13,12 @@ const generateHash = (hashLength = 8) => {
   return hash;
 };
 
-export { generateHash };
+const generateId = (() => {
+  let counter = -1;
+  return () => {
+    counter++;
+    return counter;
+  };
+})();
+
+export { generateHash, generateId };

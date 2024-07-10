@@ -13,7 +13,7 @@ const fileTreeSlice = createSlice({
       return fileTree;
     },
     updateEntity: (state, action) => {
-      // TODO: action.payload: entityEvent: { type, entity }
+      // action.payload: entityEvent: { type, entity }
       const {
         type: eventType,
         entity: {
@@ -21,16 +21,11 @@ const fileTreeSlice = createSlice({
         },
       } = action.payload;
 
-      if (eventType === entityEventTypes.create) {
-        console.log(`Creating a new entity!`);
-        console.log(action);
-
-        const pathEntities = path.split("/");
-        const parentPathEntities = pathEntities.slice(0, -1);
-        const entityName = pathEntities[pathEntities.length - 1];
+      const getNode = (path) => {
+        const pathEntities = path.split("/").filter((e) => e !== "");
 
         let node = state;
-        for (const pathEntityName of parentPathEntities) {
+        for (const pathEntityName of pathEntities) {
           let found = false;
           for (const child of node.children) {
             if (child.name === pathEntityName) {
@@ -41,21 +36,40 @@ const fileTreeSlice = createSlice({
           }
 
           if (!found) {
-            console.error(
-              `updateEntity dispatched with an invalid entity path of ${path}`,
-            );
-            return state;
+            const error = `parent entity path of ${path} doesn't exist`;
+            console.error(error);
+            throw error;
           }
         }
 
+        return node;
+      };
+
+      if (eventType === entityEventTypes.create) {
+        const pathEntities = path.split("/");
+        const parentPath = pathEntities.slice(0, -1).join("/");
+        const entityName = pathEntities[pathEntities.length - 1];
+
+        let parent = getNode(parentPath);
+
         if (
-          node.children.find((element) => element.name === entityName) ===
+          parent.children.find((element) => element.name === entityName) ===
           undefined
         ) {
-          node.children.push(getFileTreeNode(entityName, type));
+          parent.children.push(getFileTreeNode(entityName, type));
         } else {
           console.error("creating entity that already exists!");
         }
+      } else if (eventType === entityEventTypes.delete) {
+        const pathEntities = path.split("/");
+        const parentPath = pathEntities.slice(0, -1).join("/");
+        const entityName = pathEntities[pathEntities.length - 1];
+
+        let parent = getNode(parentPath);
+
+        parent.children = parent.children.filter(
+          (child, index) => child.name !== entityName,
+        );
       }
     },
   },

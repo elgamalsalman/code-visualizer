@@ -27,7 +27,7 @@ const App = () => {
   const [{ current: editorStates }, subscribe, unsubscribe] =
     useOpenEditorStates();
   const [save, registerEntityEvent] = useAutoSaveEntities(editorStates);
-  const [renderWindowTree, focusTab, addTab] = useWindowTree(
+  const [renderWindowTree, focusTab, addTab, closeTabs] = useWindowTree(
     subscribe,
     unsubscribe,
     editorStates,
@@ -63,9 +63,10 @@ const App = () => {
       <div className={styles["main-div"]}>
         <Tile transparent className={styles["file-tree-tile"]}>
           <FileTree
+            registerEntityEvent={registerEntityEvent}
             onFocusTab={focusTab}
             onAddTab={addTab}
-            registerEntityEvent={registerEntityEvent}
+            onCloseTabs={closeTabs}
           />
         </Tile>
         <div className={styles["window-tree"]}>{renderWindowTree()}</div>

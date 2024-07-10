@@ -13,7 +13,7 @@ const config = {
       failed: 500,
     },
   },
-  localStorage: {
+  storage: {
     fileKeysPrefix: "file:",
   },
   editor: {

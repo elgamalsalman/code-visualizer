@@ -12,7 +12,7 @@ import {
 import FileTreeEntity from "./FileTreeEntity";
 import { entityTypes } from "src/models/entity/entityModels";
 
-function FileTree({ onFocusTab, onAddTab, registerEntityEvent }) {
+function FileTree({ registerEntityEvent, onFocusTab, onAddTab, onCloseTabs }) {
   const [isFileTreeOpen, setIsFileTreeOpen] = useState(true);
   const fileTree = useSelector((state) => state.fileTree);
   const [newEntityPrompt, setNewEntityPrompt] = useState(null); // { path, type }
@@ -80,6 +80,7 @@ function FileTree({ onFocusTab, onAddTab, registerEntityEvent }) {
             registerEntityEvent={registerEntityEvent}
             onFocusTab={onFocusTab}
             onAddTab={onAddTab}
+            onCloseTabs={onCloseTabs}
           />
         )}
       </div>
