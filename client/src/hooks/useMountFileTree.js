@@ -1,16 +1,16 @@
-import { useSelector, useDispatch } from "react-redux";
-import { useEffect } from "react";
-import { getEntityMeta } from "src/models/entity/entityModels";
+import { useDispatch } from "react-redux";
+import { useContext, useEffect } from "react";
 import { updateFileTree } from "src/redux/fileTree/fileTreeSlice";
-import { setAppStatus } from "src/redux/app/appSlice";
 import { appStatuses } from "src/models/app/appModels";
+import { useAppStatusContext } from "./useAppStatusContext";
 
 const useMountFileTree = (fileTree) => {
   const dispatch = useDispatch();
+  const [appStatus, setAppStatus] = useAppStatusContext();
   useEffect(() => {
     if (fileTree === null) return;
     dispatch(updateFileTree({ fileTree: fileTree }));
-    dispatch(setAppStatus({ status: appStatuses.idle }));
+    setAppStatus(appStatuses.idle);
   }, [fileTree]);
 };
 
