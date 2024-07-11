@@ -4,12 +4,16 @@ import styles from "./Editor.module.css";
 import config from "src/config";
 
 import { EditorView } from "@codemirror/view";
-import { Transaction } from "@codemirror/state";
 import { createExternallyResolvablePromise } from "src/common/utils/promiseUtils";
 import { generateHash } from "src/common/utils/securityUtils";
 import { ReactComponent as EditorLoadingSkeleton } from "./editorLoadingSkeleton.svg";
+import {
+  entityEventTypes,
+  getEntityEvent,
+} from "src/models/events/entityEvents";
+import { entityTypes, getEntityMeta } from "src/models/entity/entityModels";
 
-function Editor({ subscribe, unsubscribe, filePath, onNativeChange }) {
+function Editor({ filePath, autoSaverInterface, openEditorStatesInterface }) {
   const editorId = useId();
   const [hasLoaded, setHasLoaded] = useState(false);
 
@@ -18,7 +22,7 @@ function Editor({ subscribe, unsubscribe, filePath, onNativeChange }) {
     let view = null;
     let commonState = null;
     let updaterId = null;
-    const subscriptionPromise = subscribe(filePath);
+    const subscriptionPromise = openEditorStatesInterface.subscribe(filePath);
     const editorCreationPromise = createExternallyResolvablePromise();
 
     // wait till state ref loads and update loaded state
@@ -33,7 +37,14 @@ function Editor({ subscribe, unsubscribe, filePath, onNativeChange }) {
           for (const tr of trs) {
             view.update([tr]);
             if (tr.changes && tr.docChanged) {
-              onNativeChange();
+              autoSaverInterface.registerChangeEvent(
+                filePath,
+                getEntityEvent(
+                  entityEventTypes.write,
+                  getEntityMeta(filePath, entityTypes.file),
+                ),
+              );
+
               commonState.updateLastTransaction(tr);
               for (const id in commonState.updaters) {
                 if (id !== updaterId) commonState.updaters[id](tr);
@@ -55,7 +66,7 @@ function Editor({ subscribe, unsubscribe, filePath, onNativeChange }) {
         await subscriptionPromise;
         await editorCreationPromise;
         delete commonState.updaters[updaterId];
-        unsubscribe(filePath);
+        openEditorStatesInterface.unsubscribe(filePath);
         view.destroy();
       })();
     };

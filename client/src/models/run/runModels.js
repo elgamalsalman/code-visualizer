@@ -3,6 +3,7 @@ const runStatuses = {
   connecting: "connecting",
   compiling: "compiling",
   running: "running",
+  killed: "killed",
   success: "success",
   failed: "failed",
 };
@@ -13,7 +14,7 @@ const runPendingStatuses = [
   runStatuses.compiling,
   runStatuses.running,
 ];
-const runDoneStatuses = [runStatuses.success, runStatuses.failed];
+const runDoneStatuses = [runStatuses.killed, runStatuses.success, runStatuses.failed];
 
 const getNewRun = (id, startTime) => {
   return {

@@ -1,6 +1,6 @@
 import { useRef, useEffect } from "react";
 
-const useAutoSave = (onSave, autoSavingDelay) => {
+const useBasicAutoSaver = (onSave, autoSavingDelay) => {
   const autoSavingTimerRef = useRef(null);
   const changesMapRef = useRef(new Map());
 
@@ -30,9 +30,11 @@ const useAutoSave = (onSave, autoSavingDelay) => {
   }, []);
 
   // registerChange
-  const registerChange = (changeId, change) => {
+  const registerChangeEvent = (changeEventId, changeEvent) => {
     // add change to set of changes
-    if (changeId !== undefined) changesMapRef.current.set(changeId, change);
+    if (changeEventId !== undefined) {
+      changesMapRef.current.set(changeEventId, changeEvent);
+    }
 
     if (autoSavingTimerRef.current === null) {
       // schedule an auto-save
@@ -40,7 +42,12 @@ const useAutoSave = (onSave, autoSavingDelay) => {
     }
   };
 
-  return [save, registerChange];
+  const autoSaverInterface = {
+    save: save,
+    registerChangeEvent: registerChangeEvent,
+  };
+
+  return autoSaverInterface;
 };
 
-export default useAutoSave;
+export default useBasicAutoSaver;

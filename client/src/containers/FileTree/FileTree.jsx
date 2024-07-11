@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import styles from "./FileTree.module.css";
 
 import {
@@ -12,9 +11,13 @@ import {
 import FileTreeEntity from "./FileTreeEntity";
 import { entityTypes } from "src/models/entity/entityModels";
 
-function FileTree({ registerEntityEvent, onFocusTab, onAddTab, onCloseTabs }) {
+function FileTree({
+  fileTree,
+  fileTreeInterface,
+  autoSaverInterface,
+  windowTreeInterface,
+}) {
   const [isFileTreeOpen, setIsFileTreeOpen] = useState(true);
-  const fileTree = useSelector((state) => state.fileTree);
   const [newEntityPrompt, setNewEntityPrompt] = useState(null); // { path, type }
 
   if (!isFileTreeOpen) {
@@ -77,10 +80,9 @@ function FileTree({ registerEntityEvent, onFocusTab, onAddTab, onCloseTabs }) {
             deleteNewEntityPrompt={() => {
               setNewEntityPrompt(null);
             }}
-            registerEntityEvent={registerEntityEvent}
-            onFocusTab={onFocusTab}
-            onAddTab={onAddTab}
-            onCloseTabs={onCloseTabs}
+            fileTreeInterface={fileTreeInterface}
+            autoSaverInterface={autoSaverInterface}
+            windowTreeInterface={windowTreeInterface}
           />
         )}
       </div>

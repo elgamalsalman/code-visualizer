@@ -3,15 +3,15 @@ import config from "src/config";
 import { entityTypes, getEntityData } from "src/models/entity/entityModels";
 import { entityEventTypes } from "src/models/events/entityEvents";
 
-import useAutoSave from "src/common/hooks/useAutoSave";
+import useBasicAutoSaver from "src/common/hooks/useBasicAutoSaver";
 import { pushEntityEventsToServer } from "src/api/entityService";
 import {
   readFileFromStorage,
   writeFileToStorage,
 } from "src/services/storageService";
 
-const useAutoSaveEntities = (editorStates) => {
-  return useAutoSave(async (changes) => {
+const useAutoSaver = (editorStates) => {
+  const basicAutoSaverInterface = useBasicAutoSaver(async (changes) => {
     const locallyProcessedEntityEvents = await Promise.all(
       changes.map(async (entityEvent) => {
         if (
@@ -45,6 +45,11 @@ const useAutoSaveEntities = (editorStates) => {
     await pushEntityEventsToServer(config.userId, locallyProcessedEntityEvents);
     console.log("saved to server!");
   }, config.autoSavingDelay);
+
+  return {
+    save: basicAutoSaverInterface.save,
+    registerChangeEvent: basicAutoSaverInterface.registerChangeEvent,
+  };
 };
 
-export default useAutoSaveEntities;
+export default useAutoSaver;

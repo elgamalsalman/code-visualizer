@@ -1,11 +1,9 @@
 import React, { useRef, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
 
 import ConsoleRun from "./ConsoleRun";
 
-const Console = ({ onInput }) => {
+const Console = ({ runs, onInput }) => {
   const consoleEndRef = useRef(null);
-  const runs = useSelector((state) => state.runs);
 
   // Scroll to bottom when runs change
   useEffect(() => {

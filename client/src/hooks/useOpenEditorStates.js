@@ -96,7 +96,12 @@ const useOpenEditorStates = () => {
     // console.log(JSON.stringify(statesRef.current));
   };
 
-  return [statesRef, subscribe, unsubscribe];
+  const openEditorStatesInterface = {
+    subscribe: subscribe,
+    unsubscribe: unsubscribe,
+  };
+
+  return [statesRef.current, openEditorStatesInterface];
 };
 
 export default useOpenEditorStates;

@@ -1,19 +1,26 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import styles from "./NewEntityPrompt.module.css";
 
 import DynamicFileIcon from "src/common/components/DynamicFileIcon/DynamicFileIcon";
 import DynamicDirIcon from "src/common/components/DynamicDirIcon/DynamicDirIcon";
-import { entityTypes, getEntityData } from "src/models/entity/entityModels";
+import {
+  entityTypes,
+  getEntityData,
+  getEntityMeta,
+} from "src/models/entity/entityModels";
 import {
   entityEventTypes,
   getEntityEvent,
 } from "src/models/events/entityEvents";
-import { updateEntity } from "src/redux/fileTree/fileTreeSlice";
 
-function NewEntityPrompt({ type, onDeletion, registerEntityEvent }) {
+function NewEntityPrompt({
+  type,
+  onDeletion,
+  fileTreeInterface,
+  autoSaverInterface,
+  windowTreeInterface,
+}) {
   const textareaRef = useRef(null);
-  const dispatch = useDispatch();
   const [path, setPath] = useState("");
   useEffect(() => {
     textareaRef.current.focus();
@@ -38,20 +45,29 @@ function NewEntityPrompt({ type, onDeletion, registerEntityEvent }) {
         onBlur={() => {
           onDeletion();
         }}
-        onKeyDown={(event) => {
-          console.log(event.key);
+        onKeyDown={async (event) => {
           if (event.key === "Enter") {
+            const newEntity = getEntityData(
+              path,
+              type,
+              undefined,
+              type === entityTypes.file ? "" : undefined,
+            );
             const entityEvent = getEntityEvent(
               entityEventTypes.create,
-              getEntityData(
-                path,
-                type,
-                undefined,
-                type === entityTypes.file ? "" : undefined,
-              ),
+              newEntity,
             );
-            dispatch(updateEntity(entityEvent));
-            registerEntityEvent(path, entityEvent);
+
+						// update the file tree
+            fileTreeInterface.createEntity(
+              getEntityMeta(path, type, undefined),
+            );
+						// register for saving
+            autoSaverInterface.registerChangeEvent(path, entityEvent);
+            // open if file
+            if (type === entityTypes.file) {
+              windowTreeInterface.addTab({ type: "editor", path: path });
+            }
             onDeletion();
           } else if (event.key === "Escape") {
             onDeletion();

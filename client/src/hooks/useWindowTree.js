@@ -50,10 +50,10 @@ const initialWindowTree = addIds({
 });
 
 const useWindowTree = (
-  subscribe,
-  unsubscribe,
-  editorStates,
-  registerEntityEvent,
+  runs,
+  openEditorStatesInterface,
+  autoSaverInterface,
+  runsInterface,
 ) => {
   const [windowTree, updateWindowTree] = useImmer(initialWindowTree);
 
@@ -200,18 +200,9 @@ const useWindowTree = (
             };
             body = (
               <Editor
-                subscribe={subscribe}
-                unsubscribe={unsubscribe}
                 filePath={tab.path}
-                onNativeChange={() =>
-                  registerEntityEvent(
-                    tab.path,
-                    getEntityEvent(
-                      entityEventTypes.write,
-                      getEntityMeta(tab.path, entityTypes.file),
-                    ),
-                  )
-                }
+                autoSaverInterface={autoSaverInterface}
+                openEditorStatesInterface={openEditorStatesInterface}
               />
             );
           } else if (tab.type === "console") {
@@ -220,14 +211,14 @@ const useWindowTree = (
               title: "Console",
               type: "console",
             };
-            body = <Console />;
+            body = <Console runs={runs} />;
           } else if (tab.type === "grapher") {
             props = {
               ...props,
               title: "Grapher",
               type: "grapher",
             };
-            body = <Grapher />;
+            body = <Grapher runs={runs} />;
           }
 
           const t = <Tab {...props}>{body}</Tab>;
@@ -281,7 +272,13 @@ const useWindowTree = (
     );
   };
 
-  return [render, focus, add, closeTabs];
+  const windowTreeInterface = {
+    focusTab: focus,
+    addTab: add,
+    closeTabs: closeTabs,
+  };
+
+  return [render, windowTreeInterface];
 };
 
 export default useWindowTree;

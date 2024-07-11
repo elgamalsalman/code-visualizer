@@ -14,15 +14,15 @@ const appToButtonStatusMap = {
   [appStatuses.running]: runButtonStatuses.kill,
 };
 
-const Header = ({ eventHandlers }) => {
+const Header = ({ runEventHandlers }) => {
   const [appStatus, setAppStatus] = useAppStatusContext();
   return (
     <header className={styles["header"]}>
       <div className={styles["run-button-div"]}>
         <RunButton
           status={appToButtonStatusMap[appStatus]}
-          onRun={eventHandlers.onRun}
-          onKill={eventHandlers.onKill}
+          onRun={runEventHandlers.runHandler}
+          onKill={runEventHandlers.killHandler}
         />
       </div>
     </header>

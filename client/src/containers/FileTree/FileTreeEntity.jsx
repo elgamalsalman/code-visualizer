@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from "react";
-import { useDispatch } from "react-redux";
+import React, { useState } from "react";
 import styles from "./FileTreeEntity.module.css";
 
 import NewEntityPrompt from "./NewEntityPrompt";
@@ -10,7 +9,11 @@ import {
   EllipsisVerticalIcon,
 } from "@heroicons/react/24/outline";
 
-import { entityTypes, getEntityData } from "src/models/entity/entityModels";
+import {
+  entityTypes,
+  getEntityData,
+  getEntityMeta,
+} from "src/models/entity/entityModels";
 import {
   entityEventTypes,
   getEntityEvent,
@@ -19,19 +22,16 @@ import DynamicFileIcon from "src/common/components/DynamicFileIcon/DynamicFileIc
 import DynamicDirIcon from "src/common/components/DynamicDirIcon/DynamicDirIcon";
 import FileContextMenu from "./contextMenus/FileContextMenu";
 import DirContextMenu from "./contextMenus/DirContextMenu";
-import { updateEntity } from "src/redux/fileTree/fileTreeSlice";
 
 const FileTreeEntity = ({
   path,
   fileTree,
   newEntityPrompt,
   deleteNewEntityPrompt,
-  registerEntityEvent,
-  onFocusTab,
-  onAddTab,
-  onCloseTabs,
+  fileTreeInterface,
+  autoSaverInterface,
+  windowTreeInterface,
 }) => {
-  const dispatch = useDispatch();
   const [isDirOpen, setIsDirOpen] = useState(true);
   const [isContextMenuActive, setIsContextMenuActive] = useState(false);
   const [contextMenuPosition, setContextMenuPosition] = useState({
@@ -68,10 +68,9 @@ const FileTreeEntity = ({
               : null
           }
           deleteNewEntityPrompt={deleteNewEntityPrompt}
-          registerEntityEvent={registerEntityEvent}
-          onFocusTab={onFocusTab}
-          onAddTab={onAddTab}
-          onCloseTabs={onCloseTabs}
+          fileTreeInterface={fileTreeInterface}
+          autoSaverInterface={autoSaverInterface}
+          windowTreeInterface={windowTreeInterface}
         />
       )),
     ];
@@ -81,7 +80,9 @@ const FileTreeEntity = ({
           key={"newEntityPrompt"}
           type={newEntityPrompt.type}
           onDeletion={deleteNewEntityPrompt}
-          registerEntityEvent={registerEntityEvent}
+          fileTreeInterface={fileTreeInterface}
+          autoSaverInterface={autoSaverInterface}
+          windowTreeInterface={windowTreeInterface}
         />,
       );
     }
@@ -97,9 +98,11 @@ const FileTreeEntity = ({
           onClick={() => {
             if (isFile) {
               if (
-                !onFocusTab((tab) => tab.type === "editor" && tab.path === path)
+                !windowTreeInterface.focusTab(
+                  (tab) => tab.type === "editor" && tab.path === path,
+                )
               ) {
-                onAddTab({type: "editor", path});
+                windowTreeInterface.addTab({ type: "editor", path });
               }
             } else {
               setIsDirOpen((flag) => !flag);
@@ -155,9 +158,7 @@ const FileTreeEntity = ({
           position={contextMenuPosition}
           onBlur={() => setIsContextMenuActive(false)}
           onOpen={() => {
-            // if (!onFocusTab("editor", path)) {
-            onAddTab({ type: "editor", path });
-            // }
+            windowTreeInterface.addTab({ type: "editor", path });
             setIsContextMenuActive(false);
           }}
           onDelete={() => {
@@ -165,9 +166,13 @@ const FileTreeEntity = ({
               entityEventTypes.delete,
               getEntityData(path, entityTypes.file, undefined, undefined),
             );
-            registerEntityEvent(path, entityEvent);
-            dispatch(updateEntity(entityEvent));
-            onCloseTabs((tab) => tab.type === "editor" && tab.path === path);
+            autoSaverInterface.registerChangeEvent(path, entityEvent);
+            fileTreeInterface.deleteEntity(
+              getEntityMeta(path, entityTypes.file, undefined),
+            );
+            windowTreeInterface.closeTabs(
+              (tab) => tab.type === "editor" && tab.path === path,
+            );
             setIsContextMenuActive(false);
           }}
         />
@@ -182,9 +187,11 @@ const FileTreeEntity = ({
               entityEventTypes.delete,
               getEntityData(path, entityTypes.dir, undefined, undefined),
             );
-            registerEntityEvent(path, entityEvent);
-            dispatch(updateEntity(entityEvent)); // FIXME: IMPLEMENT
-            onCloseTabs(
+            autoSaverInterface.registerChangeEvent(path, entityEvent);
+            fileTreeInterface.deleteEntity(
+              getEntityMeta(path, entityTypes.dir, undefined),
+            );
+            windowTreeInterface.closeTabs(
               (tab) => tab.type === "editor" && tab.path.startsWith(`${path}/`),
             );
             setIsContextMenuActive(false);

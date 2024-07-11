@@ -1,72 +1,57 @@
-import React, { useId, useState, useEffect, useRef } from "react";
-import { useImmer, useImmerReducer } from "use-immer";
-import { useDispatch, useSelector } from "react-redux";
+import React from "react";
 import styles from "./App.module.css";
 
 import config from "src/config";
-import { getUNIXTimeNow } from "src/common/utils/dateTime";
 
-import { createRun, logRunEvent, terminateRun } from "src/redux/runs/runsSlice";
-import { getRunEventTemplate } from "src/models/run/runEventModels";
-import { runStatuses } from "src/models/run/runModels";
-import useServerPullFileTree from "src/hooks/useServerPullFileTree";
-import useMountFileTree from "src/hooks/useMountFileTree";
+import useFileTree from "src/hooks/useFileTree";
 import useWindowTree from "src/hooks/useWindowTree";
 import useOpenEditorStates from "src/hooks/useOpenEditorStates";
-import useAutoSaveEntities from "src/hooks/useAutoSaveEntities";
+import useAutoSaver from "src/hooks/useAutoSaver";
+import useRuns from "src/hooks/useRuns";
 
 import Tile from "src/common/components/Tile/Tile";
 import Header from "src/containers/Header/Header";
 import FileTree from "src/containers/FileTree/FileTree";
 
 const App = () => {
-  const dispatch = useDispatch();
-
-  const fileTree = useServerPullFileTree();
-  useMountFileTree(fileTree);
-  const [{ current: editorStates }, subscribe, unsubscribe] =
-    useOpenEditorStates();
-  const [save, registerEntityEvent] = useAutoSaveEntities(editorStates);
-  const [renderWindowTree, focusTab, addTab, closeTabs] = useWindowTree(
-    subscribe,
-    unsubscribe,
-    editorStates,
-    registerEntityEvent,
+  const [fileTree, fileTreeInterface] = useFileTree();
+  const [editorStates, openEditorStatesInterface] = useOpenEditorStates();
+  const autoSaverInterface = useAutoSaver(editorStates);
+  const [runs, runsInterface] = useRuns();
+  const [renderWindowTree, windowTreeInterface] = useWindowTree(
+    runs,
+    openEditorStatesInterface,
+    autoSaverInterface,
+    runsInterface,
   );
-  const runWSRef = useRef(null);
 
   const runHandler = async () => {
     // save and create new run object
-    await save();
-    dispatch(createRun({ startTime: getUNIXTimeNow() }));
+    await autoSaverInterface.save();
+    runsInterface.run();
   };
 
   const killHandler = () => {
-    dispatch(
-      terminateRun({
-        event: getRunEventTemplate.terminate(runStatuses.failed),
-        endTime: getUNIXTimeNow(),
-      }),
-    );
+    runsInterface.kill();
   };
 
   return (
     <div className={styles["app"]}>
       <div className={styles["header-div"]}>
         <Header
-          eventHandlers={{
-            onRun: runHandler,
-            onKill: killHandler,
+          runEventHandlers={{
+            runHandler: runHandler,
+            killHandler: killHandler,
           }}
         />
       </div>
       <div className={styles["main-div"]}>
         <Tile transparent className={styles["file-tree-tile"]}>
           <FileTree
-            registerEntityEvent={registerEntityEvent}
-            onFocusTab={focusTab}
-            onAddTab={addTab}
-            onCloseTabs={closeTabs}
+            fileTree={fileTree}
+            fileTreeInterface={fileTreeInterface}
+            autoSaverInterface={autoSaverInterface}
+            windowTreeInterface={windowTreeInterface}
           />
         </Tile>
         <div className={styles["window-tree"]}>{renderWindowTree()}</div>
