@@ -1,3 +1,8 @@
-.spinner {
-  @apply rounded-full border-4 border-t-4 border-gray-200;
+.loading-spinner-on,
+.loading-spinner-off {
+  @apply aspect-square rounded-full border-2 border-background-dark-400 border-b-transparent;
+}
+
+.loading-spinner-on {
+  @apply animate-spin;
 }

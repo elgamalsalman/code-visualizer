@@ -28,6 +28,7 @@ const App = () => {
   const runHandler = async () => {
     // save and create new run object
     await autoSaverInterface.save();
+    windowTreeInterface.focusTab((tab) => tab.type === "console");
     runsInterface.run();
   };
 

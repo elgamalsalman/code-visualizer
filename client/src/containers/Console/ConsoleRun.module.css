@@ -1,20 +1,90 @@
+.console-run {
+  @apply flex h-full flex-col;
+}
+
 .header {
-  @apply border-background-dark-750 mb-1 border-b;
-  @apply font-mono text-gray-200;
+  @apply flex items-center justify-between border-b border-background-dark-750;
+  @apply font-mono text-xs text-gray-200;
+}
+
+.header-left-half,
+.header-right-half {
+  @apply flex h-7 items-center gap-2 px-2;
+}
+.header-right-half {
+  @apply border-l border-background-dark-750;
+}
+
+.run-label {
+  @apply rounded-lg bg-background-dark-750 px-2 pb-0.5 pt-1;
+}
+
+.run-time-div {
+  @apply mt-1 flex items-center gap-[0.5em];
+}
+
+.icon {
+  @apply h-4 w-4;
+}
+
+.run-status {
+  @apply relative;
+}
+.run-status:hover::after {
+  @apply absolute right-0 translate-y-1 rounded bg-background-dark-700 p-1;
+}
+.run-status-connecting:hover::after {
+  @apply content-['connecting'];
+}
+.run-status-compiling:hover::after {
+  @apply content-['compiling'];
+}
+.run-status-running:hover::after {
+  @apply content-['running'];
+}
+.run-status-success:hover::after {
+  @apply content-['success'];
+}
+.run-status-failed:hover::after {
+  @apply content-['failed'];
+}
+.run-status-killed:hover::after {
+  @apply content-['killed'];
+}
+
+.green-circle-icon {
+  @apply h-4 w-4 rounded-lg bg-green-600;
 }
 
 .content {
-  @apply whitespace-pre-wrap font-mono leading-none;
+  @apply relative block min-h-16 overflow-scroll whitespace-pre-wrap border-b border-background-dark-750 p-2 font-mono leading-none;
 }
 
-.content-type-input {
+.closed-content {
+  @apply hidden;
+}
+
+.content-type-stdout,
+.content-type-stdin,
+.content-type-stderr,
+.active-input {
+  @apply inline;
+}
+
+.active-input {
+  @apply border-r border-transparent outline-none;
+}
+
+.content-type-stdin,
+.active-input {
   @apply text-gray-400;
 }
 
-.content-type-output {
+.content-type-stdout {
   @apply text-gray-200;
 }
 
-.content-type-error {
+.content-type-error,
+.content-type-stderr {
   @apply text-red-500;
 }

@@ -30,9 +30,7 @@ const config = {
     },
     defaultValue: "// your code here",
   },
-  console: {
-    defaultRowCount: 3,
-  },
+  console: {},
   autoSavingDelay: 5000,
 };
 

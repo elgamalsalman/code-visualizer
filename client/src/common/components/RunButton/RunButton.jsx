@@ -10,7 +10,7 @@ const runButtonStatuses = {
   kill: "kill",
 };
 
-const RunButton = ({ status, onRun, onKill }) => {
+const RunButton = ({ status, onRun, onKill, className }) => {
   const mode = {
     [runButtonStatuses.run]: {
       onClick: onRun,
@@ -19,11 +19,7 @@ const RunButton = ({ status, onRun, onKill }) => {
     },
     [runButtonStatuses.pending]: {
       onClick: () => {},
-      icon: (
-        <div className={styles["icon"]}>
-          <LoadingSpinner />
-        </div>
-      ),
+      icon: <LoadingSpinner className={styles["icon"]} isSpinning={true} />,
       text: "Working",
     },
     [runButtonStatuses.kill]: {
@@ -36,7 +32,7 @@ const RunButton = ({ status, onRun, onKill }) => {
   return (
     <button
       onClick={mode.onClick}
-      className={`${styles["run-button"]} ${styles[`run-button-${status}`]}`}
+      className={`${className ? className : ""} ${styles["run-button"]} ${styles[`run-button-${status}`]}`}
     >
       {mode.icon}
       <span>{mode.text}</span>

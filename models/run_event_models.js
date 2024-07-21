@@ -1,4 +1,5 @@
 const run_event_types = {
+	connection: "connection",
 	compilation: "compilation",
 	stdin: "stdin",
 	stdout: "stdout",
@@ -8,12 +9,53 @@ const run_event_types = {
 	terminate: "terminate",
 };
 
-const get_run_event_template = {
-	compilation: (status) => {
-		return {
-			type: run_event_types.compilation,
-			status: status,
-		};
+const run_event_data_types = [
+	run_event_types.stdin,
+	run_event_types.stdout,
+	run_event_types.stderr,
+	run_event_types.grapher,
+];
+
+const run_event_statuses = {
+	success: "success",
+	failed: "failed",
+	killed: "killed",
+};
+
+const grapher_event_types = {
+	create: "create",
+	change: "change",
+	delete: "delete",
+};
+
+const get_run_event = {
+	connection: (status, error = "") => {
+		if (status === run_event_statuses.success) {
+			return {
+				type: run_event_types.connection,
+				status: status,
+			};
+		} else if (status === run_event_statuses.failed) {
+			return {
+				type: run_event_types.connection,
+				status: status,
+				error: error,
+			};
+		} else console.error(`Connecting with unknown status of ${status}`);
+	},
+	compilation: (status, error = "") => {
+		if (status === run_event_statuses.success) {
+			return {
+				type: run_event_types.compilation,
+				status: status,
+			};
+		} else if (status === run_event_statuses.failed) {
+			return {
+				type: run_event_types.compilation,
+				status: status,
+				error: error,
+			};
+		} else console.error(`Compiling with unknown status of ${status}`);
 	},
 	stdin: (data) => {
 		return {
@@ -33,11 +75,39 @@ const get_run_event_template = {
 			data: data,
 		};
 	},
-	grapher: (event) => {
-		return {
-			type: run_event_types.grapher,
-			event: event,
-		};
+	grapher: {
+		create: (cls, id, props) => {
+			return {
+				type: run_event_types.grapher,
+				event: {
+					type: grapher_event_types.create,
+					class: cls,
+					id: id,
+					props: props,
+				},
+			};
+		},
+		change: (cls, id, props) => {
+			return {
+				type: run_event_types.grapher,
+				event: {
+					type: grapher_event_types.change,
+					class: cls,
+					id: id,
+					props: props,
+				},
+			};
+		},
+		delete: (cls, id) => {
+			return {
+				type: run_event_types.grapher,
+				event: {
+					type: grapher_event_types.delete,
+					class: cls,
+					id: id,
+				},
+			};
+		},
 	},
 	error: (error) => {
 		return {
@@ -55,12 +125,18 @@ const get_run_event_template = {
 
 // assert valid file configuration
 (() => {
-	const keys1 = Object.keys(run_event_types);
-	const keys2 = Object.keys(get_run_event_template);
 	let valid = true;
-	if (keys1.length !== keys2.length) valid = false;
-	for (const key1 of keys1) {
-		if (!keys2.includes(key1)) valid = false;
+	const run_keys1 = Object.keys(run_event_types);
+	const run_keys2 = Object.keys(get_run_event);
+	if (run_keys1.length !== run_keys2.length) valid = false;
+	for (const run_key1 of run_keys1) {
+		if (!run_keys2.includes(run_key1)) valid = false;
+	}
+	const grapher_keys1 = Object.keys(grapher_event_types);
+	const grapher_keys2 = Object.keys(get_run_event.grapher);
+	if (grapher_keys1.length !== grapher_keys2.length) valid = false;
+	for (const grapher_key1 of grapher_keys1) {
+		if (!grapher_keys2.includes(grapher_key1)) valid = false;
 	}
 
 	if (!valid) {
@@ -68,4 +144,10 @@ const get_run_event_template = {
 	}
 })();
 
-export { run_event_types, get_run_event_template };
+export {
+	run_event_types,
+	run_event_data_types,
+	run_event_statuses,
+	grapher_event_types,
+	get_run_event,
+};

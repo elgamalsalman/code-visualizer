@@ -26,12 +26,18 @@ module.exports = {
       },
       keyframes: {
         "soft-pulse": {
-          "0%, 100%": { opacity: "0.05" }, // Change this value to your desired min opacity
-          "50%": { opacity: "0.1" }, // Change this value to your desired max opacity
+          "0%, 100%": { opacity: "0.05" },
+          "50%": { opacity: "0.1" },
+        },
+        "square-pulse": {
+          "0%, 50%": { opacity: "1" }, // Change this value to your desired min opacity
+          "51%, 100%": { opacity: "0" }, // Change this value to your desired max opacity
         },
       },
       animation: {
         "soft-pulse": "soft-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+        "square-pulse":
+          "square-pulse 1.25s cubic-bezier(0.4, 0, 0.6, 1) infinite",
       },
     },
   },

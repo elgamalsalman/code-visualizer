@@ -1,5 +1,4 @@
 const runStatuses = {
-  waiting: "waiting",
   connecting: "connecting",
   compiling: "compiling",
   running: "running",
@@ -9,21 +8,25 @@ const runStatuses = {
 };
 
 const runPendingStatuses = [
-  runStatuses.waiting,
   runStatuses.connecting,
   runStatuses.compiling,
   runStatuses.running,
 ];
-const runDoneStatuses = [runStatuses.killed, runStatuses.success, runStatuses.failed];
+const runDoneStatuses = [
+  runStatuses.killed,
+  runStatuses.success,
+  runStatuses.failed,
+];
 
-const getNewRun = (id, startTime) => {
+const getRun = (id, startTime, status = runStatuses.connecting) => {
   return {
     id: id,
     data: [],
     startTime: startTime,
     endTime: null,
-    status: runStatuses.waiting,
+    status: status,
+    error: null,
   };
 };
 
-export { runStatuses, runPendingStatuses, runDoneStatuses, getNewRun };
+export { runStatuses, runPendingStatuses, runDoneStatuses, getRun };

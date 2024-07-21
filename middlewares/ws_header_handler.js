@@ -3,11 +3,11 @@ const ws_header = async (req, res, next) => {
 		.split(",")
 		.map((val) => val.trim());
 
-	const [_, user_id] = protocols;
+	const [_, encoded_header] = protocols;
 
-	req.body = {
-		user_id: user_id,
-	};
+	req.body = JSON.parse(
+		decodeURIComponent(atob(encoded_header.replace(/-/g, "/")))
+	);
 
 	next();
 };

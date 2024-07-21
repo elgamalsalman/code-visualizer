@@ -37,14 +37,11 @@ const initialWindowTree = addIds({
   windows: [
     {
       type: "tabGroup",
-      tabs: [
-        { type: "editor", path: "main.cpp" },
-        { type: "editor", path: "headers/vector.h" },
-      ],
+      tabs: [{ type: "editor", path: "main.cpp" }],
     },
     {
       type: "tabGroup",
-      tabs: [{ type: "editor", path: "main.cpp" }, { type: "console" }],
+      tabs: [{ type: "grapher" }, { type: "console" }],
     },
   ],
 });
@@ -211,14 +208,14 @@ const useWindowTree = (
               title: "Console",
               type: "console",
             };
-            body = <Console runs={runs} />;
+            body = <Console runs={runs} runsInterface={runsInterface} />;
           } else if (tab.type === "grapher") {
             props = {
               ...props,
               title: "Grapher",
               type: "grapher",
             };
-            body = <Grapher runs={runs} />;
+            body = <Grapher runs={runs} runsInterface={runsInterface} />;
           }
 
           const t = <Tab {...props}>{body}</Tab>;

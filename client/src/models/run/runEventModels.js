@@ -1,4 +1,5 @@
 const runEventTypes = {
+  connection: "connection",
   compilation: "compilation",
   stdin: "stdin",
   stdout: "stdout",
@@ -8,12 +9,59 @@ const runEventTypes = {
   terminate: "terminate",
 };
 
-const getRunEventTemplate = {
-  compilation: (status) => {
-    return {
-      type: runEventTypes.compilation,
-      status: status,
-    };
+const runEventConsoleDataTypes = [
+  runEventTypes.stdin,
+  runEventTypes.stdout,
+  runEventTypes.stderr,
+];
+
+const runEventDataTypes = [
+  runEventTypes.stdin,
+  runEventTypes.stdout,
+  runEventTypes.stderr,
+  runEventTypes.grapher,
+];
+
+const runEventStatuses = {
+  success: "success",
+  failed: "failed",
+  killed: "killed",
+};
+
+const grapherEventTypes = {
+  create: "create",
+  change: "change",
+  delete: "delete",
+};
+
+const getRunEvent = {
+  connection: (status, error = "") => {
+    if (status === runEventStatuses.success) {
+      return {
+        type: runEventTypes.connection,
+        status: status,
+      };
+    } else if (status === runEventStatuses.failed) {
+      return {
+        type: runEventTypes.connection,
+        status: status,
+        error: error,
+      };
+    } else console.error(`Connecting with unknown status of ${status}`);
+  },
+  compilation: (status, error = "") => {
+    if (status === runEventStatuses.success) {
+      return {
+        type: runEventTypes.compilation,
+        status: status,
+      };
+    } else if (status === runEventStatuses.failed) {
+      return {
+        type: runEventTypes.compilation,
+        status: status,
+        error: error,
+      };
+    } else console.error(`Compiling with unknown status of ${status}`);
   },
   stdin: (data) => {
     return {
@@ -33,11 +81,39 @@ const getRunEventTemplate = {
       data: data,
     };
   },
-  grapher: (event) => {
-    return {
-      type: runEventTypes.grapher,
-      event: event,
-    };
+  grapher: {
+    create: (cls, id, props) => {
+      return {
+        type: runEventTypes.grapher,
+        event: {
+          type: grapherEventTypes.create,
+          class: cls,
+          id: id,
+          props: props,
+        },
+      };
+    },
+    change: (cls, id, props) => {
+      return {
+        type: runEventTypes.grapher,
+        event: {
+          type: grapherEventTypes.change,
+          class: cls,
+          id: id,
+          props: props,
+        },
+      };
+    },
+    delete: (cls, id) => {
+      return {
+        type: runEventTypes.grapher,
+        event: {
+          type: grapherEventTypes.delete,
+          class: cls,
+          id: id,
+        },
+      };
+    },
   },
   error: (error) => {
     return {
@@ -55,12 +131,18 @@ const getRunEventTemplate = {
 
 // assert valid file configuration
 (() => {
-  const keys1 = Object.keys(runEventTypes);
-  const keys2 = Object.keys(getRunEventTemplate);
   let valid = true;
-  if (keys1.length !== keys2.length) valid = false;
-  for (const key1 of keys1) {
-    if (!keys2.includes(key1)) valid = false;
+  const runKeys1 = Object.keys(runEventTypes);
+  const runKeys2 = Object.keys(getRunEvent);
+  if (runKeys1.length !== runKeys2.length) valid = false;
+  for (const runKey1 of runKeys1) {
+    if (!runKeys2.includes(runKey1)) valid = false;
+  }
+  const grapherKeys1 = Object.keys(grapherEventTypes);
+  const grapherKeys2 = Object.keys(getRunEvent.grapher);
+  if (grapherKeys1.length !== grapherKeys2.length) valid = false;
+  for (const grapherKey1 of grapherKeys1) {
+    if (!grapherKeys2.includes(grapherKey1)) valid = false;
   }
 
   if (!valid) {
@@ -68,4 +150,11 @@ const getRunEventTemplate = {
   }
 })();
 
-export { runEventTypes, getRunEventTemplate };
+export {
+  runEventTypes,
+  runEventConsoleDataTypes,
+  runEventDataTypes,
+  runEventStatuses,
+  grapherEventTypes,
+  getRunEvent,
+};

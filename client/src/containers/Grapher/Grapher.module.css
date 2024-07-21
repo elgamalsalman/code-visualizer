@@ -1,0 +1,28 @@
+.grapher-div {
+  @apply flex h-full flex-col;
+}
+
+.grapher-canvas {
+  @apply relative grow;
+}
+
+.no-run-message-div {
+  @apply absolute left-0 top-0 flex h-full w-full items-center justify-center;
+}
+
+.no-run-message {
+  @apply w-4/5 rounded-2xl border-2 border-dashed border-white/30 bg-transparent p-3;
+  @apply flex flex-col items-center justify-center gap-2;
+}
+
+.no-run-message-text {
+  @apply text-center text-white;
+}
+
+.no-run-message-title {
+  @apply font-bold;
+}
+
+.console-run-div {
+  @apply max-h-32;
+}

@@ -10,7 +10,11 @@ import { strict as assert } from "assert";
 // config
 import config from "../config.js";
 
-// utils
+// models and utils
+import {
+	get_run_event,
+	run_event_statuses,
+} from "../models/run_event_models.js";
 import { create_externally_resolvable_promise } from "../utils/promise_utils.js";
 import {
 	count_occurrences,
@@ -143,18 +147,14 @@ class Code_Analyser {
 					this.#add_tracked_object_controlpoint(object_address, watchpoint);
 				}
 
+				// FIXME: reading class parameters
 				// log event
-				this.#log_event({
-					type: "new",
-					objects: [
-						{
-							class: class_name,
-							location: "heap", // HARDCODED
-							id: object_address,
-							// ...default_parameters, // TODO: pass object parameters
-						},
-					],
-				});
+				const creation_event = get_run_event.grapher.create(
+					class_name,
+					object_address,
+					{}
+				);
+				this.#log_event(creation_event);
 			}
 		},
 
@@ -177,10 +177,11 @@ class Code_Analyser {
 			await this.#untrack_object(object_address);
 
 			// log event
-			this.#log_event({
-				type: "delete",
-				id: object_address,
-			});
+			const deletion_event = get_run_event.grapher.delete(
+				undefined, // FIXME: get object class name and send it here
+				object_address
+			);
+			this.#log_event(deletion_event);
 		},
 
 		// returns a callback for the change of a specific property in a
@@ -208,12 +209,14 @@ class Code_Analyser {
 					examination_format
 				);
 
-				this.#log_event({
-					type: "change",
-					id: object_address,
-					property: property_name,
-					new_value: new_value,
-				});
+				const change_event = get_run_event.grapher.change(
+					undefined,
+					object_address,
+					{
+						[property_name]: new_value,
+					}
+				);
+				this.#log_event(change_event);
 			};
 		},
 	};
@@ -224,7 +227,7 @@ class Code_Analyser {
 		this.#user_id = user_id;
 		this.#user_dir_path = path.resolve(
 			config.users.files.root_dir_path,
-			user_id
+			this.#user_id
 		);
 		this.#executable_file_path = path.resolve(
 			this.#user_dir_path,
@@ -259,18 +262,14 @@ class Code_Analyser {
 
 	// process incoming program output data
 	#on_program_output_data = (data) => {
-		this.#log_event({
-			type: "output",
-			content: data,
-		});
+		const output_event = get_run_event.stdout(data);
+		this.#log_event(output_event);
 	};
 
 	// process incoming program error data
 	#on_program_error_data = (data) => {
-		this.#log_event({
-			type: "error",
-			content: data,
-		});
+		const error_event = get_run_event.stderr(data);
+		this.#log_event(error_event);
 	};
 
 	// controlpoints callbacks getter and setter
@@ -332,6 +331,12 @@ class Code_Analyser {
 
 	// intialise gdb
 	init = async () => {
+		// send a connection setup event
+		const connection_event = get_run_event.connection(
+			run_event_statuses.success
+		);
+		this.#log_event(connection_event);
+
 		// reset files
 		await PTY.execute(`rm`, [`-f`, `${this.#executable_file_path}`]); // remove previous executable file
 		await PTY.execute(`rm`, [`-f`, `${this.#program_input_file_path}`]); // remove previous program input file
@@ -355,20 +360,16 @@ class Code_Analyser {
 				`${this.#user_dir_path}`,
 			]);
 		} catch (error) {
-			const error_event = {
-				type: "compilation",
-				status: "failed",
-				error: error.message,
-			};
+			const error_event = get_run_event.compilation(
+				run_event_statuses.failed,
+				error.message
+			);
+			console.error(error.message);
 			this.#log_event(error_event);
 			return error_event;
 		}
 
-		const success_event = {
-			type: "compilation",
-			status: "success",
-			output: compilation_output,
-		};
+		const success_event = get_run_event.compilation(run_event_statuses.success);
 		this.#log_event(success_event);
 		console.log(`[*] compiled`);
 
@@ -462,10 +463,7 @@ class Code_Analyser {
 		await this.#gdb.execute("quit");
 
 		// exit event
-		const success_event = {
-			type: "exit",
-			status: "success",
-		};
+		const success_event = get_run_event.terminate(run_event_statuses.success);
 		this.#log_event(success_event);
 		return success_event;
 	};

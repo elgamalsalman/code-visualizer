@@ -1,0 +1,19 @@
+.console-div {
+  @apply h-full;
+}
+
+.empty-console-content {
+  @apply flex h-full flex-col items-center justify-center;
+}
+
+.empty-console-message-div {
+  @apply mb-2 text-center text-white;
+}
+
+.empty-console-message-title {
+  @apply font-bold;
+}
+
+.run-button {
+  @apply w-fit;
+}

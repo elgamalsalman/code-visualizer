@@ -1,0 +1,11 @@
+.react-flow__minimap-svg {
+  @apply h-28 w-32;
+}
+
+.react-flow__pane {
+  /* @apply bg-background-dark-950; */
+}
+
+.react-flow__minimap-node {
+  @apply !fill-[#222222]; /* FIXME: shouldn't need to do this */
+}
