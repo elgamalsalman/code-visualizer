@@ -1,8 +1,8 @@
-# Code Visualizer
-
 <p align="center">
 	<img src="./assets/logo_with_name.png" alt="Code Visualizer Branding" />
 </p>
+
+# Code Visualizer
 
 Code Visualizer is an online coding platform for data structures and algorithms students to practice coding basic data structures like linked lists and trees and visually see what their code is doing step by step, making understanding complex algorithmic concepts and debugging code significantly easier and giving students a tangible way of sensing what their code does apart from just simple text on a screen.
 
