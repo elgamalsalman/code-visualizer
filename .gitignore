@@ -2,6 +2,7 @@ node_modules
 .*.sw*
 .env
 .todo
+.VSCodeCounter
 
 # users files
 _users
