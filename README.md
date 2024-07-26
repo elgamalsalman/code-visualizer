@@ -10,6 +10,15 @@ The state-of-the-art technology this platform is providing is the fact that the 
 
 The project is publicaly avaiable to try here [coming soon]!
 
+## Demo
+
+The following demo shows a code that builds a chain of nodes (linked list) one node at a time and stores user input in the nodes.
+
+> [!WARNING]
+> Please don't take this code for a proper implementation of a linked list, we are aware of the memory leak in the code, this is just for demonstrative purposes :)
+
+[code_visualizer_demo.webm](https://github.com/user-attachments/assets/9c96c4f7-33ac-47b6-86d1-6c544306171c)
+
 ## Interface
 
 The platform has an expandable filetree to the left which allows for file and folder structure creation, viewing, deletion and manipulation. Different files can be opened and edited in the left pane and the right pane contains the grapher and the console where the project can be run and visualized!
