@@ -1,0 +1,27 @@
+.nav-bar {
+  @apply h-16 px-16 py-4;
+}
+
+.nav-bar-border {
+  @apply h-[1px] bg-gradient-to-r from-transparent from-10% via-purple-500/50 to-transparent to-90%;
+}
+
+.nav-bar,
+.nav-bar-section {
+  @apply flex shrink items-center justify-between gap-16;
+}
+
+.logo-div {
+  @apply h-16 py-4;
+}
+.logo {
+  @apply h-full w-fit;
+}
+
+.page-button {
+  @apply py-4 text-gray-300 hover:text-white;
+}
+
+.start-button {
+  @apply rounded-xl bg-purple-950 px-5 py-3 font-bold tracking-wider text-white;
+}

@@ -1,0 +1,76 @@
+.home-page {
+  @apply flex h-lvh flex-col;
+}
+
+.content {
+  @apply relative grow;
+}
+
+.main-text-div {
+  @apply flex h-full flex-col justify-between py-28 pl-20 text-7xl text-white;
+}
+
+.data-structures-line {
+  @apply flex gap-12 text-purple-400;
+}
+
+.data-structures-list-div {
+  @apply h-[1em] overflow-hidden tracking-wide;
+}
+.data-structures-list {
+  animation: scroll 4s infinite;
+  animation-timing-function: steps(4, end);
+}
+.data-structure-coming-soon::after {
+  @apply relative -top-6 text-lg content-['*'];
+}
+@keyframes scroll {
+  0% {
+    transform: translateY(0em);
+  }
+  100% {
+    transform: translateY(-4em);
+  }
+}
+.emphasized-text {
+  @apply pl-5 text-8xl font-bold tracking-[1.75rem];
+}
+
+.moto-graph-div {
+  @apply absolute right-0 top-0 flex h-full w-6/12 flex-col p-12 pr-20;
+}
+.moto-graph-items {
+  /* @apply h-fit w-full; */
+  @apply relative;
+}
+.moto-graph {
+  @apply h-fit w-full;
+}
+.graph-top-padding {
+  @apply grow basis-auto;
+}
+.graph-bottom-padding {
+  @apply grow-[5] basis-auto;
+}
+.node-overlay {
+  @apply z-10;
+}
+.code-node-overlay {
+  @apply absolute left-[5%] top-[7%] h-[17.5%] w-[37.5%] rounded-2xl;
+  @apply hover:after:bg-[url("../../assets/moto_graph_code_node_description.svg")];
+}
+.visualize-node-overlay {
+  @apply absolute left-[32%] top-[39%] h-[17.5%] w-[47.5%] rounded-2xl;
+  @apply hover:after:bg-[url("../../assets/moto_graph_visualize_node_description.svg")];
+}
+.interact-node-overlay {
+  @apply absolute left-[53%] top-[75.75%] h-[17.5%] w-[42.5%] rounded-2xl;
+  @apply hover:after:bg-[url("../../assets/moto_graph_interact_node_description.svg")];
+}
+.node-overlay:hover::after {
+  @apply absolute right-full top-1/2 h-[300%] w-[160%] -translate-y-1/2 bg-contain bg-right bg-no-repeat content-[''];
+}
+
+.footnote {
+  @apply absolute bottom-2 right-4 text-purple-400/50;
+}
