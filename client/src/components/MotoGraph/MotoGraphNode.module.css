@@ -1,0 +1,36 @@
+.node {
+  @apply relative rounded-3xl bg-[#3b3e5e] px-12 pb-3 pt-5 font-mono text-2xl tracking-widest text-white shadow-inner shadow-purple-500;
+  @apply before:absolute before:left-0 before:top-0 before:-z-10 before:h-full before:w-full before:rounded-3xl before:bg-purple-500/30 before:blur-lg before:content-[''];
+}
+
+.description-wrapper {
+  @apply absolute right-full top-1/2 -translate-x-4 -translate-y-1/2;
+}
+.description {
+  @apply hidden w-72 rounded-xl bg-[#3b3e5e] px-6 py-4 text-lg tracking-wide;
+}
+.description::before {
+  @apply absolute left-0 top-0 -z-10 h-full w-full rounded-xl bg-purple-500/30 blur-lg content-[''];
+}
+.description-visible {
+  @apply block;
+}
+
+.indentation {
+  @apply pl-[1rem];
+}
+.text-class {
+  @apply text-[#4787c9];
+}
+.text-prop {
+  @apply text-[#a4c9ed];
+}
+.text-address {
+  @apply text-[#9eb96f];
+}
+.text-string {
+  @apply text-[#ffbd7a];
+}
+.text-special-values {
+  @apply text-[#4787c9];
+}

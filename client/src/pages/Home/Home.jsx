@@ -1,18 +1,40 @@
-import React from "react";
+import React, { useState, useEffect, useRef } from "react";
 import clsx from "clsx";
 import commonPageStyles from "../pages.module.css";
 import styles from "./Home.module.css";
 
 import NavBar from "src/containers/NavBar/NavBar";
-import { ReactComponent as MotoGraphWide } from "src/assets/moto_graph_wide.svg";
+import MotoGraph from "src/components/MotoGraph/MotoGraph";
+
+const dataStructuresPresented = [
+  { name: "Linked-lists", isAvailable: true },
+  { name: "Trees", isAvailable: true },
+  { name: "Vectors", isAvailable: false },
+  { name: "Graphs", isAvailable: false },
+];
 
 function Home() {
-  const dataStructuresPresented = [
-    { name: "Linked-lists", isAvailable: true },
-    { name: "Trees", isAvailable: true },
-    { name: "Vectors", isAvailable: false },
-    { name: "Graphs", isAvailable: false },
-  ];
+  const [motoGraphDivDimensions, setMotoGraphDivDimensions] = useState({
+    x: 1525,
+    y: 667,
+  });
+  useEffect(() => {
+    const motoGraphDiv = document.getElementsByClassName(
+      styles["moto-graph-div"],
+    )[0];
+    const observer = new ResizeObserver(() => {
+      setMotoGraphDivDimensions({
+        x: motoGraphDiv.offsetWidth,
+        y: motoGraphDiv.offsetHeight,
+      });
+    });
+    observer.observe(motoGraphDiv);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
+
   return (
     <div
       className={clsx(
@@ -47,29 +69,17 @@ function Home() {
           </div>
         </div>
         <div className={styles["moto-graph-div"]}>
-          <div className={styles["graph-top-padding"]}></div>
-          <div className={styles["moto-graph-items"]}>
-            <MotoGraphWide className={styles["moto-graph"]} />
-            <div
-              className={clsx(
-                styles["node-overlay"],
-                styles["code-node-overlay"],
-              )}
-            ></div>
-            <div
-              className={clsx(
-                styles["node-overlay"],
-                styles["visualize-node-overlay"],
-              )}
-            ></div>
-            <div
-              className={clsx(
-                styles["node-overlay"],
-                styles["interact-node-overlay"],
-              )}
-            ></div>
-          </div>
-          <div className={styles["graph-bottom-padding"]}></div>
+          <MotoGraph
+            className={styles["moto-graph"]}
+            offset={{
+              x: motoGraphDivDimensions.x * (7 / 12),
+              y: motoGraphDivDimensions.y * (1 / 6),
+            }}
+            dimensions={{
+              x: motoGraphDivDimensions.x * (3 / 12),
+              y: motoGraphDivDimensions.y * (2 / 3),
+            }}
+          />
         </div>
         <div className={styles["footnote"]}>* coming soon</div>
       </div>

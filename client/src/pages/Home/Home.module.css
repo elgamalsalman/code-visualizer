@@ -37,10 +37,9 @@
 }
 
 .moto-graph-div {
-  @apply absolute right-0 top-0 flex h-full w-6/12 flex-col p-12 pr-20;
+  @apply absolute right-0 top-0 h-full w-full;
 }
 .moto-graph-items {
-  /* @apply h-fit w-full; */
   @apply relative;
 }
 .moto-graph {
