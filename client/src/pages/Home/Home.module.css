@@ -37,37 +37,10 @@
 }
 
 .moto-graph-div {
-  @apply absolute right-0 top-0 h-full w-full;
-}
-.moto-graph-items {
-  @apply relative;
+  @apply absolute right-0 top-0 z-10 h-full w-full;
 }
 .moto-graph {
   @apply h-fit w-full;
-}
-.graph-top-padding {
-  @apply grow basis-auto;
-}
-.graph-bottom-padding {
-  @apply grow-[5] basis-auto;
-}
-.node-overlay {
-  @apply z-10;
-}
-.code-node-overlay {
-  @apply absolute left-[5%] top-[7%] h-[17.5%] w-[37.5%] rounded-2xl;
-  @apply hover:after:bg-[url("../../assets/moto_graph_code_node_description.svg")];
-}
-.visualize-node-overlay {
-  @apply absolute left-[32%] top-[39%] h-[17.5%] w-[47.5%] rounded-2xl;
-  @apply hover:after:bg-[url("../../assets/moto_graph_visualize_node_description.svg")];
-}
-.interact-node-overlay {
-  @apply absolute left-[53%] top-[75.75%] h-[17.5%] w-[42.5%] rounded-2xl;
-  @apply hover:after:bg-[url("../../assets/moto_graph_interact_node_description.svg")];
-}
-.node-overlay:hover::after {
-  @apply absolute right-full top-1/2 h-[300%] w-[160%] -translate-y-1/2 bg-contain bg-right bg-no-repeat content-[''];
 }
 
 .footnote {

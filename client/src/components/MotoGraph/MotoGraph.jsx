@@ -293,12 +293,12 @@ function MotoGraph({ className, compact, offset, dimensions }) {
       edges={edges}
       nodeTypes={nodeTypes}
       onNodesChange={onNodesChange}
-      // preventScrolling
-      // zoomOnDoubleClick={false}
-      // zoomOnPinch={false}
-      // zoomOnScroll={false}
-      // panOnDrag={false}
-      // panOnScroll={false}
+      preventScrolling
+      zoomOnDoubleClick={false}
+      zoomOnPinch={false}
+      zoomOnScroll={false}
+      panOnDrag={false}
+      panOnScroll={false}
       viewport={{ x: 0, y: 0, zoom: 1 }}
       onNodeDragStart={(event, draggedNode, nodes) => {
         activateNode(draggedNode.id, false);

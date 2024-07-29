@@ -72,7 +72,7 @@ function Home() {
           <MotoGraph
             className={styles["moto-graph"]}
             offset={{
-              x: motoGraphDivDimensions.x * (7 / 12),
+              x: motoGraphDivDimensions.x * (6.75 / 12),
               y: motoGraphDivDimensions.y * (1 / 6),
             }}
             dimensions={{

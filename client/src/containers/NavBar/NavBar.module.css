@@ -23,5 +23,9 @@
 }
 
 .start-button {
-  @apply rounded-xl bg-purple-950 px-5 py-3 font-bold tracking-wider text-white;
+  @apply relative rounded-xl bg-purple-950 px-5 py-3 font-bold tracking-wider text-white;
+  @apply hover:bg-purple-800;
+}
+.start-button:hover::before {
+  @apply absolute left-0 top-0 h-full w-full bg-purple-500/20 blur-lg content-[''];
 }
