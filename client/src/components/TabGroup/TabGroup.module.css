@@ -3,7 +3,7 @@
 }
 
 .tab-group-header {
-  @apply flex h-8 w-full;
+  @apply flex h-12 w-full items-stretch;
 }
 
 .tab-heads-div {

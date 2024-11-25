@@ -1,3 +1,5 @@
+import "dotenv/config";
+
 import path from "path";
 import http from "http";
 
@@ -35,6 +37,7 @@ server.listen(port, () => {
 	console.log(`Listening on port ${port}`);
 });
 
+import { query } from "./db/db_manager.js";
 (async () => {
 	// // any startup instructions for the server
 	// let code_analyser = new Code_Analyser(
@@ -45,4 +48,5 @@ server.listen(port, () => {
 	// );
 	// code_analyser.run();
 	// code_analyser.input("3");
+	// console.log((await query("SELECT * FROM users;")).rows);
 })();
