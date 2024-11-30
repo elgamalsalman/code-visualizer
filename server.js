@@ -3,9 +3,11 @@ import "dotenv/config";
 import path from "path";
 import http from "http";
 
-import express from "express";
 import cors from "cors";
+import express from "express";
+import session from "express-session";
 import expressWS from "express-ws";
+import passport from "passport";
 
 import api_routes from "./routes/api_routes.js";
 
@@ -20,6 +22,17 @@ expressWS(app, server);
 
 app.use(cors()); // prevent cors errors
 app.use(express.json());
+app.use(
+	session({
+		secret: process.env.SESSION_SECRET,
+		resave: false,
+		saveUninitialized: true,
+		cookie: { maxAge: 60 * 60 * 1000 }, // 1 hour
+	})
+);
+
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.use("/", express.static(path.resolve(process.cwd(), "client", "build")));
 
@@ -37,7 +50,7 @@ server.listen(port, () => {
 	console.log(`Listening on port ${port}`);
 });
 
-import { query } from "./db/db_manager.js";
+import db from "./db/db.js";
 (async () => {
 	// // any startup instructions for the server
 	// let code_analyser = new Code_Analyser(
@@ -48,5 +61,9 @@ import { query } from "./db/db_manager.js";
 	// );
 	// code_analyser.run();
 	// code_analyser.input("3");
-	// console.log((await query("SELECT * FROM users;")).rows);
+	// console.log((await db.query("SELECT * FROM users;")).rows);
+	// console.log(
+	// 	(await db.query("SELECT * FROM users WHERE username = $1", ["se2422"]))
+	// 		.rowCount
+	// );
 })();

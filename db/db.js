@@ -8,4 +8,4 @@ const query = async (text, params) => {
 	return res;
 };
 
-export { query };
+export default { query };

@@ -2,6 +2,7 @@
 
 import { Router } from "express";
 
+import api_auth_routes from "./api_auth_routes.js";
 import api_ws_routes from "./api_ws_routes.js";
 
 import auth from "../middlewares/auth_handler.js";
@@ -17,8 +18,9 @@ const router = Router();
 
 // --- routes ---
 
+router.use("/auth", api_auth_routes);
+
 router.use("/ws", ws_header);
-router.use(auth);
 
 router.put("/push", push_controller.push);
 router.post("/pull/file_tree", pull_controller.file_tree);
