@@ -27,15 +27,15 @@
      inkscape:pagecheckerboard="0"
      inkscape:deskcolor="#d1d1d1"
      inkscape:document-units="mm"
-     inkscape:zoom="0.15639036"
-     inkscape:cx="3372.97"
-     inkscape:cy="1400.3421"
+     inkscape:zoom="0.11058468"
+     inkscape:cx="4742.9714"
+     inkscape:cy="1709.0974"
      inkscape:window-width="1366"
      inkscape:window-height="704"
      inkscape:window-x="0"
      inkscape:window-y="27"
      inkscape:window-maximized="1"
-     inkscape:current-layer="layer1" /><defs
+     inkscape:current-layer="g175" /><defs
      id="defs1"><inkscape:path-effect
        effect="fillet_chamfer"
        id="path-effect742"
@@ -919,15 +919,15 @@
          style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:96px;font-family:Monospace;-inkscape-font-specification:Monospace;white-space:pre;shape-inside:url(#rect69);display:inline;fill:#172033;fill-opacity:1;stroke-width:1.39465;stroke-dasharray:none"><tspan
            x="421.11133"
            y="148.99023"
-           id="tspan152"><tspan
+           id="tspan147"><tspan
              style="font-weight:bold"
              id="tspan131">Code
 </tspan></tspan><tspan
            x="421.11133"
            y="268.99023"
-           id="tspan154"><tspan
+           id="tspan153"><tspan
              style="font-weight:bold"
-             id="tspan153">Visualizer</tspan></tspan></text></g><g
+             id="tspan152">Visualizer</tspan></tspan></text></g><g
        id="g99"
        inkscape:export-filename="logo.png"
        inkscape:export-xdpi="96"
@@ -1142,9 +1142,9 @@
          style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:96px;font-family:Monospace;-inkscape-font-specification:Monospace;white-space:pre;shape-inside:url(#rect19);display:inline;fill:#580067;fill-opacity:1;stroke-width:1.39465;stroke-dasharray:none"><tspan
            x="421.11133"
            y="148.99023"
-           id="tspan156"><tspan
+           id="tspan155"><tspan
              style="font-weight:bold"
-             id="tspan155">CodeVisualizer</tspan></tspan></text><g
+             id="tspan154">CodeVisualizer</tspan></tspan></text><g
          id="g31"
          inkscape:export-filename="logo_with_name.svg"
          inkscape:export-xdpi="96"
@@ -1193,9 +1193,9 @@
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:96px;font-family:Monospace;-inkscape-font-specification:Monospace;white-space:pre;shape-inside:url(#rect39);display:inline;fill:#ffffff;fill-opacity:1;stroke-width:1.39465;stroke-dasharray:none"><tspan
          x="421.11133"
          y="148.99023"
-         id="tspan158"><tspan
+         id="tspan157"><tspan
            style="font-weight:bold"
-           id="tspan157">CodeVisualizer</tspan></tspan></text><g
+           id="tspan156">CodeVisualizer</tspan></tspan></text><g
        id="g39"
        inkscape:export-filename="logo_with_name.svg"
        inkscape:export-xdpi="96"
@@ -1286,27 +1286,27 @@
        style="font-size:85.3333px;font-family:Monospace;-inkscape-font-specification:Monospace;text-align:center;letter-spacing:0px;white-space:pre;shape-inside:url(#rect57);display:inline;fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:1.39465"><tspan
          x="1336.295"
          y="123.77927"
-         id="tspan160"><tspan
+         id="tspan159"><tspan
            style="stroke:none"
-           id="tspan159">About</tspan></tspan></text><text
+           id="tspan158">About</tspan></tspan></text><text
        xml:space="preserve"
        transform="matrix(0.26458333,0,0,0.26458333,126.28268,28.90824)"
        id="text58"
        style="font-size:85.3333px;font-family:Monospace;-inkscape-font-specification:Monospace;text-align:center;letter-spacing:0px;white-space:pre;shape-inside:url(#rect58);display:inline;fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:1.39465"><tspan
          x="1259.2325"
          y="123.77927"
-         id="tspan162"><tspan
+         id="tspan161"><tspan
            style="stroke:none"
-           id="tspan161">Products</tspan></tspan></text><text
+           id="tspan160">Products</tspan></tspan></text><text
        xml:space="preserve"
        transform="matrix(0.26458333,0,0,0.26458333,300.05308,28.90824)"
        id="text59"
        style="font-size:85.3333px;font-family:Monospace;-inkscape-font-specification:Monospace;text-align:center;letter-spacing:0px;white-space:pre;shape-inside:url(#rect59);display:inline;fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:1.39465"><tspan
          x="1207.8575"
          y="123.77927"
-         id="tspan164"><tspan
+         id="tspan163"><tspan
            style="stroke:none"
-           id="tspan163">Enterprise
+           id="tspan162">Enterprise
 </tspan></tspan></text><text
        xml:space="preserve"
        transform="matrix(0.26458333,0,0,0.26458333,717.87489,28.90824)"
@@ -1314,18 +1314,18 @@
        style="font-size:85.3333px;font-family:Monospace;-inkscape-font-specification:Monospace;text-align:center;letter-spacing:0px;white-space:pre;shape-inside:url(#rect61);display:inline;fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:1.39465"><tspan
          x="1336.295"
          y="123.77927"
-         id="tspan166"><tspan
+         id="tspan165"><tspan
            style="stroke:none"
-           id="tspan165">Login</tspan></tspan></text><text
+           id="tspan164">Login</tspan></tspan></text><text
        xml:space="preserve"
        transform="matrix(0.26458333,0,0,0.26458333,877.18827,28.90824)"
        id="text63"
        style="font-size:85.3333px;font-family:Monospace;-inkscape-font-specification:Monospace;text-align:center;letter-spacing:0px;white-space:pre;shape-inside:url(#rect63);display:inline;fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:1.39465"><tspan
          x="1233.545"
          y="123.77927"
-         id="tspan168"><tspan
+         id="tspan167"><tspan
            style="font-weight:bold;stroke:none"
-           id="tspan167">Code Now!</tspan></tspan></text><rect
+           id="tspan166">Code Now!</tspan></tspan></text><rect
        style="opacity:1;fill:url(#radialGradient78);fill-opacity:0.5;stroke:none;stroke-width:1.05138;stroke-dasharray:none;stroke-opacity:1"
        id="rect76"
        width="834.04559"
@@ -2482,9 +2482,9 @@
          y="0"><tspan
            x="924.2207"
            y="957.11719"
-           id="tspan170"><tspan
+           id="tspan169"><tspan
              style="text-align:start"
-             id="tspan169">DSA:
+             id="tspan168">DSA:
 </tspan></tspan></text><text
          xml:space="preserve"
          transform="matrix(0.26458333,0,0,0.26458333,-130.26109,313.82876)"
@@ -2494,12 +2494,12 @@
          y="0"><tspan
            x="924.2207"
            y="1027.8984"
-           id="tspan173"><tspan
+           id="tspan172"><tspan
              style="text-align:start"
-             id="tspan171">Made </tspan><tspan
+             id="tspan170">Made </tspan><tspan
              dx="-100"
              style="font-weight:bold;font-size:400px;letter-spacing:100px;word-spacing:0px"
-             id="tspan172">Visual!</tspan></tspan></text><text
+             id="tspan171">Visual!</tspan></tspan></text><text
          xml:space="preserve"
          transform="matrix(0.26458333,0,0,0.26458333,-130.34377,171.54268)"
          id="text554"
@@ -2508,9 +2508,9 @@
          y="0"><tspan
            x="924.2207"
            y="957.11719"
-           id="tspan175"><tspan
+           id="tspan174"><tspan
              style="text-align:start"
-             id="tspan174">&gt; Linked-lists</tspan></tspan></text></g><rect
+             id="tspan173">&gt; Linked-lists</tspan></tspan></text></g><rect
        style="fill:#434869;fill-opacity:0.520115;stroke:#53156a;stroke-width:4.99999;stroke-dasharray:none;stroke-opacity:1;filter:url(#filter536)"
        id="rect532"
        width="267.03659"
@@ -2532,9 +2532,9 @@
        style="font-size:160px;font-family:Monospace;-inkscape-font-specification:Monospace;text-align:center;letter-spacing:0px;white-space:pre;shape-inside:url(#rect521);display:inline;fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:1.39465"><tspan
          x="1369.4404"
          y="189.8418"
-         id="tspan177"><tspan
+         id="tspan176"><tspan
            style="stroke:none"
-           id="tspan176">&quot;code&quot;</tspan></tspan></text><rect
+           id="tspan175">&quot;code&quot;</tspan></tspan></text><rect
        style="fill:#434869;fill-opacity:0.520115;stroke:#53156a;stroke-width:4.99999;stroke-dasharray:none;stroke-opacity:1;filter:url(#filter535)"
        id="rect533"
        width="334.45938"
@@ -2558,7 +2558,7 @@
          y="189.8418"
          id="tspan179"><tspan
            style="stroke:none"
-           id="tspan178">&quot;visualize&quot;</tspan></tspan></text><rect
+           id="tspan177">&quot;visualize&quot;</tspan></tspan></text><rect
        style="fill:#434869;fill-opacity:0.520115;stroke:#53156a;stroke-width:4.99999;stroke-dasharray:none;stroke-opacity:1;filter:url(#filter534)"
        id="rect534"
        width="298.58789"
@@ -3236,17 +3236,18 @@
        x="889.20575"
        y="2464.219"
        ry="0.86196631" /><g
-       id="g177"><path
+       id="g177"
+       transform="translate(4.15544,-42.952595)"><path
          id="path151"
-         style="fill:#48125c;stroke-width:4.49378;stroke-linecap:round;fill-opacity:1;opacity:0.5;filter:url(#filter155)"
+         style="opacity:0.5;fill:#48125c;fill-opacity:1;stroke-width:4.49378;stroke-linecap:round;filter:url(#filter155)"
          d="m 1524.9461,91.995491 h 330.7762 c 12.4898,0 22.5448,10.054959 22.5448,22.544749 v 140.0493 c 0,12.48979 -10.055,22.54474 -22.5448,22.54474 h -330.7762 c -12.4898,0 -22.5447,-10.05495 -22.5447,-22.54474 v -140.0493 c 0,-12.48979 10.0549,-22.544749 22.5447,-22.544749 z" /><path
          id="rect177"
-         style="fill:#3b3e5e;stroke-width:4.49378;stroke-linecap:round;fill-opacity:1"
+         style="fill:#3b3e5e;fill-opacity:1;stroke-width:4.49378;stroke-linecap:round"
          d="m 1524.9461,91.995491 h 330.7762 c 12.4898,0 22.5448,10.054959 22.5448,22.544749 v 140.0493 c 0,12.48979 -10.055,22.54474 -22.5448,22.54474 h -330.7762 c -12.4898,0 -22.5447,-10.05495 -22.5447,-22.54474 v -140.0493 c 0,-12.48979 10.0549,-22.544749 22.5447,-22.544749 z" /><text
          xml:space="preserve"
          transform="matrix(0.26458333,0,0,0.26458333,674.41639,-181.8515)"
          id="text191"
-         style="font-size:96px;line-height:1;font-family:Monospace;-inkscape-font-specification:Monospace;text-align:start;letter-spacing:0px;word-spacing:0px;white-space:pre;shape-inside:url(#rect192);fill:#220098;fill-opacity:1;stroke:none;stroke-width:18.8976;stroke-linecap:round"
+         style="font-size:96px;line-height:1;font-family:Monospace;-inkscape-font-specification:Monospace;text-align:start;letter-spacing:0px;word-spacing:0px;white-space:pre;shape-inside:url(#rect192);display:inline;fill:#220098;fill-opacity:1;stroke:none;stroke-width:18.8976;stroke-linecap:round"
          x="-109.5"
          y="0"><tspan
            x="3272.9473"
@@ -3265,7 +3266,7 @@
    style="fill:#f5f9fc"
    id="tspan246">:</tspan> <tspan
    style="fill:#9eb96f"
-   id="tspan247">0xbbbb05</tspan><tspan
+   id="tspan247">0xbbbb01</tspan><tspan
    style="fill:#f5f9fc"
    id="tspan248">,</tspan>
 </tspan><tspan
@@ -3277,7 +3278,7 @@
    style="fill:#f5f9fc"
    id="tspan251">:</tspan> <tspan
    style="fill:#ffbd7a"
-   id="tspan252">&quot;interact&quot;</tspan><tspan
+   id="tspan252">&quot;code&quot;</tspan><tspan
    style="fill:#f5f9fc"
    id="tspan253">,</tspan>
 </tspan><tspan
@@ -3289,7 +3290,7 @@
    style="fill:#f5f9fc"
    id="tspan256">:</tspan> <tspan
    style="fill:#9eb96f"
-   id="tspan257">0x000000</tspan><tspan
+   id="tspan257">0xbbbb02</tspan><tspan
    style="fill:#f5f9fc"
    id="tspan258">,</tspan>
 </tspan><tspan
@@ -3298,9 +3299,10 @@
            id="tspan261"><tspan
              style="fill:#f5f9fc"
              id="tspan260">}</tspan></tspan></text></g><g
-       id="g176"><path
+       id="g176"
+       transform="translate(1.06714,-35.346919)"><path
          id="path152"
-         style="fill:#48125c;fill-opacity:1;stroke-width:4.49378;stroke-linecap:round;opacity:0.5;filter:url(#filter154)"
+         style="opacity:0.5;fill:#48125c;fill-opacity:1;stroke-width:4.49378;stroke-linecap:round;filter:url(#filter154)"
          d="m 1528.0344,326.77753 h 330.7762 c 12.4898,0 22.5448,10.05496 22.5448,22.54475 v 140.0493 c 0,12.48979 -10.055,22.54474 -22.5448,22.54474 h -330.7762 c -12.4898,0 -22.5447,-10.05495 -22.5447,-22.54474 v -140.0493 c 0,-12.48979 10.0549,-22.54475 22.5447,-22.54475 z" /><path
          id="path1"
          style="fill:#3b3e5e;fill-opacity:1;stroke-width:4.49378;stroke-linecap:round"
@@ -3308,7 +3310,7 @@
          xml:space="preserve"
          transform="matrix(0.26458333,0,0,0.26458333,669.85868,52.930536)"
          id="text126"
-         style="font-size:96px;line-height:1;font-family:Monospace;-inkscape-font-specification:Monospace;text-align:start;letter-spacing:0px;word-spacing:0px;white-space:pre;shape-inside:url(#rect126);fill:#220098;fill-opacity:1;stroke:none;stroke-width:18.8976;stroke-linecap:round"
+         style="font-size:96px;line-height:1;font-family:Monospace;-inkscape-font-specification:Monospace;text-align:start;letter-spacing:0px;word-spacing:0px;white-space:pre;shape-inside:url(#rect126);display:inline;fill:#220098;fill-opacity:1;stroke:none;stroke-width:18.8976;stroke-linecap:round"
          x="-109.5"
          y="0"><tspan
            x="3272.9473"
@@ -3327,7 +3329,7 @@
    style="fill:#f5f9fc"
    id="tspan266">:</tspan> <tspan
    style="fill:#9eb96f"
-   id="tspan267">0xbbbb05</tspan><tspan
+   id="tspan267">0xbbbb02</tspan><tspan
    style="fill:#f5f9fc"
    id="tspan268">,</tspan>
 </tspan><tspan
@@ -3351,7 +3353,7 @@
    style="fill:#f5f9fc"
    id="tspan276">:</tspan> <tspan
    style="fill:#9eb96f"
-   id="tspan277">0x000000</tspan><tspan
+   id="tspan277">0xbbbb05</tspan><tspan
    style="fill:#f5f9fc"
    id="tspan278">,</tspan>
 </tspan><tspan
@@ -3361,7 +3363,7 @@
              style="fill:#f5f9fc"
              id="tspan280">}</tspan></tspan></text></g><g
        id="g175"
-       transform="translate(842.25343,146.31609)"><path
+       transform="translate(842.25343,103.3635)"><path
          id="path153"
          style="opacity:0.5;fill:#48125c;fill-opacity:1;stroke-width:4.49378;stroke-linecap:round;filter:url(#filter153)"
          d="m 686.84812,430.45483 h 330.77618 c 12.4898,0 22.5448,10.05496 22.5448,22.54475 v 140.0493 c 0,12.48979 -10.055,22.54474 -22.5448,22.54474 H 686.84812 c -12.4898,0 -22.5447,-10.05495 -22.5447,-22.54474 v -140.0493 c 0,-12.48979 10.0549,-22.54475 22.5447,-22.54475 z" /><path
@@ -3371,7 +3373,7 @@
          xml:space="preserve"
          transform="matrix(0.26458333,0,0,0.26458333,-163.68157,156.60784)"
          id="text151"
-         style="font-size:96px;line-height:1;font-family:Monospace;-inkscape-font-specification:Monospace;text-align:start;letter-spacing:0px;word-spacing:0px;white-space:pre;shape-inside:url(#rect151);fill:#220098;fill-opacity:1;stroke:none;stroke-width:18.8976;stroke-linecap:round"
+         style="font-size:96px;line-height:1;font-family:Monospace;-inkscape-font-specification:Monospace;text-align:start;letter-spacing:0px;word-spacing:0px;white-space:pre;shape-inside:url(#rect151);display:inline;fill:#220098;fill-opacity:1;stroke:none;stroke-width:18.8976;stroke-linecap:round"
          x="-109.5"
          y="0"><tspan
            x="3272.9473"
@@ -3413,8 +3415,8 @@
    id="tspan295">next</tspan><tspan
    style="fill:#f5f9fc"
    id="tspan296">:</tspan> <tspan
-   style="fill:#9eb96f"
-   id="tspan297">0x000000</tspan><tspan
+   style="fill:#4787c9"
+   id="tspan297">nullptr</tspan><tspan
    style="fill:#f5f9fc"
    id="tspan298">,</tspan>
 </tspan><tspan

@@ -2,8 +2,9 @@ import React from "react";
 import { Routes, Route, BrowserRouter } from "react-router-dom";
 
 import Home from "src/pages/Home/Home";
-import Register from "src/pages/Register/Register";
-import Login from "src/pages/Login/Login";
+import RegisterLogin, {
+  pageTypes as registerLoginPageTypes,
+} from "src/pages/RegisterLogin/RegisterLogin";
 import NotFound from "src/pages/NotFound/NotFound";
 import Editor from "src/pages/Editor/Editor";
 
@@ -14,8 +15,14 @@ function RootRouter() {
         <Route path={"/"}>
           <Route>
             <Route index element={<Home />} />
-            <Route path={"register"} element={<Register />} />
-            <Route path={"login"} element={<Login />} />
+            <Route
+              path={"register"}
+              element={<RegisterLogin type={registerLoginPageTypes.register} />}
+            />
+            <Route
+              path={"login"}
+              element={<RegisterLogin type={registerLoginPageTypes.login} />}
+            />
             <Route path={"*"} element={<NotFound />} />
           </Route>
           <Route path={"/projects"}>

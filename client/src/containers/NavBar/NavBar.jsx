@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import clsx from "clsx";
 import styles from "./NavBar.module.css";
 
@@ -39,17 +40,8 @@ function NavBar() {
         <div
           className={clsx(styles["nav-bar-section"], styles["right-section"])}
         >
-          <div
-            className={clsx(styles["page-button"], styles["login-button"])}
-            onClick={() => navigate("/register")}
-          >
-            Register
-          </div>
-          <div
-            className={styles["start-button"]}
-            onClick={() => navigate("/login")}
-          >
-            Code Now!
+          <div className={clsx(styles["page-button"], styles["login-button"])}>
+            Login
           </div>
         </div>
       </div>

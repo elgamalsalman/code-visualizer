@@ -37,7 +37,7 @@
 }
 
 .moto-graph-div {
-  @apply absolute right-0 top-0 z-10 h-full w-full;
+  @apply pointer-events-none absolute right-0 top-0 z-10 h-full w-full;
 }
 .moto-graph {
   @apply h-fit w-full;
