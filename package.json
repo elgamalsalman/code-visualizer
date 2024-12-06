@@ -15,6 +15,7 @@
   "author": "Salman El Gamal",
   "license": "MIT",
   "dependencies": {
+    "@drdgvhbh/postgres-error-codes": "^0.0.6",
     "bcrypt": "^5.1.1",
     "child_process": "^1.0.2",
     "cors": "^2.8.5",

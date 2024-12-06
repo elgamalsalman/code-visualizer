@@ -142,6 +142,11 @@
     "@babel/helper-string-parser" "^7.25.9"
     "@babel/helper-validator-identifier" "^7.25.9"
 
+"@drdgvhbh/postgres-error-codes@^0.0.6":
+  version "0.0.6"
+  resolved "https://registry.yarnpkg.com/@drdgvhbh/postgres-error-codes/-/postgres-error-codes-0.0.6.tgz#ff1c6258771894c5c7662495531c38b46e1cc037"
+  integrity sha512-tAz0Xp+qhq90x0r/3VW96iRdHFw72cYQqXa65u0eFVhSMC27bc2gZ8Ky5WXEmshrl/bCe7QTYBNEF0U5zeSQjw==
+
 "@jridgewell/gen-mapping@^0.3.5":
   version "0.3.5"
   resolved "https://registry.npmjs.org/@jridgewell/gen-mapping/-/gen-mapping-0.3.5.tgz"

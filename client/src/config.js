@@ -9,6 +9,18 @@ const config = {
       },
       auth: {
         url: "http://localhost:3001/api/v1/auth",
+        register: {
+          url: "http://localhost:3001/api/v1/auth/register",
+          password: {
+            url: "http://localhost:3001/api/v1/auth/register/password",
+          },
+        },
+        login: {
+          url: "http://localhost:3001/api/v1/auth/login",
+          password: {
+            url: "http://localhost:3001/api/v1/auth/login/password",
+          },
+        },
       },
     },
     http_codes: {
