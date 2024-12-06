@@ -1,5 +1,5 @@
 .nav-bar {
-  @apply h-16 px-16 py-4;
+  @apply px-8;
 }
 
 .nav-bar-border {
@@ -12,18 +12,18 @@
 }
 
 .logo-div {
-  @apply h-16 py-4;
+  @apply h-20 pb-[1.125rem] pt-[0.875rem] hover:cursor-pointer;
 }
 .logo {
   @apply h-full w-fit;
 }
 
 .page-button {
-  @apply py-4 text-gray-300 hover:text-white;
+  @apply py-4 text-gray-300 hover:cursor-pointer hover:text-white;
 }
 
 .start-button {
-  @apply relative rounded-xl bg-purple-950 px-5 py-3 font-bold tracking-wider text-white;
+  @apply relative rounded-xl bg-purple-950 px-5 py-3 font-bold tracking-wider text-white hover:cursor-pointer;
   @apply hover:bg-purple-800;
 }
 .start-button:hover::before {

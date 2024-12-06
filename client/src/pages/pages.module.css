@@ -1,11 +1,11 @@
 .page-dark-background {
-  @apply bg-slate-900;
+  @apply relative bg-slate-900;
 }
 
 .page-dark-background::before {
-  @apply absolute bottom-[20%] left-[20%] z-0 rounded-full bg-purple-700/20 p-32 blur-[256px] content-[''];
+  @apply absolute bottom-[20%] left-[20%] z-0 rounded-full bg-purple-700/30 p-32 blur-[256px] content-[''];
 }
 
 .page-dark-background::after {
-  @apply absolute bottom-[30%] left-[40%] z-0 rounded-full bg-purple-700/10 p-52 blur-[256px] content-[''];
+  @apply absolute bottom-[30%] left-[40%] z-0 rounded-full bg-purple-700/20 p-52 blur-[256px] content-[''];
 }

@@ -3,38 +3,12 @@ import clsx from "clsx";
 import commonPageStyles from "../pages.module.css";
 import styles from "./Home.module.css";
 
+import config from "src/config";
+
 import NavBar from "src/containers/NavBar/NavBar";
 import MotoGraph from "src/components/MotoGraph/MotoGraph";
 
-const dataStructuresPresented = [
-  { name: "Linked-lists", isAvailable: true },
-  { name: "Trees", isAvailable: true },
-  { name: "Vectors", isAvailable: false },
-  { name: "Graphs", isAvailable: false },
-];
-
 function Home() {
-  const [motoGraphDivDimensions, setMotoGraphDivDimensions] = useState({
-    x: 1525,
-    y: 667,
-  });
-  useEffect(() => {
-    const motoGraphDiv = document.getElementsByClassName(
-      styles["moto-graph-div"],
-    )[0];
-    const observer = new ResizeObserver(() => {
-      setMotoGraphDivDimensions({
-        x: motoGraphDiv.offsetWidth,
-        y: motoGraphDiv.offsetHeight,
-      });
-    });
-    observer.observe(motoGraphDiv);
-
-    return () => {
-      observer.disconnect();
-    };
-  }, []);
-
   return (
     <div
       className={clsx(
@@ -50,7 +24,7 @@ function Home() {
             <div className={styles["data-structures-line-marker"]}>{"> "}</div>
             <div className={styles["data-structures-list-div"]}>
               <div className={styles["data-structures-list"]}>
-                {dataStructuresPresented.map((ds) => (
+                {config.home.dataStructuresPresented.map((ds) => (
                   <div
                     key={ds.name}
                     className={clsx(
@@ -71,13 +45,14 @@ function Home() {
         <div className={styles["moto-graph-div"]}>
           <MotoGraph
             className={styles["moto-graph"]}
-            offset={{
-              x: motoGraphDivDimensions.x * (6.75 / 12),
-              y: motoGraphDivDimensions.y * (1 / 6),
+            divClassName={styles["moto-graph-div"]}
+            offsetFactors={{
+              x: 6.75 / 12,
+              y: 1.75 / 12,
             }}
-            dimensions={{
-              x: motoGraphDivDimensions.x * (3 / 12),
-              y: motoGraphDivDimensions.y * (2 / 3),
+            dimensionFactors={{
+              x: 3 / 12,
+              y: 2 / 3,
             }}
           />
         </div>

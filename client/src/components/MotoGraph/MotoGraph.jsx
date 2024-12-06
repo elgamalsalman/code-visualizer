@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import {
   ReactFlow,
   useNodesState,
@@ -74,7 +80,7 @@ const targetNodesCompact = [
   baseTargetNodes[1],
   {
     ...baseTargetNodes[2],
-    fractionalPosition: { x: 0.3, y: baseTargetNodes[2].fractionalPosition.y },
+    fractionalPosition: { x: 0.15, y: baseTargetNodes[2].fractionalPosition.y },
   },
 ];
 const getTargetNodes = (compact, offset, dimensions) => {
@@ -134,7 +140,48 @@ const edges = [
   },
 ];
 
-function MotoGraph({ className, compact, offset, dimensions }) {
+function MotoGraph({
+  className,
+  divClassName,
+  compact,
+  offsetFactors,
+  dimensionFactors,
+}) {
+  // div states
+  const [isGraphFirstUpdateDone, setIsGraphFirstUpdateDone] = useState(false);
+  const [motoGraphDivDimensions, setMotoGraphDivDimensions] = useState({
+    x: 0,
+    y: 0,
+  });
+  useEffect(() => {
+    const motoGraphDiv = document.getElementsByClassName(divClassName)[0];
+    const observer = new ResizeObserver(() => {
+      setMotoGraphDivDimensions({
+        x: motoGraphDiv.offsetWidth,
+        y: motoGraphDiv.offsetHeight,
+      });
+    });
+    observer.observe(motoGraphDiv);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [divClassName]);
+
+  // div variables FIXME
+  const offset = useMemo(() => {
+    return {
+      x: motoGraphDivDimensions.x * offsetFactors.x,
+      y: motoGraphDivDimensions.y * offsetFactors.y,
+    };
+  }, [motoGraphDivDimensions, offsetFactors]);
+  const dimensions = useMemo(() => {
+    return {
+      x: motoGraphDivDimensions.x * dimensionFactors.x,
+      y: motoGraphDivDimensions.y * dimensionFactors.y,
+    };
+  }, [motoGraphDivDimensions, dimensionFactors]);
+
   const targetNodesRef = useRef(getTargetNodes(compact, offset, dimensions));
   const [nodes, setNodes, onNodesChange] = useNodesState(
     targetNodesRef.current,
@@ -186,6 +233,14 @@ function MotoGraph({ className, compact, offset, dimensions }) {
       nodeUpdater(node),
     );
     prevDimensionsRef.current = dimensions;
+
+    // only display graph after first update
+    if (
+      !(dimensions.x === 0 && dimensions.y === 0) &&
+      !isGraphFirstUpdateDone
+    ) {
+      setIsGraphFirstUpdateDone(true);
+    }
   }, [dimensions, setNodes]);
 
   // node activity
@@ -289,8 +344,8 @@ function MotoGraph({ className, compact, offset, dimensions }) {
   return (
     <ReactFlow
       className={clsx(className, styles["react-flow"])}
-      nodes={nodes}
-      edges={edges}
+      nodes={isGraphFirstUpdateDone ? nodes : []}
+      edges={isGraphFirstUpdateDone ? edges : []}
       nodeTypes={nodeTypes}
       onNodesChange={onNodesChange}
       preventScrolling

@@ -1,3 +1,11 @@
+.react-flow {
+  @apply block;
+}
+
+.react-flow-hidden {
+  @apply hidden;
+}
+
 @keyframes edge-animation {
   0% {
     stroke-dashoffset: 0;

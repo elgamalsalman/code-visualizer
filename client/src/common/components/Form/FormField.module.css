@@ -1,0 +1,26 @@
+.field-div {
+  @apply relative h-16 gap-1 rounded-lg bg-gray-200 p-3 pt-7 font-mono text-gray-900 hover:cursor-text;
+  @apply border-2 border-gray-200;
+}
+:not(.field-div-inactive).field-div-focused {
+  @apply border-gray-300;
+}
+:not(.field-div-inactive).field-div-error {
+  @apply border-red-300 bg-red-100 text-red-600;
+}
+
+.field-title {
+  @apply absolute left-2 top-2 text-xs uppercase;
+}
+.required-field-asterisk {
+  @apply text-red-500;
+}
+
+.field {
+  @apply h-5 w-full resize-none overflow-hidden whitespace-nowrap bg-transparent outline-none;
+}
+
+.field-div-inactive,
+.field-div-inactive * {
+  @apply text-gray-400 hover:cursor-not-allowed;
+}

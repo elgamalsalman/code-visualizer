@@ -21,4 +21,21 @@ const generateId = (() => {
   };
 })();
 
-export { generateHash, generateId };
+const validatePassword = (password) => {
+  const minPasswordLength = 8;
+  const specialCharacters = /[`!@#$%^&*()_\-+=\[\]{};':"\\|,.<>\/?~]/;
+  const lowercaseLetters = /[a-z]/;
+  const uppercaseLetters = /[A-Z]/;
+  const numbers = /\d/;
+  if (
+    password.length >= minPasswordLength &&
+    lowercaseLetters.test(password) &&
+    uppercaseLetters.test(password) &&
+    specialCharacters.test(password) &&
+    numbers.test(password)
+  ) {
+    return true;
+  } else return false;
+};
+
+export { generateHash, generateId, validatePassword };

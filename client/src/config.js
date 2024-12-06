@@ -1,5 +1,13 @@
 const config = {
   userId: "test_user",
+  home: {
+    dataStructuresPresented: [
+      { name: "Linked-lists", isAvailable: true },
+      { name: "Trees", isAvailable: true },
+      { name: "Vectors", isAvailable: false },
+      { name: "Graphs", isAvailable: false },
+    ],
+  },
   server: {
     url: "http://localhost:3001",
     api: {

@@ -1,0 +1,5 @@
+.or-divider {
+  @apply relative w-full text-center text-gray-500;
+  @apply after:absolute after:left-0 after:top-[50%] after:h-0.5 after:w-[calc((100%-3rem)/2)] after:-translate-y-1/4 after:bg-gray-300 after:content-[''];
+  @apply before:absolute before:right-0 before:top-[50%] before:h-0.5 before:w-[calc((100%-3rem)/2)] before:-translate-y-1/4 before:bg-gray-300 before:content-[''];
+}

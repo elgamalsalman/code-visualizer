@@ -1,0 +1,20 @@
+.button {
+  @apply flex h-12 items-center justify-center gap-3 rounded-lg bg-gray-200 font-mono text-black;
+  @apply hover:cursor-pointer;
+}
+:not(.button-inactive).button:hover,
+:not(.button-inactive).button:focus {
+  @apply bg-gray-300;
+}
+
+.button-cta {
+  @apply bg-purple-700 font-bold text-purple-200;
+}
+:not(.button-inactive).button-cta:hover,
+:not(.button-inactive).button-cta:focus {
+  @apply bg-purple-600 text-white;
+}
+.button-inactive {
+  @apply bg-gray-200 font-normal text-gray-400;
+  @apply hover:cursor-not-allowed;
+}
