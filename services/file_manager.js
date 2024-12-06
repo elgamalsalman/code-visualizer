@@ -11,6 +11,11 @@ export default class File_Manager {
 
 	constructor() {
 		this.#users_dir = path.resolve(config.users.files.root_dir_path);
+
+		// create users dir if it doesn't exist
+		if (!fs.existsSync(this.#users_dir)) {
+			fs.mkdirSync(this.#users_dir);
+		}
 	}
 
 	create_user_dir = async (user_id) => {

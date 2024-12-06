@@ -15,6 +15,9 @@ const config = {
       ws: {
         url: "http://localhost:3001/api/v1/ws",
       },
+      auth: {
+        url: "http://localhost:3001/api/v1/auth",
+      },
     },
     http_codes: {
       success: 200,
