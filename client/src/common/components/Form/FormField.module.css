@@ -10,10 +10,16 @@
 }
 
 .field-title {
-  @apply absolute left-2 top-2 text-xs uppercase;
+  @apply absolute right-0 top-2 w-full px-2 text-xs uppercase;
 }
 .required-field-asterisk {
   @apply text-red-500;
+}
+.error-icon {
+  @apply mr-[0.375em] inline-block h-4 w-4 text-red-500;
+}
+.error-message {
+  @apply absolute right-2 inline-block text-red-500;
 }
 
 .field {

@@ -28,11 +28,11 @@ const validatePassword = (password) => {
   const uppercaseLetters = /[A-Z]/;
   const numbers = /\d/;
   if (
-    password.length >= minPasswordLength &&
-    lowercaseLetters.test(password) &&
-    uppercaseLetters.test(password) &&
-    specialCharacters.test(password) &&
-    numbers.test(password)
+    password.length >= minPasswordLength
+    // lowercaseLetters.test(password) &&
+    // uppercaseLetters.test(password) &&
+    // specialCharacters.test(password) &&
+    // numbers.test(password)
   ) {
     return true;
   } else return false;

@@ -2,9 +2,9 @@ import React from "react";
 import { Routes, Route, BrowserRouter } from "react-router-dom";
 
 import Home from "src/pages/Home/Home";
-import RegisterLogin, {
-  pageTypes as registerLoginPageTypes,
-} from "src/pages/RegisterLogin/RegisterLogin";
+import Register from "src/pages/Auth/Register";
+import Login from "src/pages/Auth/Login";
+import EmailVerification from "src/pages/Auth/EmailVerification";
 import NotFound from "src/pages/NotFound/NotFound";
 import Editor from "src/pages/Editor/Editor";
 
@@ -15,14 +15,14 @@ function RootRouter() {
         <Route path={"/"}>
           <Route>
             <Route index element={<Home />} />
-            <Route
-              path={"register"}
-              element={<RegisterLogin type={registerLoginPageTypes.register} />}
-            />
-            <Route
-              path={"login"}
-              element={<RegisterLogin type={registerLoginPageTypes.login} />}
-            />
+            <Route>
+              <Route path={"register"} element={<Register />} />
+              <Route path={"login"} element={<Login />} />
+              <Route
+                path={"email-verification"}
+                element={<EmailVerification />}
+              />
+            </Route>
             <Route path={"*"} element={<NotFound />} />
           </Route>
           <Route path={"/projects"}>

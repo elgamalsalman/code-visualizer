@@ -1,0 +1,11 @@
+.checkbox-div {
+  @apply flex items-center gap-3;
+}
+
+.checkbox {
+  @apply h-4 w-4;
+}
+
+.required-asterisk {
+  @apply text-red-500;
+}

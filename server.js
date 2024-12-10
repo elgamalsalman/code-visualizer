@@ -50,7 +50,6 @@ server.listen(port, () => {
 	console.log(`Listening on port ${port}`);
 });
 
-import db from "./db/db.js";
 (async () => {
 	// // any startup instructions for the server
 	// let code_analyser = new Code_Analyser(

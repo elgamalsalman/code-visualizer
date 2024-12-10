@@ -1,6 +1,6 @@
 .button {
   @apply flex h-12 items-center justify-center gap-3 rounded-lg bg-gray-200 font-mono text-black;
-  @apply hover:cursor-pointer;
+  @apply border-none hover:cursor-pointer;
 }
 :not(.button-inactive).button:hover,
 :not(.button-inactive).button:focus {
@@ -8,7 +8,7 @@
 }
 
 .button-cta {
-  @apply bg-purple-700 font-bold text-purple-200;
+  @apply bg-purple-700 font-bold text-purple-100;
 }
 :not(.button-inactive).button-cta:hover,
 :not(.button-inactive).button-cta:focus {
@@ -17,4 +17,11 @@
 .button-inactive {
   @apply bg-gray-200 font-normal text-gray-400;
   @apply hover:cursor-not-allowed;
+}
+
+.content {
+  @apply relative;
+}
+.icon-div {
+  @apply absolute top-1/2 -translate-y-1/2 translate-x-[calc(-100%-0.75em)];
 }

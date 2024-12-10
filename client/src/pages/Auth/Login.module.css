@@ -1,0 +1,24 @@
+.page {
+  @apply flex h-svh;
+}
+
+.content {
+  @apply flex h-full grow flex-col justify-between px-10 py-10;
+}
+
+.title {
+  @apply flex flex-col items-center font-mono text-xl;
+}
+
+.form-main-body {
+  @apply flex flex-col justify-between gap-10;
+}
+
+.external-registrations,
+.internal-registration {
+  @apply flex w-full flex-col gap-4;
+}
+
+.alternative-page-link {
+  @apply flex justify-center;
+}
