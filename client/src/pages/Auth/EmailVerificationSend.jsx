@@ -1,16 +1,15 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import clsx from "clsx";
-import styles from "./EmailVerification.module.css";
+import styles from "./EmailVerificationSend.module.css";
 import globalStyles from "src/pages/globalStyles.module.css";
 
 import { SideCanvas } from "./shared";
+import { requestEmailVerification } from "src/api/authService";
 
-function EmailVerification() {
+function EmailVerificationSend() {
   const location = useLocation();
   const { email } = location.state;
-
-  // email resending
   const [resent, setResent] = useState(false);
 
   return (
@@ -26,27 +25,27 @@ function EmailVerification() {
             A verification email was sent to the following email
           </div>
           <div className={styles["email-div"]}>{email}</div>
-          <div
+          <button
             className={clsx(styles["resend"], resent && styles["resend-done"])}
             onClick={() => {
               if (!resent) {
-                // TODO: resent email
+                requestEmailVerification(email);
                 setResent(true);
               }
             }}
           >
             {resent ? "email resent" : "resend email"}
-          </div>
+          </button>
         </div>
         <div className={styles["alternative-page-links"]}>
           <div>
-            <Link to={"/register"} className={globalStyles["link"]}>
+            <Link to={"/auth/register"} className={globalStyles["link"]}>
               Register
             </Link>
           </div>
           <div className={styles["links-separator"]}></div>
           <div>
-            <Link to={"/login"} className={globalStyles["link"]}>
+            <Link to={"/auth/login"} className={globalStyles["link"]}>
               Login
             </Link>
           </div>
@@ -56,4 +55,4 @@ function EmailVerification() {
   );
 }
 
-export default EmailVerification;
+export default EmailVerificationSend;

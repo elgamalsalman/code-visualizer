@@ -9,7 +9,7 @@ passport.use(
 	new passportLocal.Strategy(
 		{ usernameField: "email", passwordField: "password", session: false },
 		async (email, password, done) => {
-			const user = await db.users.get_user({ email, password });
+			const user = await db.users.auth_user({ email, password });
 
 			if (user === null) done(null, false);
 			else done(null, user);

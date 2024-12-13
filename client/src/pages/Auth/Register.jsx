@@ -19,7 +19,10 @@ import {
   FormCheckBox,
   FormOrDivider,
 } from "src/common/components/Form";
-import { registerUserPassword } from "src/api/authService";
+import {
+  registerUserPassword,
+  requestEmailVerification,
+} from "src/api/authService";
 
 function Register() {
   const navigate = useNavigate();
@@ -114,8 +117,11 @@ function Register() {
                     password,
                     name,
                   );
-                  navigate("/email-verification", { state: { email } });
-                  // TODO: verify email
+                  // TODO: handle case if result is erroneous
+                  requestEmailVerification(email);
+                  navigate("/auth/email-verification/send", {
+                    state: { email },
+                  });
                 } else if (authMethod.name === authMethods.nyu.name) {
                   // TODO: nyu authentiation
                 } else {
@@ -146,7 +152,7 @@ function Register() {
         <div className={styles["alternative-page-link"]}>
           <span>
             Already have an account?{" "}
-            <Link to={"/login"} className={globalStyles["link"]}>
+            <Link to={"/auth/login"} className={globalStyles["link"]}>
               Log in
             </Link>
           </span>

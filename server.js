@@ -34,15 +34,14 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use("/", express.static(path.resolve(process.cwd(), "client", "build")));
-
 // ----- ROUTES -----
 
 // api
 app.use("/api/v1", api_routes);
 
 // web app
-app.get("/", async (req, res, next) => {
+app.get("*", express.static(path.resolve(process.cwd(), "client", "build")));
+app.get("*", async (req, res, next) => {
 	res.sendFile(path.join(process.cwd(), "client", "build", "index.html"));
 });
 
@@ -50,6 +49,7 @@ server.listen(port, () => {
 	console.log(`Listening on port ${port}`);
 });
 
+// import db from "./db/db.js";
 (async () => {
 	// // any startup instructions for the server
 	// let code_analyser = new Code_Analyser(
@@ -60,7 +60,15 @@ server.listen(port, () => {
 	// );
 	// code_analyser.run();
 	// code_analyser.input("3");
-	// console.log((await db.query("SELECT * FROM users;")).rows);
+	// console.log(
+	// 	await db.users.update_user("bcd@gmail.com", {
+	// 		name: "abc",
+	// 		email: "abc@gmail.com",
+	// 	})
+	// );
+	// console.log(
+	// 	await db.query("UPDATE users SET name = 'def' WHERE name = 'abc';")
+	// );
 	// console.log(
 	// 	(await db.query("SELECT * FROM users WHERE username = $1", ["se2422"]))
 	// 		.rowCount

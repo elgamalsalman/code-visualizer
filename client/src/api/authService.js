@@ -30,4 +30,41 @@ const passwordAuthenticate = async (email, password) => {
   return payload;
 };
 
-export { passwordAuthenticate, registerUserPassword };
+const requestEmailVerification = async (email) => {
+  const requestOptions = {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email }),
+  };
+  const requestURL = config.server.api.auth.email_verification.send.url;
+  console.log(requestURL);
+  const response = await fetch(requestURL, requestOptions);
+  const payload = await response.json();
+
+  console.log(payload);
+
+  return payload;
+};
+
+const verifyEmail = async (token) => {
+  console.log("verifying");
+  const requestOptions = {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+  };
+  const requestURL = `${config.server.api.auth.email_verification.verify.url}/${token}`;
+  console.log(requestURL);
+  const response = await fetch(requestURL, requestOptions);
+  const payload = await response.json();
+
+  console.log(payload);
+
+  return payload;
+};
+
+export {
+  passwordAuthenticate,
+  registerUserPassword,
+  requestEmailVerification,
+  verifyEmail,
+};

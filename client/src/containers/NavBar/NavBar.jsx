@@ -42,7 +42,7 @@ function NavBar() {
           <div
             className={clsx(styles["page-button"], styles["login-button"])}
             onClick={() => {
-              navigate("/login");
+              navigate("/auth/login");
             }}
           >
             Login

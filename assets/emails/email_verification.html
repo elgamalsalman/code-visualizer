@@ -1,0 +1,66 @@
+<html>
+	<head>
+		<style>
+			* {
+				box-sizing: border-box;
+			}
+			.page {
+				width: 25rem;
+				margin: auto;
+				background-color: #eee;
+			}
+			.header {
+				width: 100%;
+				height: 100%;
+				padding: 1rem;
+				text-align: center;
+				font-size: larger;
+				font-weight: bolder;
+				color: white !important;
+				background-color: #0f172a;
+			}
+			.page-body {
+				padding: 1rem;
+			}
+
+			h1 {
+				font-size: medium;
+			}
+			.button {
+				display: block;
+				width: fit-content;
+				padding: 0.75rem 2rem;
+				margin: 1.5rem auto;
+				font-size: medium;
+				background-color: #6e17ae;
+				color: white !important;
+				border-radius: 3px;
+				text-decoration: none;
+				font-weight: bold;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="page">
+			<div class="header">Algoview</div>
+			<div class="page-body">
+				<h1>Verify Your Algoview Account!</h1>
+				<p>
+					Hello {{name}}!<br /><br />
+					One last step to join! Click on the verification button below to
+					verify your email and start visualizing! (expires in 24 hours)
+				</p>
+
+				<a href="{{link}}" class="button">Verify</a>
+
+				<p>
+					If you haven't register in Algoview yourself, please just ignore this
+					email.<br /><br />
+					Happy Visualizing!<br /><br />
+					Best,<br />
+					Salman Elgamal from the Algoview team
+				</p>
+			</div>
+		</div>
+	</body>
+</html>

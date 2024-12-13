@@ -26,9 +26,6 @@ function FormButton({
         e.preventDefault();
         clickHandler();
       }}
-      onKeyDown={(e) => {
-        if (e.key === "Enter") clickHandler();
-      }}
     >
       {children}
     </button>

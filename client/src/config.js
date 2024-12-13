@@ -29,6 +29,15 @@ const config = {
             url: "http://localhost:3001/api/v1/auth/login/password",
           },
         },
+        email_verification: {
+          url: "http://localhost:3001/api/v1/auth/email-verification",
+          send: {
+            url: "http://localhost:3001/api/v1/auth/email-verification/send",
+          },
+          verify: {
+            url: "http://localhost:3001/api/v1/auth/email-verification/verify",
+          },
+        },
       },
     },
     http_codes: {

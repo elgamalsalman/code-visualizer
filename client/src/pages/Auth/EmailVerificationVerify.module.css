@@ -1,0 +1,35 @@
+.page {
+  @apply flex h-svh;
+}
+
+.content {
+  @apply flex h-full grow flex-col justify-between px-10 py-10;
+}
+
+.title {
+  @apply flex flex-col items-center font-mono text-xl;
+}
+
+.form-main-body {
+  @apply flex flex-col items-center justify-between gap-2;
+}
+
+.button {
+  @apply relative flex w-full justify-center rounded-lg bg-gray-200 p-3 font-bold text-gray-500;
+}
+.button-success {
+  @apply bg-purple-700 text-white;
+}
+.button-failed {
+  @apply bg-purple-200 text-purple-700;
+}
+.redirect-timer {
+  @apply absolute right-[1rem] top-[50%] -translate-y-[50%] text-purple-300;
+}
+
+.alternative-page-links {
+  @apply flex items-center justify-center gap-2;
+}
+.links-separator {
+  @apply h-0.5 w-0.5 rounded bg-black;
+}

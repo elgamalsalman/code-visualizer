@@ -93,7 +93,7 @@ function Login() {
         <div className={styles["alternative-page-link"]}>
           <span>
             Don't have an account?{" "}
-            <Link to={"/register"} className={globalStyles["link"]}>
+            <Link to={"/auth/register"} className={globalStyles["link"]}>
               Register
             </Link>
           </span>
