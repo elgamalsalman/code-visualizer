@@ -28,6 +28,9 @@ const config = {
           password: {
             url: "http://localhost:3001/api/v1/auth/login/password",
           },
+          nyu: {
+            url: "http://localhost:3001/api/v1/auth/login/nyu",
+          },
         },
         email_verification: {
           url: "http://localhost:3001/api/v1/auth/email-verification",
@@ -36,6 +39,15 @@ const config = {
           },
           verify: {
             url: "http://localhost:3001/api/v1/auth/email-verification/verify",
+          },
+        },
+        password_reset: {
+          url: "http://localhost:3001/api/v1/auth/password-reset",
+          send: {
+            url: "http://localhost:3001/api/v1/auth/password-reset/send",
+          },
+          reset: {
+            url: "http://localhost:3001/api/v1/auth/password-reset/reset",
           },
         },
       },
@@ -47,6 +59,9 @@ const config = {
   },
   storage: {
     fileKeysPrefix: "file:",
+  },
+  alerter: {
+    alertsLifeTime: 5000,
   },
   editor: {
     themes: {

@@ -1,10 +1,10 @@
-import React, { useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useCallback, useMemo, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import clsx from "clsx";
 import styles from "./Login.module.css";
 import globalStyles from "src/pages/globalStyles.module.css";
 
-import { validatePassword } from "src/common/utils/securityUtils";
+import { validateEmail } from "src/common/utils/emailUtils";
 import {
   authMethods,
   SideCanvas,
@@ -13,9 +13,17 @@ import {
   useAuthMethod,
 } from "./shared";
 import { FormButton, FormOrDivider } from "src/common/components/Form";
-import { passwordAuthenticate } from "src/api/authService";
+import { nyuAuthenticate, passwordAuthenticate } from "src/api/authService";
+import useAlerter from "src/hooks/useAlerter";
+import useUser from "src/hooks/useUser";
 
 function Login() {
+  // alerter
+  const [_, alerter] = useAlerter();
+
+  // url redirecting
+  const navigate = useNavigate();
+
   // form data states
   const [email, setEmail] = useState("");
   const authMethod = useAuthMethod(email);
@@ -24,6 +32,26 @@ function Login() {
   const passwordActive = useMemo(() => {
     return authMethod.name === authMethods.password.name;
   }, [authMethod]);
+
+  // validate plausable credentials
+  const credentialsValid = useMemo(() => {
+    // universal checks
+    if (!validateEmail(email)) return false;
+    if (password === "") return false;
+  }, [email, password]);
+
+  // auth user information
+  const [__, updateUser] = useUser();
+  const logUserIn = useCallback(
+    (user) => {
+      // update app-wide user information
+      updateUser((_) => {
+        return user;
+      });
+      navigate("/projects/home"); // TODO: this redirects to nothing
+    },
+    [navigate, updateUser],
+  );
 
   return (
     <div className={clsx(styles["page"])}>
@@ -43,12 +71,12 @@ function Login() {
               title={"password"}
               state={password}
               stateSetter={setPassword}
-              error={validatePassword(password) ? null : "not long enough"}
+              error={null}
             />
 
             <FormButton
               cta={true}
-              active={true}
+              active={credentialsValid}
               icon={authMethod.activeIcon}
               inactiveIcon={authMethod.inactiveIcon}
               text={
@@ -57,19 +85,46 @@ function Login() {
                   : "Login with NYU"
               }
               onClick={async () => {
+                let user = null;
+                let error = null;
                 if (authMethod.name === authMethods.password.name) {
-                  console.log("logging in");
                   const result = await passwordAuthenticate(email, password);
-                  console.log(result);
-                  // TODO: do something with the user data, maybe not here actually
-                  // maybe in the register function itself
+                  if (result.error) {
+                    error = result.error;
+                  } else {
+                    user = result;
+                  }
                 } else if (authMethod.name === authMethods.nyu.name) {
                   // TODO: nyu authentiation
+                  const result = await nyuAuthenticate();
+                  console.log(result);
                 } else {
                   console.log("unkown authentication type!");
                 }
+
+                // if found a user successfully log them in
+                if (user) logUserIn(user);
+                // else alert error and create
+                else {
+                  setPassword(""); // reset password field in case it was used
+                  alerter.create("error", error || "Error Logging In"); // alert
+                }
               }}
             />
+
+            <div
+              className={clsx(
+                globalStyles["link"],
+                styles["forgot-password-link"],
+              )}
+              onClick={() => {
+                navigate("/auth/password-reset/send", {
+                  state: { email },
+                });
+              }}
+            >
+              Forgot Password?
+            </div>
           </div>
 
           <FormOrDivider />

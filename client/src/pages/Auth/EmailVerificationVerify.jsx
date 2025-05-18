@@ -1,11 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  Link,
-  redirect,
-  useLocation,
-  useNavigate,
-  useParams,
-} from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import clsx from "clsx";
 import styles from "./EmailVerificationVerify.module.css";
 import globalStyles from "src/pages/globalStyles.module.css";
@@ -61,7 +55,7 @@ function EmailVerificationVerify() {
           </div>
 
           <button
-            class={clsx(
+            className={clsx(
               styles["button"],
               status === "success" && styles["button-success"],
               status === "failed" && styles["button-failed"],
@@ -72,7 +66,7 @@ function EmailVerificationVerify() {
               else if (status === "failed") navigate("/auth/register");
             }}
           >
-            <div class={styles["button-text"]} onClick={() => {}}>
+            <div className={styles["button-text"]} onClick={() => {}}>
               {status === "pending" && "Pending..."}
               {status === "success" && "Go to Login!"}
               {status === "failed" && "Back to Register"}

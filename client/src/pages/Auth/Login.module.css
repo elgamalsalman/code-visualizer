@@ -19,6 +19,10 @@
   @apply flex w-full flex-col gap-4;
 }
 
+.forgot-password-link {
+  @apply mx-auto;
+}
+
 .alternative-page-link {
   @apply flex justify-center;
 }

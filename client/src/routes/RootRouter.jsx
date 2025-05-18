@@ -1,21 +1,32 @@
 import React from "react";
 import { Routes, Route, BrowserRouter } from "react-router-dom";
 
+import GeneralPageLayout from "src/containers/GeneralPageLayout/GeneralPageLayout";
 import Home from "src/pages/Home/Home";
 import Register from "src/pages/Auth/Register";
 import Login from "src/pages/Auth/Login";
 import EmailVerificationSend from "src/pages/Auth/EmailVerificationSend";
 import EmailVerificationVerify from "src/pages/Auth/EmailVerificationVerify";
+import PasswordResetSend from "src/pages/Auth/PasswordResetSend";
+import PasswordResetReset from "src/pages/Auth/PasswordResetReset";
 import NotFound from "src/pages/NotFound/NotFound";
 import Editor from "src/pages/Editor/Editor";
+import { AnonymousRoute, AuthRoute } from "./AuthRoutes";
 
 function RootRouter() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path={"/"}>
-          <Route>
-            <Route index element={<Home />} />
+        <Route element={<GeneralPageLayout />}>
+          {/* Authenticated Routes */}
+          <Route element={<AuthRoute />}>
+            <Route path={"/projects"}>
+              <Route path={":project"} element={<Editor />} exact />
+            </Route>
+          </Route>
+
+          {/* UnAuthenticated Routes */}
+          <Route element={<AnonymousRoute />}>
             <Route path={"auth"}>
               <Route path={"register"} element={<Register />} />
               <Route path={"login"} element={<Login />} />
@@ -26,12 +37,16 @@ function RootRouter() {
                   element={<EmailVerificationVerify />}
                 />
               </Route>
+              <Route path={"password-reset"}>
+                <Route path={"send"} element={<PasswordResetSend />} />
+                <Route path={"reset/:token"} element={<PasswordResetReset />} />
+              </Route>
             </Route>
-            <Route path={"*"} element={<NotFound />} />
           </Route>
-          <Route path={"/projects"}>
-            <Route path={":project"} element={<Editor />} />
-          </Route>
+
+          {/* General Routes */}
+          <Route index element={<Home />} />
+          <Route path={"*"} element={<NotFound />} />
         </Route>
       </Routes>
     </BrowserRouter>

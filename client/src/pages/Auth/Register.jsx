@@ -21,7 +21,7 @@ import {
 } from "src/common/components/Form";
 import {
   registerUserPassword,
-  requestEmailVerification,
+  requestEmailVerificationEmail,
 } from "src/api/authService";
 
 function Register() {
@@ -70,7 +70,7 @@ function Register() {
             <FormField
               required={true}
               title={"name"}
-              initialValue={name}
+              value={name}
               onChange={(value) => setName(value)}
             />
 
@@ -117,13 +117,18 @@ function Register() {
                     password,
                     name,
                   );
+
                   // TODO: handle case if result is erroneous
-                  requestEmailVerification(email);
+                  requestEmailVerificationEmail(email);
                   navigate("/auth/email-verification/send", {
                     state: { email },
                   });
                 } else if (authMethod.name === authMethods.nyu.name) {
                   // TODO: nyu authentiation
+                  const res = await fetch(
+                    "https://shibboleth.nyu.edu/idp/profile/SAML2/Redirect/SSO?execution=e1s1",
+                  );
+                  console.log(res);
                 } else {
                   console.log("unkown authentication type!");
                 }

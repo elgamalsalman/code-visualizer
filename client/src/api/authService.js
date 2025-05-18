@@ -22,6 +22,7 @@ const passwordAuthenticate = async (email, password) => {
     body: JSON.stringify({ email, password }),
   };
   const requestURL = config.server.api.auth.login.password.url;
+  console.log(requestURL);
   const response = await fetch(requestURL, requestOptions);
   const payload = await response.json();
 
@@ -30,14 +31,28 @@ const passwordAuthenticate = async (email, password) => {
   return payload;
 };
 
-const requestEmailVerification = async (email) => {
+const nyuAuthenticate = async () => {
+  const requestOptions = {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    // body: JSON.stringify({ email, password }),
+  };
+  const requestURL = config.server.api.auth.login.nyu.url;
+  const response = await fetch(requestURL, requestOptions);
+  const payload = await response.json();
+
+  console.log(payload);
+
+  return payload;
+};
+
+const requestEmailVerificationEmail = async (email) => {
   const requestOptions = {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email }),
   };
   const requestURL = config.server.api.auth.email_verification.send.url;
-  console.log(requestURL);
   const response = await fetch(requestURL, requestOptions);
   const payload = await response.json();
 
@@ -47,13 +62,42 @@ const requestEmailVerification = async (email) => {
 };
 
 const verifyEmail = async (token) => {
-  console.log("verifying");
   const requestOptions = {
     method: "POST",
     headers: { "Content-Type": "application/json" },
   };
   const requestURL = `${config.server.api.auth.email_verification.verify.url}/${token}`;
-  console.log(requestURL);
+  const response = await fetch(requestURL, requestOptions);
+  const payload = await response.json();
+
+  console.log(payload);
+
+  return payload;
+};
+
+const requestPasswordResetEmail = async (email) => {
+  const requestOptions = {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email }),
+  };
+  const requestURL = config.server.api.auth.password_reset.send.url;
+  const response = await fetch(requestURL, requestOptions);
+  const payload = await response.json();
+
+  console.log(payload);
+
+  return payload;
+};
+
+const resetPassword = async (token, password) => {
+  console.log("verifying");
+  const requestOptions = {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ password }),
+  };
+  const requestURL = `${config.server.api.auth.password_reset.reset.url}/${token}`;
   const response = await fetch(requestURL, requestOptions);
   const payload = await response.json();
 
@@ -63,8 +107,11 @@ const verifyEmail = async (token) => {
 };
 
 export {
-  passwordAuthenticate,
   registerUserPassword,
-  requestEmailVerification,
+  passwordAuthenticate,
+  nyuAuthenticate,
+  requestEmailVerificationEmail,
   verifyEmail,
+  requestPasswordResetEmail,
+  resetPassword,
 };

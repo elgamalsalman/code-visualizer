@@ -10,18 +10,17 @@ function FormField({
   valueHidden = false,
   required = false,
   title,
-  initialValue,
+  value,
   error,
   onChange,
 }) {
   const id = useId();
-  const [value, setValue] = useState(initialValue);
   const [focus, setFocus] = useState(false);
   const [receivedInput, setReceivedInput] = useState(false);
 
   // empty value if became inactive
   useEffect(() => {
-    if (!active) setValue("");
+    if (!active) onChange("");
   }, [active]);
 
   // on getting input
@@ -66,7 +65,6 @@ function FormField({
             if (!multiline) newValue = newValue.replace("\n", "");
             if (!whitespace) newValue = newValue.replace(" ", "");
             if (newValue !== value) onChange(newValue);
-            setValue(newValue);
           }}
           spellCheck={false}
           name={title}

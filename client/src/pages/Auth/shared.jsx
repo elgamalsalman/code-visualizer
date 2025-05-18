@@ -63,14 +63,22 @@ const SideCanvas = ({ pageTitle }) => {
   );
 };
 
-const EmailField = ({ state: email, stateSetter: setEmail }) => {
+const EmailField = ({
+  active = true,
+  state: email,
+  stateSetter: setEmail,
+  error: parentError,
+}) => {
+  let error = validateEmail(email) ? null : "invalid email";
+  error = error || parentError;
   return (
     <FormField
+      active={active}
       whitespace={false}
       required={true}
       title={"email"}
-      initialValue={email}
-      error={validateEmail(email) ? null : "invalid email"}
+      value={email}
+      error={error}
       onChange={(value) => setEmail(value)}
     />
   );
@@ -90,7 +98,7 @@ const PasswordField = ({
       required={true}
       title={title}
       valueHidden={true}
-      initialValue={password}
+      value={password}
       error={error}
       onChange={(value) => setPassword(value)}
     />

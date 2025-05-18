@@ -2,7 +2,7 @@ import React from "react";
 import clsx from "clsx";
 import styles from "./FormCheckBox.module.css";
 
-function FormField({
+function FormCheckBox({
   required = false,
   checked,
   onChange: changeHandler,
@@ -31,4 +31,4 @@ function FormField({
   );
 }
 
-export default FormField;
+export default FormCheckBox;

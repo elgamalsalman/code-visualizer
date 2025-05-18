@@ -89,6 +89,15 @@ const users = {
 		}
 	},
 	update_user: async (email, props) => {
+		// substitute password with hash
+		if (props.password) {
+			props = {
+				...props,
+				password_hash: hash_password(props.password),
+			};
+			delete props.password;
+		}
+
 		let operand_i = 0;
 		const operands_list = [];
 		const op = (value) => {

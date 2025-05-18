@@ -1,0 +1,9 @@
+<EntityDescriptor entityID="https://www.algoview.com/api/v1/auth/saml/metadata" xmlns="urn:oasis:names:tc:SAML:2.0:metadata">
+    <SPSSODescriptor protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
+        <!-- AssertionConsumerService: The endpoint where the IdP sends the SAML Response -->
+        <AssertionConsumerService
+            Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
+            Location="https://www.algoview.com/api/v1/auth/login/nyu/callback"
+            index="0" />
+    </SPSSODescriptor>
+</EntityDescriptor>

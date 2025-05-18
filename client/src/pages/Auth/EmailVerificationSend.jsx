@@ -5,7 +5,7 @@ import styles from "./EmailVerificationSend.module.css";
 import globalStyles from "src/pages/globalStyles.module.css";
 
 import { SideCanvas } from "./shared";
-import { requestEmailVerification } from "src/api/authService";
+import { requestEmailVerificationEmail } from "src/api/authService";
 
 function EmailVerificationSend() {
   const location = useLocation();
@@ -29,7 +29,7 @@ function EmailVerificationSend() {
             className={clsx(styles["resend"], resent && styles["resend-done"])}
             onClick={() => {
               if (!resent) {
-                requestEmailVerification(email);
+                requestEmailVerificationEmail(email);
                 setResent(true);
               }
             }}

@@ -1,0 +1,38 @@
+.alert {
+  @apply relative rounded border-2 p-2 backdrop-blur-sm;
+  @apply font-mono font-bold shadow-lg;
+}
+
+.alert-delete-button {
+  @apply absolute right-0 top-0 h-6 w-6 p-1;
+}
+
+/* modes */
+
+.alert-message {
+  @apply border-purple-800/30 bg-purple-800/55 text-purple-400 shadow-purple-700/25;
+}
+.alert-message .alert-delete-button {
+  @apply text-purple-800 hover:text-purple-500;
+}
+
+.alert-success {
+  @apply border-green-800/30 bg-green-800/55 text-green-400 shadow-green-700/25;
+}
+.alert-success .alert-delete-button {
+  @apply text-green-800 hover:text-green-500;
+}
+
+.alert-error {
+  @apply border-red-800/30 bg-red-800/55 text-red-400 shadow-red-700/25;
+}
+.alert-error .alert-delete-button {
+  @apply text-red-800 hover:text-red-500;
+}
+
+.alert-warning {
+  @apply border-yellow-800/30 bg-yellow-800/55 text-yellow-400 shadow-yellow-700/25;
+}
+.alert-warning .alert-delete-button {
+  @apply text-yellow-800 hover:text-yellow-500;
+}

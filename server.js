@@ -8,6 +8,7 @@ import express from "express";
 import session from "express-session";
 import expressWS from "express-ws";
 import passport from "passport";
+import jwt from "jsonwebtoken";
 
 import api_routes from "./routes/api_routes.js";
 
@@ -38,6 +39,17 @@ app.use(passport.session());
 
 // api
 app.use("/api/v1", api_routes);
+
+// web app autherization
+app.get("*", async (req, res, next) => {
+	const jwt = req.cookies.auth_jwt;
+	try {
+		const user = jwt.verify(token, process.env.HASHING_SALT);
+	} catch (err) {
+		res.cookie.jwt = // TODO: here is where I left off
+	}
+	next();
+});
 
 // web app
 app.get("*", express.static(path.resolve(process.cwd(), "client", "build")));
