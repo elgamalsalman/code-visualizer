@@ -7,6 +7,8 @@ import Alert from "./Alert";
 const Alerter = () => {
   const [alerts, alerter] = useAlerter();
 
+  // console.log("alerts:", alerts);
+
   return (
     <div className={styles["alerts-list"]}>
       {alerts.map((alert) => (

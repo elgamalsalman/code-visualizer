@@ -1,8 +1,9 @@
+import config from "../config.js";
+
 import passport from "passport";
 import passportLocal from "passport-local";
 import { Strategy as SamlStrategy } from "passport-saml";
 
-import config from "../config.js";
 import db from "../db/db.js";
 
 // local strategy
@@ -12,17 +13,19 @@ passport.use(
 		{ usernameField: "email", passwordField: "password", session: false },
 		async (email, password, done) => {
 			try {
-				const user = await db.users.auth_user({ email, password });
-
-				if (user === null) done(null, false);
-				else done(null, user);
+				const id = await db.users.auth_password(email, password);
+				done(null, { id });
 			} catch (err) {
-				done(err);
+				done({
+					status: config.http_codes.unauthorized,
+					message: "invalid credentials",
+				});
 			}
 		}
 	)
 );
 
+// nyu strategy
 passport.use(
 	"nyu",
 	new SamlStrategy(

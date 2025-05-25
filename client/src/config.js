@@ -1,5 +1,4 @@
 const config = {
-  userId: "test_user",
   home: {
     dataStructuresPresented: [
       { name: "Linked-lists", isAvailable: true },
@@ -52,10 +51,12 @@ const config = {
         },
       },
     },
-    http_codes: {
-      success: 200,
-      failed: 500,
-    },
+  },
+  http_codes: {
+    success: 200,
+    failed: 500,
+    unauthorized: 401,
+    forbidden: 403,
   },
   storage: {
     fileKeysPrefix: "file:",

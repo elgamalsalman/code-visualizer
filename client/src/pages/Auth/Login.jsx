@@ -1,3 +1,5 @@
+import config from "src/config";
+
 import React, { useCallback, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import clsx from "clsx";
@@ -85,29 +87,21 @@ function Login() {
                   : "Login with NYU"
               }
               onClick={async () => {
-                let user = null;
-                let error = null;
-                if (authMethod.name === authMethods.password.name) {
-                  const result = await passwordAuthenticate(email, password);
-                  if (result.error) {
-                    error = result.error;
+                try {
+                  let user = null;
+                  if (authMethod.name === authMethods.password.name) {
+                    user = await passwordAuthenticate(email, password);
+                  } else if (authMethod.name === authMethods.nyu.name) {
+                    // TODO: nyu authentiation
+                    user = await nyuAuthenticate();
                   } else {
-                    user = result;
+                    throw new Error("unkown authentication type!");
                   }
-                } else if (authMethod.name === authMethods.nyu.name) {
-                  // TODO: nyu authentiation
-                  const result = await nyuAuthenticate();
-                  console.log(result);
-                } else {
-                  console.log("unkown authentication type!");
-                }
 
-                // if found a user successfully log them in
-                if (user) logUserIn(user);
-                // else alert error and create
-                else {
+                  logUserIn(user);
+                } catch (error) {
                   setPassword(""); // reset password field in case it was used
-                  alerter.create("error", error || "Error Logging In"); // alert
+                  alerter.create("error", error.message || "error logging in"); // alert
                 }
               }}
             />

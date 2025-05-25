@@ -5,10 +5,8 @@ const getPushEntityEventsRequest = (userId, events) => {
   };
 };
 
-const getPullServerFileTreeRequest = (userId) => {
-  return {
-    user_id: userId,
-  };
+const getPullServerFileTreeRequest = () => {
+  return {};
 };
 
 const getPullServerEntitiesRequest = (userId, entityMetas) => {

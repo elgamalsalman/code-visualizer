@@ -2,8 +2,12 @@ export default {
 	port: 3001,
 	root_dir_path: process.cwd(),
 	auth: {
+		hash_length: 64,
+		secret_length: 64,
 		email_verification_lifetime: 24 * 60 * 60 * 1000, // one day
 		password_reset_lifetime: 15 * 60 * 1000, // 15 minutes
+		access_token_lifetime: 5 * 60 * 1000, // 5 minutes
+		refresh_token_lifetime: 3 * 24 * 60 * 60 * 1000, // 3 days
 		saml_id: "https://www.algoview.com/api/v1/auth/saml/metadata",
 		methods: {
 			nyu: {
@@ -18,9 +22,17 @@ MIIGzTCCBTWgAwIBAgIRAPQaF36Le4lpbFc/EWytNaQwDQYJKoZIhvcNAQEMBQAw RDELMAkGA1UEBhM
 	http_codes: {
 		success: 200,
 		failed: 500,
+		unauthorized: 401,
+		forbidden: 403,
 	},
-	testing: {
-		test_user_id: "test_user",
+	cookies: {
+		options: {
+			httpOnly: true,
+			sameSite: "None",
+			secure: true,
+		},
+		access_token: { name: "__algoview_access_token__" },
+		refresh_token: { name: "__algoview_refresh_token__" },
 	},
 	users: {
 		files: {
@@ -30,8 +42,10 @@ MIIGzTCCBTWgAwIBAgIRAPQaF36Le4lpbFc/EWytNaQwDQYJKoZIhvcNAQEMBQAw RDELMAkGA1UEBhM
 			program_output_file_name: ".out",
 			program_error_file_name: ".err",
 			shared: {
+				template: {
+					path: "scripts/template",
+				},
 				makefile: {
-					path: "scripts/makefile",
 					name: "makefile",
 				},
 				code_header: {

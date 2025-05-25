@@ -1,5 +1,4 @@
 import config from "../../config.js";
-import { entity_types, get_entity_data } from "../../models/entity_models.js";
 
 import File_Manager from "../../services/file_manager.js";
 
@@ -12,13 +11,11 @@ class Pull_Controller {
 
 	file_tree = async (req, res, next) => {
 		// --- REQUEST BODY STRUCTURE ---
-		// {
-		// 	user_id: "test_user",
-		// }
+		// {}
 		// RETURN: { file_tree: {} }
 
-		const { user_id } = req.body;
-		console.log(`sending file tree to user`);
+		const { user_id } = req.auth;
+		console.log("sending file tree of user:", user_id);
 		try {
 			const file_tree = await this.#file_manager.get_user_file_tree(user_id);
 

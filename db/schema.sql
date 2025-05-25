@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 17.1 (Postgres.app)
--- Dumped by pg_dump version 17.1 (Postgres.app)
+-- Dumped from database version 17.5 (Postgres.app)
+-- Dumped by pg_dump version 17.5 (Postgres.app)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -27,10 +27,12 @@ SET default_table_access_method = heap;
 
 CREATE TABLE public.users (
     id integer NOT NULL,
-    email character varying(100) NOT NULL,
+    email character varying(50) NOT NULL,
     name character varying(50) NOT NULL,
-    password_hash text NOT NULL,
-    created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    password_hash character(64) NOT NULL,
+    creation_timestamp timestamp without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    verified boolean DEFAULT false NOT NULL,
+    authentication_key character(64) NOT NULL,
     CONSTRAINT email_format CHECK (((email)::text ~~ '%@%'::text))
 );
 
@@ -41,37 +43,22 @@ ALTER TABLE public.users OWNER TO elgamalsalman;
 -- Name: users_id_seq; Type: SEQUENCE; Schema: public; Owner: elgamalsalman
 --
 
-CREATE SEQUENCE public.users_id_seq
-    AS integer
+ALTER TABLE public.users ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME public.users_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
     NO MAXVALUE
-    CACHE 1;
-
-
-ALTER SEQUENCE public.users_id_seq OWNER TO elgamalsalman;
-
---
--- Name: users_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: elgamalsalman
---
-
-ALTER SEQUENCE public.users_id_seq OWNED BY public.users.id;
+    CACHE 1
+);
 
 
 --
--- Name: users id; Type: DEFAULT; Schema: public; Owner: elgamalsalman
---
-
-ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_id_seq'::regclass);
-
-
---
--- Name: users users_email_key; Type: CONSTRAINT; Schema: public; Owner: elgamalsalman
+-- Name: users unique_email; Type: CONSTRAINT; Schema: public; Owner: elgamalsalman
 --
 
 ALTER TABLE ONLY public.users
-    ADD CONSTRAINT users_email_key UNIQUE (email);
+    ADD CONSTRAINT unique_email UNIQUE (email);
 
 
 --

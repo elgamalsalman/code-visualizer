@@ -7,7 +7,8 @@ export const AuthRoute = () => {
 };
 
 export const AnonymousRoute = () => {
-  const user = JSON.parse(localStorage.getItem("user"));
+  // const user = JSON.parse(localStorage.getItem("user"));
+  const [user, _] = useUser();
   console.log(user);
   return user ? <Navigate to="/" replace /> : <Outlet />;
 };

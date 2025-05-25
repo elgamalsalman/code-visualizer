@@ -9,6 +9,7 @@ import {
 const pushEntityEventsToServer = async (userId, entityEvents) => {
   const requestOptions = {
     method: "PUT",
+    credentials: "include",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(getPushEntityEventsRequest(userId, entityEvents)),
   };
@@ -18,26 +19,29 @@ const pushEntityEventsToServer = async (userId, entityEvents) => {
   console.log(data);
 };
 
-const pullServerFileTree = async (userId) => {
+const pullServerFileTree = async () => {
   const requestOptions = {
     method: "POST",
+    credentials: "include",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(getPullServerFileTreeRequest(userId)),
+    body: JSON.stringify(getPullServerFileTreeRequest()),
   };
   const requestURL = `${config.server.api.url}/pull/file_tree`;
   const response = await fetch(requestURL, requestOptions);
   const payload = await response.json();
+
   console.log("pulled server file tree payload:");
   console.log(payload);
-  if (payload.status === config.server.http_codes.failed) {
-    throw new Error(payload.error);
-  }
+
+  if (!response.ok) throw payload;
+
   return payload.file_tree;
 };
 
 const pullServerEntities = async (userId, entityMetas) => {
   const requestOptions = {
     method: "POST",
+    credentials: "include",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(getPullServerEntitiesRequest(userId, entityMetas)),
   };

@@ -121,7 +121,7 @@ function ConsoleRun({ run, onInput, onKill }) {
           <div className={styles["run-time-div"]}>
             <div id={runTimeDivId} className={styles["run-duration-div"]}></div>
             <div className={styles["run-start-time-div"]}>
-              on {UNIXToTime(run.startTime)},{UNIXToDate(run.startTime)}
+              on {UNIXToTime(run.startTime)} {UNIXToDate(run.startTime)}
             </div>
           </div>
           <div

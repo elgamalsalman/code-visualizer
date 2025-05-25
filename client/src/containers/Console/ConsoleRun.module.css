@@ -57,7 +57,7 @@
 }
 
 .content {
-  @apply relative block min-h-16 overflow-scroll whitespace-pre-wrap border-b border-background-dark-750 p-2 font-mono leading-none;
+  @apply relative block min-h-16 overflow-auto whitespace-pre-wrap border-b border-background-dark-750 p-2 font-mono leading-none;
 }
 
 .closed-content {

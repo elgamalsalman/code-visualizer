@@ -21,7 +21,7 @@ const useFileTree = () => {
   useEffect(() => {
     (async () => {
       try {
-        const serverFileTree = await pullServerFileTree(config.userId);
+        const serverFileTree = await pullServerFileTree();
         updateFileTree((fileTree) => serverFileTree);
         setAppStatus(appStatuses.idle);
       } catch (error) {

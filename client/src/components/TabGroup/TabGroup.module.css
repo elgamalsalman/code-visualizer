@@ -7,7 +7,7 @@
 }
 
 .tab-heads-div {
-  @apply flex flex-initial overflow-x-scroll;
+  @apply flex flex-initial overflow-x-auto;
 }
 
 .tab-heads-div > div:last-child {

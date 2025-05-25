@@ -23,8 +23,12 @@ import {
   registerUserPassword,
   requestEmailVerificationEmail,
 } from "src/api/authService";
+import useAlerter from "src/hooks/useAlerter";
 
 function Register() {
+  // alerter
+  const [_, alerter] = useAlerter();
+
   const navigate = useNavigate();
 
   // form data states
@@ -111,26 +115,31 @@ function Register() {
                   : "Register with NYU"
               }
               onClick={async () => {
-                if (authMethod.name === authMethods.password.name) {
-                  const result = await registerUserPassword(
-                    email,
-                    password,
-                    name,
-                  );
+                try {
+                  if (authMethod.name === authMethods.password.name) {
+                    await registerUserPassword(email, password, name);
 
-                  // TODO: handle case if result is erroneous
-                  requestEmailVerificationEmail(email);
-                  navigate("/auth/email-verification/send", {
-                    state: { email },
-                  });
-                } else if (authMethod.name === authMethods.nyu.name) {
-                  // TODO: nyu authentiation
-                  const res = await fetch(
-                    "https://shibboleth.nyu.edu/idp/profile/SAML2/Redirect/SSO?execution=e1s1",
+                    await requestEmailVerificationEmail(email);
+                    navigate("/auth/email-verification/send", {
+                      state: { email },
+                    });
+                  } else if (authMethod.name === authMethods.nyu.name) {
+                    // TODO: nyu authentiation
+                    const res = await fetch(
+                      "https://shibboleth.nyu.edu/idp/profile/SAML2/Redirect/SSO?execution=e1s1",
+                    );
+                    console.log(res);
+                  } else {
+                    console.log("unkown authentication type!");
+                  }
+                } catch (error) {
+                  console.log(error);
+                  setPassword("");
+                  setPasswordConfirmation("");
+                  alerter.create(
+                    "error",
+                    error.message || "error registering new user",
                   );
-                  console.log(res);
-                } else {
-                  console.log("unkown authentication type!");
                 }
               }}
             />

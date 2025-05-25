@@ -18,22 +18,28 @@ export default class File_Manager {
 		}
 	}
 
+	get_user_dir_name = (user_id) => {
+		return `user_${user_id}`;
+	};
+
 	create_user_dir = async (user_id) => {
-		const user_dir_path = path.resolve(this.#users_dir, user_id);
-		await fs.promises.mkdir(user_dir_path);
-		const make_file_path = path.resolve(
+		const user_dir_path = path.resolve(
+			this.#users_dir,
+			this.get_user_dir_name(user_id)
+		);
+		const template_path = path.resolve(
 			config.root_dir_path,
-			config.users.files.shared.makefile.path
+			config.users.files.shared.template.path
 		);
-		await fs.promises.cp(
-			make_file_path,
-			path.resolve(user_dir_path, config.users.files.shared.makefile.name)
-		);
+		await fs.promises.cp(template_path, user_dir_path, { recursive: true });
 	};
 
 	get_user_dir_path = async (user_id) => {
 		// console.log(`get_user_dir_path(${user_id})`);
-		const user_dir_path = path.resolve(this.#users_dir, user_id);
+		const user_dir_path = path.resolve(
+			this.#users_dir,
+			this.get_user_dir_name(user_id)
+		);
 		if (!fs.existsSync(user_dir_path)) {
 			await this.create_user_dir(user_id);
 		}

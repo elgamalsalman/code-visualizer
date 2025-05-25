@@ -3,6 +3,7 @@ import config from "src/config";
 const registerUserPassword = async (email, password, name) => {
   const requestOptions = {
     method: "POST",
+    credentials: "include",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email, password, userInfo: { name } }),
   };
@@ -10,7 +11,8 @@ const registerUserPassword = async (email, password, name) => {
   const response = await fetch(requestURL, requestOptions);
   const payload = await response.json();
 
-  // console.log(payload);
+  // if registration failed
+  if (!response.ok) throw payload;
 
   return payload;
 };
@@ -18,6 +20,7 @@ const registerUserPassword = async (email, password, name) => {
 const passwordAuthenticate = async (email, password) => {
   const requestOptions = {
     method: "POST",
+    credentials: "include",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email, password }),
   };
@@ -26,7 +29,8 @@ const passwordAuthenticate = async (email, password) => {
   const response = await fetch(requestURL, requestOptions);
   const payload = await response.json();
 
-  // console.log(payload);
+  // if login failed
+  if (!response.ok) throw payload;
 
   return payload;
 };
@@ -34,6 +38,7 @@ const passwordAuthenticate = async (email, password) => {
 const nyuAuthenticate = async () => {
   const requestOptions = {
     method: "POST",
+    credentials: "include",
     headers: { "Content-Type": "application/json" },
     // body: JSON.stringify({ email, password }),
   };
@@ -41,7 +46,8 @@ const nyuAuthenticate = async () => {
   const response = await fetch(requestURL, requestOptions);
   const payload = await response.json();
 
-  console.log(payload);
+  // if failed
+  if (!response.ok) throw payload;
 
   return payload;
 };
@@ -49,14 +55,17 @@ const nyuAuthenticate = async () => {
 const requestEmailVerificationEmail = async (email) => {
   const requestOptions = {
     method: "POST",
+    credentials: "include",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email }),
   };
-  const requestURL = config.server.api.auth.email_verification.send.url;
+  const requestURL =
+    `${config.server.api.auth.email_verification.send.url}?` +
+    new URLSearchParams({ email }).toString();
   const response = await fetch(requestURL, requestOptions);
   const payload = await response.json();
 
-  console.log(payload);
+  // if failed
+  if (!response.ok) throw payload;
 
   return payload;
 };
@@ -64,13 +73,15 @@ const requestEmailVerificationEmail = async (email) => {
 const verifyEmail = async (token) => {
   const requestOptions = {
     method: "POST",
+    credentials: "include",
     headers: { "Content-Type": "application/json" },
   };
   const requestURL = `${config.server.api.auth.email_verification.verify.url}/${token}`;
   const response = await fetch(requestURL, requestOptions);
   const payload = await response.json();
 
-  console.log(payload);
+  // if failed
+  if (!response.ok) throw payload;
 
   return payload;
 };
@@ -78,14 +89,17 @@ const verifyEmail = async (token) => {
 const requestPasswordResetEmail = async (email) => {
   const requestOptions = {
     method: "POST",
+    credentials: "include",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email }),
   };
-  const requestURL = config.server.api.auth.password_reset.send.url;
+  const requestURL =
+    `${config.server.api.auth.password_reset.send.url}?` +
+    new URLSearchParams({ email }).toString();
   const response = await fetch(requestURL, requestOptions);
   const payload = await response.json();
 
-  console.log(payload);
+  // if failed
+  if (!response.ok) throw payload;
 
   return payload;
 };
@@ -94,6 +108,7 @@ const resetPassword = async (token, password) => {
   console.log("verifying");
   const requestOptions = {
     method: "POST",
+    credentials: "include",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ password }),
   };
@@ -101,7 +116,8 @@ const resetPassword = async (token, password) => {
   const response = await fetch(requestURL, requestOptions);
   const payload = await response.json();
 
-  console.log(payload);
+  // if failed
+  if (!response.ok) throw payload;
 
   return payload;
 };
