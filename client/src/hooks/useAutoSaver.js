@@ -4,7 +4,7 @@ import { entityTypes, getEntityData } from "src/models/entity/entityModels";
 import { entityEventTypes } from "src/models/events/entityEvents";
 
 import useBasicAutoSaver from "src/common/hooks/useBasicAutoSaver";
-import { pushEntityEventsToServer } from "src/api/entityService";
+import api from "src/api/api";
 import {
   readFileFromStorage,
   writeFileToStorage,
@@ -42,7 +42,7 @@ const useAutoSaver = (editorStates) => {
         return entityEvent;
       }),
     );
-    await pushEntityEventsToServer(config.userId, locallyProcessedEntityEvents);
+    await api.entities.pushEvents(config.userId, locallyProcessedEntityEvents);
     console.log("saved to server!");
   }, config.autoSavingDelay);
 

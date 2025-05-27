@@ -1,10 +1,12 @@
-import config from "src/config";
-
 import React, { useCallback, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import clsx from "clsx";
 import styles from "./Login.module.css";
 import globalStyles from "src/pages/globalStyles.module.css";
+
+import api from "src/api/api";
+import useUser from "src/hooks/useUser";
+import useAlerter from "src/hooks/useAlerter";
 
 import { validateEmail } from "src/common/utils/emailUtils";
 import {
@@ -15,9 +17,6 @@ import {
   useAuthMethod,
 } from "./shared";
 import { FormButton, FormOrDivider } from "src/common/components/Form";
-import { nyuAuthenticate, passwordAuthenticate } from "src/api/authService";
-import useAlerter from "src/hooks/useAlerter";
-import useUser from "src/hooks/useUser";
 
 function Login() {
   // alerter
@@ -90,10 +89,10 @@ function Login() {
                 try {
                   let user = null;
                   if (authMethod.name === authMethods.password.name) {
-                    user = await passwordAuthenticate(email, password);
+                    user = await api.auth.login.password(email, password);
                   } else if (authMethod.name === authMethods.nyu.name) {
                     // TODO: nyu authentiation
-                    user = await nyuAuthenticate();
+                    user = await api.auth.login.nyu();
                   } else {
                     throw new Error("unkown authentication type!");
                   }

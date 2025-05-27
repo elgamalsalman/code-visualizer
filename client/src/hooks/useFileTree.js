@@ -9,7 +9,7 @@ import {
   getFileTreeNode,
 } from "src/models/entity/entityModels";
 
-import { pullServerFileTree } from "src/api/entityService";
+import api from "src/api/api";
 import { useAppStatusContext } from "./useAppStatusContext";
 import { writeFileToStorage } from "src/services/storageService";
 
@@ -21,7 +21,7 @@ const useFileTree = () => {
   useEffect(() => {
     (async () => {
       try {
-        const serverFileTree = await pullServerFileTree();
+        const serverFileTree = await api.entities.pullFileTree();
         updateFileTree((fileTree) => serverFileTree);
         setAppStatus(appStatuses.idle);
       } catch (error) {

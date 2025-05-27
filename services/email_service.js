@@ -31,7 +31,7 @@ const send_email = async (receivers, subject, text, html) => {
 const general_email_verification_html = fs
 	.readFileSync("./assets/emails/email_verification.html")
 	.toString();
-const send_email_verification = async (email, name, link) => {
+const send_email_verification_email = async (email, name, link) => {
 	const html = general_email_verification_html
 		.replaceAll("{{email}}", email)
 		.replaceAll("{{name}}", name)
@@ -60,4 +60,4 @@ const send_password_reset_email = async (email, name, link) => {
 	);
 };
 
-export { send_email, send_email_verification, send_password_reset_email };
+export { send_email, send_email_verification_email, send_password_reset_email };

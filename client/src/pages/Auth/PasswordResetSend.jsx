@@ -4,11 +4,12 @@ import clsx from "clsx";
 import styles from "./PasswordResetSend.module.css";
 import globalStyles from "src/pages/globalStyles.module.css";
 
+import api from "src/api/api";
+import useAlerter from "src/hooks/useAlerter";
+
 import { authMethods, EmailField, SideCanvas, useAuthMethod } from "./shared";
-import { requestPasswordResetEmail } from "src/api/authService";
 import { FormButton } from "src/common/components/Form";
 import { validateEmail } from "src/common/utils/emailUtils";
-import useAlerter from "src/hooks/useAlerter";
 
 function PasswordResetSend() {
   const location = useLocation();
@@ -52,7 +53,8 @@ function PasswordResetSend() {
             })()}
             onClick={async () => {
               setStatus("sending");
-              const { success, error } = await requestPasswordResetEmail(email);
+              const { success, error } =
+                await api.auth.passwordReset.request(email);
               if (success) {
                 alerter.create(
                   alerter.alertTypes.success,

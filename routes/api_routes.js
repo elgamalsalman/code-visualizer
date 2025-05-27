@@ -2,25 +2,19 @@
 
 import { Router } from "express";
 
-import api_auth_routes from "./api_auth_routes.js";
-import api_ws_routes from "./api_ws_routes.js";
+import api_auth_routes from "./api/auth_routes.js";
 
 import auth from "../middlewares/auth_middleware.js";
-import ws_header from "../middlewares/ws_header_middleware.js";
 
-import push_controller from "../controllers/api/push_controller.js";
-import pull_controller from "../controllers/api/pull_controller.js";
-import run_controller from "../controllers/api/run_controller.js";
+import entity_router from "./api/entity_routes.js";
+import run_router from "./api/run_routes.js";
+import user_router from "./api/user_routes.js";
 
 // --- globals ---
 
 const router = Router();
 
-// --- middlewares ---
-
-router.use("/ws", ws_header);
-
-// --- testing ---
+// --- logging ---
 
 router.use((req, res, next) => {
 	console.log({ method: req.method, url: req.url, body: req.body });
@@ -29,14 +23,22 @@ router.use((req, res, next) => {
 
 // --- routes ---
 
-router.use("/auth", api_auth_routes);
+// unauthorized api
+(() => {
+	router.use("/auth", api_auth_routes);
+})();
 
-router.put("/push", auth, push_controller.push);
-router.post("/pull/file_tree", auth, pull_controller.file_tree);
-router.post("/pull/entities", auth, pull_controller.entities);
-router.put("/run", auth, run_controller.run);
+// authorized api
+(() => {
+	const auth_router = Router();
+	auth_router.use(auth);
 
-router.use("/ws", auth, api_ws_routes);
+	auth_router.use("/entities", entity_router);
+	auth_router.use("/runs", run_router);
+	auth_router.use("/users", user_router);
+
+	router.use(auth_router);
+})();
 
 // --- api error handling ---
 

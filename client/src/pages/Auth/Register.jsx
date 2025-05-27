@@ -4,6 +4,9 @@ import clsx from "clsx";
 import styles from "./Register.module.css";
 import globalStyles from "src/pages/globalStyles.module.css";
 
+import api from "src/api/api";
+import useAlerter from "src/hooks/useAlerter";
+
 import { validateEmail } from "src/common/utils/emailUtils";
 import { validatePassword } from "src/common/utils/securityUtils";
 import {
@@ -19,11 +22,6 @@ import {
   FormCheckBox,
   FormOrDivider,
 } from "src/common/components/Form";
-import {
-  registerUserPassword,
-  requestEmailVerificationEmail,
-} from "src/api/authService";
-import useAlerter from "src/hooks/useAlerter";
 
 function Register() {
   // alerter
@@ -117,9 +115,8 @@ function Register() {
               onClick={async () => {
                 try {
                   if (authMethod.name === authMethods.password.name) {
-                    await registerUserPassword(email, password, name);
-
-                    await requestEmailVerificationEmail(email);
+                    await api.auth.register.password(email, password, name);
+                    await api.auth.emailVerification.request(email);
                     navigate("/auth/email-verification/send", {
                       state: { email },
                     });

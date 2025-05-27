@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import clsx from "clsx";
+
 import styles from "./EmailVerificationVerify.module.css";
 import globalStyles from "src/pages/globalStyles.module.css";
 
+import api from "src/api/api";
+
 import { SideCanvas } from "./shared";
-import { verifyEmail } from "src/api/authService";
 
 function EmailVerificationVerify() {
   const { token } = useParams();
@@ -16,7 +18,7 @@ function EmailVerificationVerify() {
   // do the api call for the email verification
   useEffect(() => {
     (async () => {
-      const { success } = await verifyEmail(token);
+      const { success } = await api.auth.emailVerification.verify(token);
       if (success === false) setStatus("failed");
       else if (success === true) setStatus("success");
     })();

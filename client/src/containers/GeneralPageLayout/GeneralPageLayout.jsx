@@ -3,7 +3,7 @@ import { Outlet } from "react-router-dom";
 import styles from "./GeneralPageLayout.module.css";
 
 import { AlerterProvider } from "src/contexts/alerterContexts";
-import { AuthProvider } from "src/contexts/authContext";
+import { UserProvider } from "src/contexts/userContext";
 
 import Alerter from "src/containers/Alerter/Alerter";
 
@@ -19,9 +19,9 @@ const GeneralPageLayout = () => {
 const GeneralPageLayoutWrapper = () => {
   return (
     <AlerterProvider>
-      <AuthProvider>
+      <UserProvider>
         <GeneralPageLayout />
-      </AuthProvider>
+      </UserProvider>
     </AlerterProvider>
   );
 };

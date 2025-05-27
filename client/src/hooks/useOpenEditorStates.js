@@ -8,7 +8,7 @@ import {
   getEntityMeta,
   getEntityData,
 } from "src/models/entity/entityModels";
-import { pullServerEntities } from "src/api/entityService";
+import api from "src/api/api";
 import {
   readFileFromStorage,
   writeFileToStorage,
@@ -47,7 +47,7 @@ const useOpenEditorStates = () => {
       );
       if (content === null) {
         try {
-          [{ content }] = await pullServerEntities(config.userId, [
+          [{ content }] = await api.entities.pullEntities(config.userId, [
             getEntityMeta(fileId, entityTypes.file, undefined),
           ]);
           const entity = getEntityData(

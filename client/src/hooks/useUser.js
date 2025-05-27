@@ -1,10 +1,15 @@
 import { useContext } from "react";
-import { UserContext, UpdateUserContext } from "src/contexts/authContext";
+import {
+  UserContext,
+  UpdateUserContext,
+  UserLoadingContext,
+} from "src/contexts/userContext";
 
 const useUser = () => {
   const user = useContext(UserContext);
   const updateUser = useContext(UpdateUserContext);
-  return [user, updateUser];
+  const userLoading = useContext(UserLoadingContext);
+  return [user, updateUser, userLoading];
 };
 
 export default useUser;

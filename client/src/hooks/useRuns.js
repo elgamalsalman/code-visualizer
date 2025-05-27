@@ -1,7 +1,10 @@
+import config from "src/config";
+
 import { useRef } from "react";
 import { useImmer } from "use-immer";
 
-import config from "src/config";
+import api from "src/api/api";
+
 import { getUNIXTimeNow } from "src/common/utils/dateTimeUtils";
 import { getRun, runStatuses } from "src/models/run/runModels";
 import { useAppStatusContext } from "./useAppStatusContext";
@@ -13,7 +16,6 @@ import {
   runEventStatuses,
   runEventTypes,
 } from "src/models/run/runEventModels";
-import { createRunWS } from "src/api/wsService";
 
 const useRuns = () => {
   const [appStatus, setAppStatus] = useAppStatusContext();
@@ -60,7 +62,7 @@ const useRuns = () => {
       });
       setAppStatus(appStatuses.pending);
 
-      wsRef.current = createRunWS();
+      wsRef.current = api.runs.run();
       wsRef.current.onmessage = (payload) => {
         if (payload.type === "message") {
           const event = JSON.parse(payload.data);

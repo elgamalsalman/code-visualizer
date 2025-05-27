@@ -4,9 +4,10 @@ import clsx from "clsx";
 import styles from "./PasswordResetReset.module.css";
 import globalStyles from "src/pages/globalStyles.module.css";
 
-import { PasswordField, SideCanvas } from "./shared";
-import { resetPassword } from "src/api/authService";
+import api from "src/api/api";
 import useAlerter from "src/hooks/useAlerter";
+
+import { PasswordField, SideCanvas } from "./shared";
 import { validatePassword } from "src/common/utils/securityUtils";
 import { FormButton } from "src/common/components/Form";
 
@@ -55,7 +56,10 @@ function PasswordResetReset() {
             active={passwordValid}
             text={"Reset Password"}
             onClick={async () => {
-              const { success, error } = await resetPassword(token, password);
+              const { success, error } = await api.auth.passwordReset.reset(
+                token,
+                password,
+              );
               if (success)
                 alerter.create(alerter.alertTypes.success, "Changed Password!");
               if (error) alerter.create(alerter.alertTypes.error, error);

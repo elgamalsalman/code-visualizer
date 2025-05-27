@@ -11,7 +11,7 @@ import PasswordResetSend from "src/pages/Auth/PasswordResetSend";
 import PasswordResetReset from "src/pages/Auth/PasswordResetReset";
 import NotFound from "src/pages/NotFound/NotFound";
 import Editor from "src/pages/Editor/Editor";
-import { AnonymousRoute, AuthRoute } from "./AuthRoutes";
+import { AnonymousRoute, AuthRoute, GeneralRoute } from "./AuthRoutes";
 
 function RootRouter() {
   return (
@@ -45,8 +45,10 @@ function RootRouter() {
           </Route>
 
           {/* General Routes */}
-          <Route index element={<Home />} />
-          <Route path={"*"} element={<NotFound />} />
+          <Route element={<GeneralRoute />}>
+            <Route index element={<Home />} />
+            <Route path={"*"} element={<NotFound />} />
+          </Route>
         </Route>
       </Routes>
     </BrowserRouter>
